@@ -9,7 +9,9 @@ import {
   NavbarBrand,
   NavbarToggle,
 } from "flowbite-react";
-
+import { signOut } from "firebase/auth";
+import { auth } from "../../components/firebase/index";
+import { useNavigate } from "react-router-dom";
 interface NavProps {
   onMenuClick: () => void;
 }
@@ -24,9 +26,27 @@ const Nav = ({ onMenuClick }: NavProps) => {
       document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
+const navigate = useNavigate();
+
+const handleLogout = async () => {
+  try{
+    await signOut(auth);
+    navigate("/login");
+  } catch (error){
+    console.error("Signout failed:",error);
+  }
+}
+
+const handleprofile = async () => {
+  try{
+    navigate("/myprofile");
+  }catch(error){
+    console.error("Can't navigate to MyProfile Page",error);
+  }
+}
 
   return (
-    <Navbar fluid rounded className="!bg-rose-300 dark:bg-gray-900 shadow-md">
+    <Navbar fluid rounded className="!bg-blue-500 dark:bg-gray-900 shadow-md">
       
       {/* LEFT SIDE */}
       <div className="flex items-center gap-3">
@@ -57,14 +77,13 @@ const Nav = ({ onMenuClick }: NavProps) => {
             />
           }
         >
-          <DropdownHeader>
-            <span className="block text-sm">User</span>
-            <span className="block truncate text-sm font-medium">
-              user@email.com
-            </span>
+          <DropdownHeader onClick={handleprofile}>
+            <span className="block text-sm">My Profile</span>
           </DropdownHeader>
           <DropdownDivider />
-          <DropdownItem>Sign out</DropdownItem>
+          <DropdownItem onClick={handleLogout}>
+            Sign out
+            </DropdownItem>
         </Dropdown>
 
         <NavbarToggle />

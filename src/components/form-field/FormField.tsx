@@ -1,4 +1,6 @@
 import { Label, TextInput } from "flowbite-react";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
   id: string;
@@ -23,29 +25,39 @@ const FormField = ({
   error,
   touched,
 }: Props) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === "password";
+
   return (
     <div className="flex flex-col gap-1">
       <Label htmlFor={id} className="!text-black">
         {label}
       </Label>
 
-      <TextInput
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        className={`
-         className="!bg-white !text-black focus:!bg-white focus:!text-black"
+      <div className="relative">
+        <TextInput
+          id={id}
+          type={isPassword && showPassword ? "text" : type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          className={`
+            !bg-white !text-black focus:!bg-white focus:!text-black
+            ${touched && error ? "[&_input]:!border-red-500" : "[&_input]:!border-gray-300"}
+          `}
+        />
 
-          ${
-            touched && error
-              ? "[&_input]:!border-red-500"
-              : "[&_input]:!border-gray-300"
-          }
-        `}
-      />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        )}
+      </div>
 
       {touched && error && (
         <p className="text-red-500 text-sm">{error}</p>

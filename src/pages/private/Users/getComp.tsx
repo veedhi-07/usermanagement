@@ -25,6 +25,7 @@ const Signup = () => {
     password: "",
   };
 
+  const auth = getAuth();
 console.log("Current user:", auth.currentUser);
 
   const handleRegister = async (
@@ -40,11 +41,10 @@ console.log("Current user:", auth.currentUser);
 
       const user = userCredential.user;
 
-      await setDoc(doc(db, "users", user.uid), {
+      await setDoc(doc(db, "Users", user.uid), {
         email: user.email,
         firstName: values.firstname,
         lastName: values.lastname,
-         role: "user", 
         createdAt: new Date(),
       });
 

@@ -6,13 +6,17 @@ import './index.css'
 import App from './App.tsx'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // required CSS
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
  <BrowserRouter>
+ <Provider store={store}>
     <App />
-    </BrowserRouter>
-      <ToastContainer/>
-    </StrictMode>
+  </Provider>
+  </BrowserRouter>
+  <ToastContainer/>
+  </StrictMode>
 );

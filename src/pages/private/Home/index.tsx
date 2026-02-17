@@ -7,7 +7,7 @@ const Home = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-200 via-pink-100 to-purple-200 dark:bg-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 dark:bg-gray-800">
 
       {/* Navbar */}
       <Nav onMenuClick={() => setSidebarOpen(true)} />
@@ -21,7 +21,7 @@ const Home = () => {
       {/* Main content */}
       <main className="p-8 text-black dark:text-black">
         <h1 className="text-3xl font-bold">
-          Welcome to Dashboard
+          Welcome to Home Page..
         </h1>
       </main>
 

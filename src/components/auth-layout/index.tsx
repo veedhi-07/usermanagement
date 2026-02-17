@@ -6,7 +6,7 @@ type AuthLayoutProps = {
 
 const AuthLayout = ({ title, image, children }: AuthLayoutProps) => {
   return (
-    // Gradient background
+   
     <div className="min-h-screen w-screen bg-gradient-to-b from-rose-200 via-pink-100 to-purple-200 flex items-center justify-center p-6">
 
       {/* Content container */}
