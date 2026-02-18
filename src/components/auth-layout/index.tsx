@@ -12,7 +12,7 @@ const AuthLayout = ({ title, image, children }: AuthLayoutProps) => {
       {/* Content container */}
       <div className="flex flex-col md:flex-row items-center gap-12 max-w-4xl w-full border border-black/20 rounded-3xl p-8 bg-transparent">
 
-        {/* LEFT — FORM SECTION */}
+        {/* LEFT FORM SECTION */}
         <div className="w-full md:w-[400px] flex flex-col gap-6 text-black">
 
           {/* Page title */}
@@ -20,7 +20,6 @@ const AuthLayout = ({ title, image, children }: AuthLayoutProps) => {
             {title}
           </h2>
 
-          {/* Injected form content */}
           {children}
 
         </div>

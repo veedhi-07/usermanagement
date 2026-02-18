@@ -1,9 +1,8 @@
-// services/userService.ts
+
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import type { DocumentData, UpdateData } from "firebase/firestore";
 import { db } from "../components/firebase";
 
-// Interface for profile data
 export interface ProfileData {
   firstName: string;
   lastName: string;
@@ -21,7 +20,7 @@ export interface ProfileData {
     return userSnap.data() as ProfileData;
   } else {
     // Return default values if user document does not exist
-    return { firstName: "", lastName: "", email, phone: "", role:"" };
+    return { firstName: "", lastName: "", email, phone: "", role:""};
   }
 };
 

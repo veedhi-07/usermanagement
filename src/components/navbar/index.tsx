@@ -9,15 +9,20 @@ import {
   NavbarBrand,
   NavbarToggle,
 } from "flowbite-react";
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged  } from "firebase/auth";
+import type {User} from "firebase/auth";
 import { auth } from "../../components/firebase/index";
 import { useNavigate } from "react-router-dom";
+
 interface NavProps {
   onMenuClick: () => void;
 }
 
 const Nav = ({ onMenuClick }: NavProps) => {
   const [darkMode, setDarkMode] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (darkMode) {
@@ -26,7 +31,15 @@ const Nav = ({ onMenuClick }: NavProps) => {
       document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
-const navigate = useNavigate();
+
+  //Loggedin User
+ useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
 const handleLogout = async () => {
   try{
@@ -35,7 +48,7 @@ const handleLogout = async () => {
   } catch (error){
     console.error("Signout failed:",error);
   }
-}
+};
 
 const handleprofile = async () => {
   try{
@@ -64,7 +77,7 @@ const handleprofile = async () => {
         </NavbarBrand>
       </div>
 
-      {/* RIGHT SIDE (unchanged) */}
+      {/* RIGHT SIDE */}
       <div className="flex md:order-2 items-center gap-4">
         <Dropdown
           arrowIcon={false}
@@ -77,10 +90,23 @@ const handleprofile = async () => {
             />
           }
         >
-          <DropdownHeader onClick={handleprofile}>
+            <DropdownHeader>
+             <span className="block text-sm font-medium">
+              {currentUser?.displayName || "User"}
+            </span>
+            <span className="block truncate text-sm text-white-100">
+              {currentUser?.email}
+            </span>
+            </DropdownHeader>
+
+            <DropdownDivider />
+
+            <DropdownHeader onClick={handleprofile}>
             <span className="block text-sm">My Profile</span>
           </DropdownHeader>
+
           <DropdownDivider />
+
           <DropdownItem onClick={handleLogout}>
             Sign out
             </DropdownItem>

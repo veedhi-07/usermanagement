@@ -12,7 +12,10 @@ import Signup from './pages/public/signup';
 import Home from './pages/private/Home';
 import Dashboard from './pages/private/Dashboard';
 import MyProfile from './pages/private/MyProfile';
+
 import Users from './pages/private/Users/index.tsx';
+
+import { seedData } from "./utils/seedData";
 
 const App = () => {
   const dispatch = useDispatch(); // add this
@@ -26,7 +29,7 @@ const App = () => {
         console.log("Fetched profile:",data);
       
         if (data) {
-          dispatch(setProfile({ uid: user.uid, ...cleanData }));
+          dispatch(setProfile({ uid: user.uid, ...data }));
         }
       } else {
         dispatch(clearProfile());
@@ -36,6 +39,10 @@ const App = () => {
     return () => unsubscribe();
   }, [dispatch]); //dependency added
 
+  useEffect(() => {
+    seedData();
+  }, []);
+  
   return (
     <Routes>
       <Route path="/" element={<Login />} />
@@ -44,6 +51,7 @@ const App = () => {
       <Route path="/home" element={<Home />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/myprofile" element={<MyProfile />} />
+       {/* <Route path="/myprofile" element={<UserProfiles />} /> */}
       <Route path="/users" element={<Users />} />
     </Routes>
   );

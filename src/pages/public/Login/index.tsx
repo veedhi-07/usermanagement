@@ -119,7 +119,7 @@ const Login = () => {
         </Formik>
       </AuthLayout>
 
-      {/* --- Forgot Password Modal (Flowbite v2+) --- */}
+      {/* --- Forgot Password Modal  --- */}
       <Modal show={showForgotModal} size="md" onClose={() => setShowForgotModal(false)}>
         <div className="p-6 space-y-4">
           <h2 className="text-xl font-bold">Forgot Password</h2>

@@ -17,6 +17,8 @@ import { auth, db } from "../../../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
+import { serverTimestamp } from "firebase/firestore";
+
 const Signup = () => {
   const initialValues = {
     firstname: "",
@@ -45,7 +47,7 @@ console.log("Current user:", auth.currentUser);
         firstName: values.firstname,
         lastName: values.lastname,
          role: "user", 
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
       });
 
       console.log("User created:", user);
@@ -70,7 +72,7 @@ console.log("Current user:", auth.currentUser);
 
   return (
     <>
-      {/* Toast container must be rendered once */}
+     
       <ToastContainer />
 
       <AuthLayout title="Create Account" image={signupImage}>

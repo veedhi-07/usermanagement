@@ -24,7 +24,7 @@ const [errors, setErrors] = useState({
 email: "",
 phone: "",
 });
-const [sidebarOpen, setSidebarOpen] = useState(true);
+const [sidebarOpen, setSidebarOpen] = useState(false);
 
 const [editable, setEditable] = useState(false);
 const [loading, setLoading] = useState(true);
@@ -34,7 +34,6 @@ const loadProfile = async () => {
 const auth = getAuth();
 const user = auth.currentUser;
 if (!user) return;
-
 
   const data = await userService.fetchUserProfile(
     user.uid,
