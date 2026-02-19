@@ -23,6 +23,9 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 export const auth = getAuth();
+// Secondary App for User Creation
+const secondaryApp = initializeApp(firebaseConfig, "Secondary");
+export const secondaryAuth = getAuth(secondaryApp);
 
 export const db = getFirestore(app);
 export default app;

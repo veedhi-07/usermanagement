@@ -257,6 +257,4 @@ if (loading) return <p className="p-8">Loading profile...</p>;
     </div>
   </div>
 );
-
-
 }

@@ -1,21 +1,22 @@
 import './App.css'
 import {Routes, Route} from "react-router-dom";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../src/components/firebase";
 import { fetchUserProfile } from "./services/userService";
 import { useDispatch } from "react-redux";
 import { setProfile, clearProfile } from "../src/redux/reducer/profileSlice.ts";
-
-import Login from './pages/public/Login';
-import Signup from './pages/public/signup';
-import Home from './pages/private/Home';
-import Dashboard from './pages/private/Dashboard';
-import MyProfile from './pages/private/MyProfile';
-
-import Users from './pages/private/Users/index.tsx';
+import React from 'react';
 
 import { seedData } from "./utils/seedData";
+
+const Login = React.lazy(() => import('./pages/public/Login'));
+const Signup = React.lazy(() => import('./pages/public/signup'));
+const Home = React.lazy(() => import('./pages/private/Home'));
+const Dashboard = React.lazy(() => import('./pages/private/Dashboard'));
+const MyProfile = React.lazy(() => import('./pages/private/MyProfile'));
+const Users = React.lazy(() => import('./pages/private/Users'));
+
 
 const App = () => {
   const dispatch = useDispatch(); // add this
@@ -44,7 +45,9 @@ const App = () => {
   }, []);
        
   return (
-    <Routes>
+    <>
+    <Suspense>
+  <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
@@ -54,6 +57,9 @@ const App = () => {
        {/* <Route path="/myprofile" element={<UserProfiles />} /> */}
       <Route path="/users" element={<Users />} />
     </Routes>
+  </Suspense>
+      </>
+    
   );
 }
 export default App;

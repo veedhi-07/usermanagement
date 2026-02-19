@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc, updateDoc, Timestamp } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+  Timestamp,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "../../../components/firebase";
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
 import { useAppSelector } from "../../../redux/hooks";
-import { Pencil, Trash, ArrowUpDown, SearchIcon, PlusCircleIcon } from "lucide-react";
+import {
+  Pencil,
+  Trash,
+  ArrowUpDown,
+  SearchIcon,
+  PlusSquare,
+} from "lucide-react";
 import { getAuth } from "firebase/auth";
 import EditUserModal from "../../../../src/modals/EditModal";
 import UserPagination from "../../../components/Pagination/userPagination";
+import AddUserModal from "../../../modals/AddUser";
 
 type User = {
   id: string;
@@ -25,14 +40,15 @@ const Users = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [searchQuery, setSearchQuery] = useState("");
-
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [showAddModal, setShowAddModal] = useState(false);
+
   const itemsPerPage = 5;
 
   const profile = useAppSelector((state) => state.profile);
   const isAdmin = profile?.role?.toLowerCase() === "admin";
 
-  //Fetch Users & Hide Logged-in User
+  // Fetch Users & Hide Logged-in User
   useEffect(() => {
     const auth = getAuth();
 
@@ -88,11 +104,31 @@ const Users = () => {
     }
   };
 
+  //  Add User
+  const handleAddUser = async (values: Omit<User, "id">) => {
+    try {
+      const docRef = await addDoc(collection(db, "users"), {
+        ...values,
+        createdAt: Timestamp.now(),
+      });
+
+      const newUser: User = {
+        id: docRef.id,
+        ...values,
+        createdAt: Timestamp.now(),
+      };
+
+      setUsers((prev) => [...prev, newUser]);
+      setShowAddModal(false);
+    } catch (error) {
+      console.error("Add user failed:", error);
+    }
+  };
+
   const toggleSort = () => {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  //  Search & Sort
   const filteredAndSortedUsers = users
     .filter((user) => {
       const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
@@ -107,7 +143,6 @@ const Users = () => {
         : nameB.localeCompare(nameA);
     });
 
-  //  Pagination
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedUsers = filteredAndSortedUsers.slice(startIndex, endIndex);
@@ -135,27 +170,42 @@ const Users = () => {
         <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
           <h1 className="text-2xl font-bold mb-6">Users List</h1>
 
-          {/* Search */}
-          <div className="relative w-full max-w-sm mb-4 ">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-              <SearchIcon size={18} />
-            </span>
-            <input
-              type="text"
-              placeholder="Search by name..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1); // reset page on search
-              }}
-              className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+          <div className="flex justify-between items-center mb-4">
+            {/* Search */}
+            <div className="relative w-full max-w-sm">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                <SearchIcon size={18} />
+              </span>
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Add User */}
+            <div className="flex items-center gap-2">
+              <span className="text-black font-bold">Add User</span>
+              <PlusSquare
+                size={28}
+                className={`${
+                  !isAdmin
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
+                onClick={() => {
+                  if (isAdmin) setShowAddModal(true);
+                }}
+              />
+            </div>
           </div>
-          <div className="relative w-full max-w-sm mb-4 "> 
-             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black-400">
-              <PlusCircleIcon size={18} />
-            </span>
-          </div>
+
+          {/* Table */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <table className="w-full border-collapse">
               <thead className="bg-gray-100">
@@ -197,7 +247,9 @@ const Users = () => {
                     <td className="p-3">{user.email}</td>
                     <td className="p-3">{user.role}</td>
                     <td className="p-3">
-                      {user.createdAt ? formatDate(user.createdAt) : "-"}
+                      {user.createdAt
+                        ? formatDate(user.createdAt)
+                        : "-"}
                     </td>
                     {isAdmin && (
                       <td className="p-3 flex gap-3">
@@ -218,7 +270,7 @@ const Users = () => {
               </tbody>
             </table>
           </div>
-          
+
           <UserPagination
             data={filteredAndSortedUsers}
             itemsPerPage={itemsPerPage}
@@ -230,6 +282,13 @@ const Users = () => {
               user={selectedUser}
               onClose={() => setSelectedUser(null)}
               onSave={handleSave}
+            />
+          )}
+
+          {showAddModal && isAdmin && (
+            <AddUserModal
+              onClose={() => setShowAddModal(false)}
+              onSave={handleAddUser}
             />
           )}
         </main>
