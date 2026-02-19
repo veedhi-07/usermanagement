@@ -1,297 +1,241 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../../components/firebase";
-
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
 import { useAppSelector } from "../../../redux/hooks";
-import { Pencil, Trash, ArrowUpDown,SearchIcon} from "lucide-react";
+import { Pencil, Trash, ArrowUpDown, SearchIcon, PlusCircleIcon } from "lucide-react";
 import { getAuth } from "firebase/auth";
-
 import EditUserModal from "../../../../src/modals/EditModal";
-import { Timestamp } from "firebase/firestore";
+import UserPagination from "../../../components/Pagination/userPagination";
 
 type User = {
-id: string;
-email: string;
-firstName: string;
-lastName: string;
-role: string;
-createdAt?: Timestamp;
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  createdAt?: Timestamp;
 };
 
 const Users = () => {
-const [users, setUsers] = useState<any[]>([]);
-const [loading, setLoading] = useState(true);
-const [sidebarOpen, setSidebarOpen] = useState(false);
-const [selectedUser, setSelectedUser] = useState<User | null>(null);
-const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-const [searchQuery, setSearchQuery] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [searchQuery, setSearchQuery] = useState("");
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
-useEffect(() => {
-  const storedUsers = localStorage.getItem("users");
-  if (storedUsers) {
-    const usersWithId = JSON.parse(storedUsers).map((u: any, idx: number) => ({
-      id: `${idx}`, 
-      ...u,
-    }));
-    setUsers(usersWithId);
-  }
-  setLoading(false);
-}, []);
+  const profile = useAppSelector((state) => state.profile);
+  const isAdmin = profile?.role?.toLowerCase() === "admin";
 
+  //Fetch Users & Hide Logged-in User
+  useEffect(() => {
+    const auth = getAuth();
 
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const querySnapshot = await getDocs(collection(db, "users"));
 
-const profile = useAppSelector((state) => state.profile);
-const isAdmin = profile?.role?.toLowerCase() === "admin";
+          const data: User[] = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...(doc.data() as Omit<User, "id">),
+          }));
 
-const auth = getAuth();
-const currentUser = auth.currentUser;
+          const filteredUsers = data.filter((u) => u.id !== user.uid);
 
+          setUsers(filteredUsers);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
 
-const fetchUsers = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, "users"));
+    return () => unsubscribe();
+  }, []);
 
-    const data: User[] = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<User, "id">),
-    }));
+  const handleDelete = async (userId: string) => {
+    try {
+      await deleteDoc(doc(db, "users", userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    // const filteredUsers = currentUser
-    //   ? data.filter((user) => user.id !== currentUser.uid)
-    //   : data;
+  const handleSave = async (values: Omit<User, "id">) => {
+    if (!selectedUser) return;
 
-    // setUsers(filteredUsers);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const userRef = doc(db, "users", selectedUser.id);
+      await updateDoc(userRef, values);
 
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === selectedUser.id ? { ...u, ...values } : u
+        )
+      );
 
-// useEffect(() => {
-//   const auth = getAuth();
+      setSelectedUser(null);
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  };
 
-//   const unsubscribe = auth.onAuthStateChanged((user) => {
-//     if (user) {
-//       fetchUsers();
-//     }
-//   });
+  const toggleSort = () => {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
 
-//   return () => unsubscribe();
-// }, []);
+  //  Search & Sort
+  const filteredAndSortedUsers = users
+    .filter((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      return fullName.includes(searchQuery.toLowerCase());
+    })
+    .sort((a, b) => {
+      const nameA = (a.firstName || "").toLowerCase();
+      const nameB = (b.firstName || "").toLowerCase();
 
+      return sortOrder === "asc"
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA);
+    });
 
-const handleDelete = async (userId: string) => {
-try {
-await deleteDoc(doc(db, "users", userId));
-setUsers((prev) => prev.filter((u) => u.id !== userId));
-} catch (error) {
-console.error(error);
-}
-};
+  //  Pagination
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredAndSortedUsers.slice(startIndex, endIndex);
 
-const handleSave = async (values: Omit<User, "id">) => {
-if (!selectedUser) return;
+  const formatDate = (timestamp?: Timestamp) => {
+    if (!timestamp) return "-";
 
-try {
-  const userRef = doc(db, "users", selectedUser.id);
+    const date = timestamp.toDate();
+    return date.toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
-  await updateDoc(userRef, values);
+  if (loading) return <p className="p-6">Loading users...</p>;
 
-  setUsers((prev) =>
-    prev.map((u) =>
-      u.id === selectedUser.id ? { ...u, ...values } : u
-    )
-  );
+  return (
+    <div className="flex min-h-screen">
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-  setSelectedUser(null);
-} catch (error) {
-  console.error("Update failed:", error);
-}
+      <div className="flex-1 flex flex-col">
+        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-};
+        <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
+          <h1 className="text-2xl font-bold mb-6">Users List</h1>
 
-if (loading) return <p className="p-6">Loading users...</p>;
+          {/* Search */}
+          <div className="relative w-full max-w-sm mb-4 ">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <SearchIcon size={18} />
+            </span>
+            <input
+              type="text"
+              placeholder="Search by name..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // reset page on search
+              }}
+              className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="relative w-full max-w-sm mb-4 "> 
+             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black-400">
+              <PlusCircleIcon size={18} />
+            </span>
+          </div>
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-3 text-left">
+                    <div className="flex items-center gap-2">
+                      <ArrowUpDown
+                        size={18}
+                        onClick={toggleSort}
+                        className="cursor-pointer hover:text-blue-600"
+                      />
+                      <span>First Name</span>
+                    </div>
+                  </th>
+                  <th className="p-3 text-left">Last Name</th>
+                  <th className="p-3 text-left">Email</th>
+                  <th className="p-3 text-left">Role</th>
+                  <th className="p-3 text-left">Created At</th>
+                  {isAdmin && <th className="p-3 text-left">Actions</th>}
+                </tr>
+              </thead>
 
-const toggleSort = () => {
-  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-};
+              <tbody>
+                {paginatedUsers.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={isAdmin ? 6 : 5}
+                      className="p-6 text-center text-gray-500"
+                    >
+                      No users found.
+                    </td>
+                  </tr>
+                )}
 
-// const sortedUsers = [...users].sort((a, b) => {
-//   const nameA = a.firstName.toLowerCase();
-//   const nameB = b.firstName.toLowerCase();
-
-//   return sortOrder === "asc"
-//     ? nameA.localeCompare(nameB)
-//     : nameB.localeCompare(nameA);
-// });
-
-const filteredAndSortedUsers = users
-  .filter((user) => {
-    const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
-    return fullName.includes(searchQuery.toLowerCase());
-  })
-  .sort((a, b) => {
-    const nameA = (a?.firstname || "").toLowerCase();
-    const nameB = (b?.firstname || "").toLowerCase();
-    return sortOrder === "asc"
-      ? nameA.localeCompare(nameB)
-      : nameB.localeCompare(nameA);
-  });
-
-// const sortedUsers = [...users].sort((a, b) => {
-//   const nameA = (a?.firstName || "").toLowerCase();
-//   const nameB = (b?.firstName || "").toLowerCase();
-
-//   return sortOrder === "asc"
-//     ? nameA.localeCompare(nameB)
-//     : nameB.localeCompare(nameA);
-// });
-
-const formatDate = (timestamp?: any) => {
-  if (!timestamp) return "-";
-
-  const date = timestamp.toDate(); 
-  return date.toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-};
-
-return ( 
-<div className="flex min-h-screen">
-<Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-
-  <div className="flex-1 flex flex-col">
-    <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-
-    <main className="flex-1 p-8 bg-gradient-to-br from-blue-100 to-blue-200">
-      <h1 className="text-2xl font-bold mb-6">Users List</h1>
-
-      <div className="relative w-full max-w-sm mb-4">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-          <SearchIcon size={18} />
-        </span>
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>  
-
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-3 text-left">
-              <div className="flex items-center gap-2">
-
-                <ArrowUpDown
-                  size={18}
-                  onClick={toggleSort}
-                  className="cursor-pointer hover:text-blue-600"
-                />
-                <span>First Name</span>
-              </div>
-            </th>
-              <th className="p-3 text-left">Last Name</th>
-              <th className="p-3 text-left">Email</th>
-              <th className="p-3 text-left">Role</th>
-              <th className="p-3 text-left">Created At</th>
-              {isAdmin && (
-                <th className="p-3 text-left">Actions</th>
-              )}
-            </tr>
-          </thead>
-
-          {/* <tbody>
-            {sortedUsers.map((user) => (
-              <tr key={user.id} className="border-t hover:bg-gray-50">
-                {/* <td className="p-3">{user.firstName}</td>
-                <td className="p-3">{user.lastName}</td> */}
-                {/* <td className="p-3">{user.firstname || "-"}</td>
-               <td className="p-3">{user.lastname || "-"}</td>
-                <td className="p-3">{user.email}</td>
-                <td className="p-3">{user.role}</td>
-                <td className="p-3">
-                {formatDate(user.createdAt)}
-              </td>
-                {isAdmin && (
-                <td className="p-3 flex gap-3">
-                  <Pencil
-                    size={18}
-                    className="cursor-pointer text-blue-500"
-                    onClick={() => setSelectedUser(user)}
-                  /> */}
-{/* 
-                  <Trash
-                    size={18}
-                    className="cursor-pointer text-red-500"
-                    onClick={() => handleDelete(user.id)}
-                  />
-                </td>
-              )}
-              </tr>
-            ))}
-          </tbody> */}
-
-          <tbody>
-  {filteredAndSortedUsers.length === 0 && (
-    <tr>
-      <td colSpan={isAdmin ? 6 : 5} className="p-6 text-center text-gray-500">
-        No users found.
-      </td>
-    </tr>
-  )}
-  {filteredAndSortedUsers.map((user) => (
-    <tr key={user.id} className="border-t hover:bg-gray-50">
-      <td className="p-3">{user.firstname || "-"}</td>
-      <td className="p-3">{user.lastname || "-"}</td>
-      <td className="p-3">{user.email}</td>
-      <td className="p-3">{user.role}</td>
-      <td className="p-3">{user.createdAt ? formatDate(user.createdAt) : "-"}</td>
-      {isAdmin && (
-        <td className="p-3 flex gap-3">
-          <Pencil
-            size={18}
-            className="cursor-pointer text-blue-500"
-            onClick={() => setSelectedUser(user)}
+                {paginatedUsers.map((user) => (
+                  <tr key={user.id} className="border-t hover:bg-gray-50">
+                    <td className="p-3">{user.firstName || "-"}</td>
+                    <td className="p-3">{user.lastName || "-"}</td>
+                    <td className="p-3">{user.email}</td>
+                    <td className="p-3">{user.role}</td>
+                    <td className="p-3">
+                      {user.createdAt ? formatDate(user.createdAt) : "-"}
+                    </td>
+                    {isAdmin && (
+                      <td className="p-3 flex gap-3">
+                        <Pencil
+                          size={18}
+                          className="cursor-pointer text-blue-500"
+                          onClick={() => setSelectedUser(user)}
+                        />
+                        <Trash
+                          size={18}
+                          className="cursor-pointer text-red-500"
+                          onClick={() => handleDelete(user.id)}
+                        />
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          <UserPagination
+            data={filteredAndSortedUsers}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
           />
-          <Trash
-            size={18}
-            className="cursor-pointer text-red-500"
-            onClick={() => handleDelete(user.id)}
-          />
-        </td>
-      )}
-    </tr>
-  ))}
-</tbody>
 
-        </table>
+          {selectedUser && (
+            <EditUserModal
+              user={selectedUser}
+              onClose={() => setSelectedUser(null)}
+              onSave={handleSave}
+            />
+          )}
+        </main>
       </div>
-
-      {selectedUser && (
-        <EditUserModal
-          user={selectedUser}
-          onClose={() => setSelectedUser(null)}
-          onSave={handleSave}
-        />
-      )}
-    </main>
-  </div>
-</div>
-
-
-);
+    </div>
+  );
 };
 
 export default Users;

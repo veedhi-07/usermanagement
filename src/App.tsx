@@ -42,7 +42,7 @@ const App = () => {
   useEffect(() => {
     seedData();
   }, []);
-  
+       
   return (
     <Routes>
       <Route path="/" element={<Login />} />
