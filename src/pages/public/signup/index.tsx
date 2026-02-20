@@ -11,7 +11,7 @@ import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 
 import { signupSchema } from "../../../components/validation";
-
+import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
@@ -20,6 +20,7 @@ import { getAuth } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const initialValues = {
     firstname: "",
     lastname: "",
@@ -50,11 +51,10 @@ console.log("Current user:", auth.currentUser);
         createdAt: serverTimestamp(),
       });
 
-      console.log("User created:", user);
-
       toast.success("User Registered Successfully!", {
         position: "top-center",
       });
+      navigate("/home");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Signup error:", error.message);

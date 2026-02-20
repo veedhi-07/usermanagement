@@ -154,7 +154,6 @@ export default function MyProfile() {
               }) => (
                 <Form>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                     {/* First Name */}
                     <div>
                       {editable ? (
