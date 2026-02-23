@@ -19,18 +19,9 @@ interface NavProps {
 }
 
 const Nav = ({ onMenuClick }: NavProps) => {
-  const [darkMode, setDarkMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [darkMode]);
 
   //Loggedin User
  useEffect(() => {
@@ -59,7 +50,7 @@ const handleprofile = async () => {
 }
 
   return (
-    <Navbar fluid rounded className="!bg-blue-500 dark:bg-gray-900 shadow-md">
+    <Navbar fluid rounded className="!bg-blue-50! dark:bg-gray-900 shadow-md">
       
       {/* LEFT SIDE */}
       <div className="flex items-center gap-3">
@@ -100,12 +91,6 @@ const handleprofile = async () => {
             </DropdownHeader>
 
             <DropdownDivider />
-
-            <DropdownHeader onClick={handleprofile}>
-            <span className="block text-sm">My Profile</span>
-          </DropdownHeader>
-
-          <DropdownDivider />
 
           <DropdownItem onClick={handleLogout}>
             Sign out

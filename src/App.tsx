@@ -16,8 +16,8 @@ const Home = React.lazy(() => import('./pages/private/Home'));
 const Dashboard = React.lazy(() => import('./pages/private/Dashboard'));
 const MyProfile = React.lazy(() => import('./pages/private/MyProfile'));
 const Users = React.lazy(() => import('./pages/private/Users'));
-
-
+const Roles = React.lazy(() => import('./pages/private/Roles'));
+const AddRole = React.lazy(() => import ('./pages/private/AddRole'))
 const App = () => {
   const dispatch = useDispatch(); // add this
 
@@ -55,10 +55,14 @@ const App = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/myprofile" element={<MyProfile />} />
       <Route path="/users" element={<Users />} />
+      <Route path="/roles" element = {<Roles/>}/>
+      <Route path = "/add-role" element = {<AddRole/>}/>
+      <Route path="/edit-role/:id" element={<AddRole />} />
+
+Now same component handles both.
     </Routes>
   </Suspense>
       </>
-    
   );
 }
-export default App;
+export default App;    

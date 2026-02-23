@@ -75,7 +75,8 @@ const Users = () => {
 
     return () => unsubscribe();
   }, []);
-
+  
+//DeleteUser
   const handleDelete = async (userId: string) => {
     try {
       await deleteDoc(doc(db, "users", userId));
@@ -208,7 +209,7 @@ const Users = () => {
           {/* Table */}
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <table className="w-full border-collapse">
-              <thead className="bg-gray-100">
+              <thead className="bg-gray-300">
                 <tr>
                   <th className="p-3 text-left">
                     <div className="flex items-center gap-2">

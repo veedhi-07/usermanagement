@@ -22,7 +22,7 @@ import { serverTimestamp } from "firebase/firestore";
 const Signup = () => {
   const navigate = useNavigate();
   const initialValues = {
-    firstname: "",
+    firstname: "",      
     lastname: "",
     email: "",
     password: "",
