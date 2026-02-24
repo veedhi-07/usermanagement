@@ -3,49 +3,81 @@ import { FormField, loginFields } from "../../../components/form-field";
 import { Button, Modal, Label, TextInput } from "flowbite-react";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
-
+import {doc,getDoc,collection,getDocs} from "firebase/firestore";
+import {db} from "../../../components/firebase";
+import type { UseDispatch } from "react-redux";
+import { setPermissions } from "../../../redux/reducer/permissionSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../components/validation";
 
 import { signInWithEmailAndPassword, getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../../components/firebase";
-
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 import type {ChangeEvent} from "react";
 
 const Login = () => {
   const initialValues = { email: "", password: "" };
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // --- Forgot Password Modal State ---
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [loadingReset, setLoadingReset] = useState(false);
 
-  // --- Handle Formik Login ---
+  // Handle Formik Login 
   const handleLogin = async (
-    values: typeof initialValues,
-    { setSubmitting }: FormikHelpers<typeof initialValues>
-  ) => {
-    try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      toast.success("Login successful!", { position: "top-center" });
-      navigate("/home");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message, { position: "top-center" });
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  values: typeof initialValues,
+  { setSubmitting }: FormikHelpers<typeof initialValues>
+) => {
+  try {
+    //  Login with Firebase
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      values.email,
+      values.password
+    );
+    
+    const uid = userCredential.user.uid;
 
-  // --- Handle Forgot Password ---
+    // Fetch user profile from Firestore
+    const userDoc = await getDoc(doc(db, "users", uid));
+
+    if (!userDoc.exists()) {
+      throw new Error("User profile not found");
+    }
+
+    const userData = userDoc.data();
+    const userRole = userData.role;
+
+    // Fetch role permissions directly by document ID
+      const roleDocRef = doc(db, "roles", userRole);
+      const roleDocSnap = await getDoc(roleDocRef);
+
+      if (roleDocSnap.exists()) {
+        dispatch(setPermissions(roleDocSnap.data().permissions));
+      } else {
+        console.log("Role not found in Firestore");
+      }
+
+    toast.success("Login successful!", { position: "top-center" });
+
+    navigate("/home");
+
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message, { position: "top-center" });
+    }
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+  // Handle Forgot Password 
   const handleForgotPassword = async () => {
     if (!resetEmail) return;
     setLoadingReset(true);
@@ -119,7 +151,7 @@ const Login = () => {
         </Formik>
       </AuthLayout>
 
-      {/* --- Forgot Password Modal  --- */}
+      {/* Forgot Password Modal */}
       <Modal show={showForgotModal} size="md" onClose={() => setShowForgotModal(false)}>
         <div className="p-6 space-y-4">
           <h2 className="text-xl font-bold">Forgot Password</h2>

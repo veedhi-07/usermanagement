@@ -19,7 +19,10 @@ const Users = React.lazy(() => import('./pages/private/Users'));
 const Roles = React.lazy(() => import('./pages/private/Roles'));
 const AddRole = React.lazy(() => import ('./pages/private/AddRole'))
 const App = () => {
-  const dispatch = useDispatch(); // add this
+  const dispatch = useDispatch(); 
+  useEffect(() => {
+    seedData();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -40,9 +43,7 @@ const App = () => {
     return () => unsubscribe();
   }, [dispatch]); //dependency added
 
-  useEffect(() => {
-    seedData();
-  }, []);
+
        
   return (
     <>
@@ -58,8 +59,6 @@ const App = () => {
       <Route path="/roles" element = {<Roles/>}/>
       <Route path = "/add-role" element = {<AddRole/>}/>
       <Route path="/edit-role/:id" element={<AddRole />} />
-
-Now same component handles both.
     </Routes>
   </Suspense>
       </>

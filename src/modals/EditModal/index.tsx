@@ -1,6 +1,9 @@
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import FormField from "../../components/form-field/FormField";
+import { db } from "../../components/firebase";
+import {getDocs,collection } from "firebase/firestore";
+import { useState, useEffect } from "react";
 
 type User = {
 id: string;
@@ -24,6 +27,20 @@ role: Yup.string().required("Role is required"),
 });
 
 export default function EditUserModal({ user, onClose, onSave }: Props) {
+const[roles, setRoles] = useState<string[]>([]);
+   useEffect(() =>{
+      const fetchRoles = async () => {
+        try{
+          const snapshot = await getDocs(collection(db,"roles"));
+          const roleList = snapshot.docs.map((doc) => doc.data().name);
+          setRoles(roleList);
+        }
+        catch(error){
+          console.log("Error",error);
+        }
+      };
+      fetchRoles();
+    }, []);
 return ( 
 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
  <div className="bg-white p-6 rounded-lg shadow-lg w-105">
@@ -41,7 +58,7 @@ return (
         onSave(values);
       }}
     >
-      {({ values, handleChange, handleBlur, errors, touched }) => (
+      {({ values, handleChange, handleBlur, errors, touched,setFieldValue, }) => (
         <Form className="space-y-3">
 
           <FormField
@@ -77,18 +94,22 @@ return (
             error={errors.email}
             touched={touched.email}
           />
-
-          <div>
+            <div>
             <label className="text-sm text-gray-600">Role</label>
-            <select
-              name="role"
+             <select
               value={values.role}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="w-full border p-2 rounded"
+              onChange={(e) =>
+              setFieldValue("role", e.target.value)
+            }
+              className="border rounded-lg p-2 w-full"
             >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
+              <option value="">Select Role</option>
+
+              {roles.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
             </select>
 
             {touched.role && errors.role && (
@@ -100,14 +121,14 @@ return (
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded"
+              className="px-4 py-2 bg-blue-600 hover:bg-gray-600! text-white"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded border"
+              className="px-4 py-2 bg-blue-600 hover:bg-gray-600! text-white"
             >
               Save
             </button>

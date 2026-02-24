@@ -9,7 +9,7 @@ interface PaginationProps<T> {
 
 function UserPagination<T>({
   data,
-  itemsPerPage = 6,
+  itemsPerPage = 7,
   onPageChange,
 }: PaginationProps<T>) {
   const [currentPage, setCurrentPage] = useState<number>(1);

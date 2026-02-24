@@ -13,6 +13,8 @@ import UserPagination from "../../../components/Pagination/userPagination";
 import { useAppSelector } from "../../../redux/hooks";
 import { SearchIcon, Trash, PlusSquare, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Can from "../../../components/Can";
+import { usePermission } from "../../../hooks/usePermission";
 
 type Role = {
   id: string;
@@ -31,7 +33,12 @@ const navigate = useNavigate();
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const itemsPerPage = 5;
+  const itemsPerPage = 7;
+
+  const { can } = usePermission(); 
+  const canDelete = can("role","delete");
+  const canEdit = can("role","edit");
+
   const countPermissions = (permissions: Permissions) => {
     let count = 0;
 
@@ -43,8 +50,6 @@ const navigate = useNavigate();
 
   return count;
 };
-  const profile = useAppSelector((state) => state.profile);
-  const isAdmin = profile?.role?.toLowerCase() === "admin";
 
   // Fetch Roles
   useEffect(() => {
@@ -139,16 +144,13 @@ const navigate = useNavigate();
             </div>
 
             <div className="flex items-center gap-2">
+             <Can module="role" action="add">
               <span className="text-black font-bold">Add Roles</span>
               <PlusSquare
                 size={28}
-                className={`${
-                  !isAdmin
-                    ? "opacity-50 cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
-                onClick={() => isAdmin && navigate("/add-role")}
+                onClick={() => navigate("/add-role")}
               />
+              </Can>
             </div>
           </div>
 
@@ -165,7 +167,7 @@ const navigate = useNavigate();
                   </th>
                   <th className="p-3 text-left">Date</th>
                   <th className="p-3 text-left">Role Permission</th>
-                  {isAdmin && <th className="p-3 text-left">Actions</th>}
+                  <th className="p-3 text-left">Actions</th>
                 </tr>
               </thead>
 
@@ -173,7 +175,6 @@ const navigate = useNavigate();
                 {paginatedRoles.length === 0 && (
                   <tr>
                     <td
-                      colSpan={isAdmin ? 3 : 2}
                       className="p-6 text-center text-gray-500"
                     >
                       No roles found.
@@ -190,20 +191,20 @@ const navigate = useNavigate();
                         : "-"}
                     </td>
                     <td className="p-3">{role.permissions ? countPermissions(role.permissions) : 0}</td>
-                    {isAdmin && (
                       <td className="p-3 flex gap-3">
+                    
                         <Pencil
                           size={20}
-                          className="cursor-pointer text-blue-500"
-                          onClick={() => navigate(`/edit-role/${role.id}`)}
+                          className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                          onClick={canEdit ?() => navigate(`/edit-role/${role.id}`): undefined}
                         />
+
                         <Trash
                           size={20}
-                          className="cursor-pointer text-red-500"
-                          onClick={() => handleDelete(role.id)}
+                          className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer":"opacity-40 cursor-not-allowed"}`}
+                          onClick={canDelete ?() => handleDelete(role.id) : undefined}
                         />
                       </td>
-                    )}
                   </tr>
                 ))}
               </tbody>

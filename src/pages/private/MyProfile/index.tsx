@@ -112,7 +112,7 @@ export default function MyProfile() {
 
               {!editable && (
                 <Button
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                  className="bg-blue-600 hover:bg-gray-600! text-white"
                   onClick={() => setEditable(true)}
                 >
                   Edit
@@ -265,7 +265,7 @@ export default function MyProfile() {
                     <div className="mt-6">
                       <Button
                         type="submit"
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        className="bg-blue-600 hover:bg-gray-600! text-white"
                       >
                         Save
                       </Button>

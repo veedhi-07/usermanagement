@@ -83,7 +83,7 @@ const handleprofile = async () => {
         >
             <DropdownHeader>
              <span className="block text-sm font-medium">
-              {currentUser?.displayName || "User"}
+              {currentUser?.displayName}
             </span>
             <span className="block truncate text-sm text-white-100">
               {currentUser?.email}

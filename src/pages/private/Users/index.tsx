@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import {
   collection,
   getDocs,
@@ -11,7 +11,6 @@ import {
 import { db } from "../../../components/firebase";
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
-import { useAppSelector } from "../../../redux/hooks";
 import {
   Pencil,
   Trash,
@@ -23,7 +22,8 @@ import { getAuth } from "firebase/auth";
 import EditUserModal from "../../../../src/modals/EditModal";
 import UserPagination from "../../../components/Pagination/userPagination";
 import AddUserModal from "../../../modals/AddUser";
-
+import Can from "../../../components/Can";
+import { usePermission } from "../../../hooks/usePermission";
 type User = {
   id: string;
   email: string;
@@ -42,12 +42,11 @@ const Users = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showAddModal, setShowAddModal] = useState(false);
-
-  const itemsPerPage = 5;
-
-  const profile = useAppSelector((state) => state.profile);
-  const isAdmin = profile?.role?.toLowerCase() === "admin";
-
+  const { can } = usePermission(); 
+  const canDelete = can("user", "delete");
+  const canEdit = can("user","edit")
+  const itemsPerPage = 7;
+  
   // Fetch Users & Hide Logged-in User
   useEffect(() => {
     const auth = getAuth();
@@ -190,20 +189,18 @@ const Users = () => {
             </div>
 
             {/* Add User */}
+            <Can module="user" action="add">
             <div className="flex items-center gap-2">
               <span className="text-black font-bold">Add User</span>
               <PlusSquare
                 size={28}
-                className={`${
-                  !isAdmin
-                    ? "opacity-50 cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
+                className="cursor-pointer"
                 onClick={() => {
-                  if (isAdmin) setShowAddModal(true);
+                 setShowAddModal(true);
                 }}
               />
             </div>
+            </Can>
           </div>
 
           {/* Table */}
@@ -225,7 +222,7 @@ const Users = () => {
                   <th className="p-3 text-left">Email</th>
                   <th className="p-3 text-left">Role</th>
                   <th className="p-3 text-left">Created At</th>
-                  {isAdmin && <th className="p-3 text-left">Actions</th>}
+                  <th className="p-3 text-left">Actions</th>
                 </tr>
               </thead>
 
@@ -233,7 +230,6 @@ const Users = () => {
                 {paginatedUsers.length === 0 && (
                   <tr>
                     <td
-                      colSpan={isAdmin ? 6 : 5}
                       className="p-6 text-center text-gray-500"
                     >
                       No users found.
@@ -252,20 +248,19 @@ const Users = () => {
                         ? formatDate(user.createdAt)
                         : "-"}
                     </td>
-                    {isAdmin && (
                       <td className="p-3 flex gap-3">
                         <Pencil
                           size={18}
-                          className="cursor-pointer text-blue-500"
-                          onClick={() => setSelectedUser(user)}
+                          className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                          onClick={canEdit ?() => setSelectedUser(user): undefined}
                         />
                         <Trash
                           size={18}
-                          className="cursor-pointer text-red-500"
-                          onClick={() => handleDelete(user.id)}
+                          className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                           onClick={canDelete ?() => handleDelete : undefined}
                         />
+                       
                       </td>
-                    )}
                   </tr>
                 ))}
               </tbody>
@@ -286,7 +281,7 @@ const Users = () => {
             />
           )}
 
-          {showAddModal && isAdmin && (
+          {showAddModal && (
             <AddUserModal
               onClose={() => setShowAddModal(false)}
               onSave={handleAddUser}

@@ -9,11 +9,11 @@ import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 
 import { signupSchema } from "../../components/validation/index";
-
+import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { secondaryAuth } from "../../components/firebase";
 import { db } from "../../components/firebase";
-import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { setDoc, doc, serverTimestamp,getDocs,collection } from "firebase/firestore";
 
 type AddUserModalProps = {
   onClose: () => void;
@@ -25,6 +25,7 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
     lastname: "",
     email: "",
     password: "",
+    role:"",
   };
 
   const handleRegister = async (
@@ -44,7 +45,7 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
         email: user.email,
         firstName: values.firstname,
         lastName: values.lastname,
-        role: "user",
+        role: values.role,
         createdAt: serverTimestamp(),
       });
 
@@ -67,7 +68,20 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
       setSubmitting(false);
     }
   };
-
+    const[roles, setRoles] = useState<string[]>([]);
+    useEffect(() =>{
+      const fetchRoles = async () => {
+        try{
+          const snapshot = await getDocs(collection(db,"roles"));
+          const roleList = snapshot.docs.map((doc) => doc.data().name);
+          setRoles(roleList);
+        }
+        catch(error){
+          console.log("Error",error);
+        }
+      };
+      fetchRoles();
+    }, []);
   return (
     <div>
       <ToastContainer />
@@ -77,12 +91,12 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
           
           <button
             onClick={onClose}
-            className="absolute top-1 right-2"
+            className="absolute top-1 right-3"
           >
-            <X size={22} />
+            <X size={25} />
           </button>
 
-          <div className="bg-gray-400 p-6 rounded-lg shadow-lg w-105">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-105">
             <h2 className="text-xl font-bold mb-4">Add User</h2>
 
             <Formik
@@ -97,6 +111,7 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
                 errors,
                 touched,
                 isSubmitting,
+                setFieldValue,  
               }) => (
                 <Form className="flex flex-col gap-5">
                   {signupFields.map((field) => (
@@ -110,13 +125,35 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
                       touched={touched[field.id as keyof typeof touched]}
                     />
                   ))}
+            <div>
+            <label className="text-sm text-gray-600">Role</label>
+             <select
+              value={values.role}
+              onChange={(e) =>
+              setFieldValue("role", e.target.value)
+            }
+              className="border rounded-lg p-2 w-full"
+            >
+              <option value="">Select Role</option>
+
+              {roles.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
+            </select>
+
+            {touched.role && errors.role && (
+              <p className="text-red-500 text-sm">{errors.role}</p>
+            )}
+          </div>
 
                   {/* Buttons */}
                   <div className="flex justify-end gap-3">
                     <Button
                       type="button"
                       onClick={onClose}
-                      className="bg-gray-500 hover:bg-gray-900! text-white rounded-xl py-3"
+                      className="bg-blue-600! hover:bg-gray-600! text-white py-3"
                     >
                       Cancel
                     </Button>
@@ -124,7 +161,7 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-blue! hover:bg-gray-900! text-white rounded-xl py-3"
+                      className="bg-blue-600! hover:bg-gray-600! text-white py-3"
                     >
                       {isSubmitting ? "Adding User..." : "Add User"}
                     </Button>
