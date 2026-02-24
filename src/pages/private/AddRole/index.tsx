@@ -3,16 +3,23 @@ import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../../components/firebase";
 
-const modules = ["user", "chat", "role", "campaign"];
-const actions = ["view", "add", "edit", "delete"];
+type Module = "user"| "chat"| "role"| "campaign";
+type Action = "view"| "add"| "edit"|"delete";
+
+const modules: Module[] = ["user", "chat", "role", "campaign"];
+const actions: Action[] = ["view", "add", "edit", "delete"];
+
 
 const AddRole = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditMode = Boolean(id);
 
+type ModulePermissions = Record<Action, boolean>;
+type Permissions = Record<Module, ModulePermissions>;
+
   const [roleName, setRoleName] = useState("");
-  const [permissions, setPermissions] = useState<any>({
+  const [permissions, setPermissions] = useState<Permissions>({
     user: { view: false, add: false, edit: false, delete: false },
     chat: { view: false, add: false, edit: false, delete: false },
     role: { view: false, add: false, edit: false, delete: false },
@@ -37,15 +44,15 @@ const AddRole = () => {
     fetchRole();
   }, [id]);
 
-  const handleToggle = (module: string, action: string) => {
-    setPermissions((prev: any) => ({
-      ...prev,
-      [module]: {
-        ...prev[module],
-        [action]: !prev[module][action],
-      },
-    }));
-  };
+const handleToggle = (module: Module, action: Action) => {
+  setPermissions((prev) => ({
+    ...prev,
+    [module]: {
+      ...prev[module],
+      [action]: !prev[module][action],
+    },
+  }));
+};
 
   const handleSave = async () => {
     if (!roleName.trim()) return;
