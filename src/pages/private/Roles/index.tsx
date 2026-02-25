@@ -10,7 +10,6 @@ import { db } from "../../../components/firebase";
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
 import UserPagination from "../../../components/Pagination/userPagination";
-import { useAppSelector } from "../../../redux/hooks";
 import { SearchIcon, Trash, PlusSquare, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Can from "../../../components/Can";
@@ -38,7 +37,8 @@ const navigate = useNavigate();
   const { can } = usePermission(); 
   const canDelete = can("role","delete");
   const canEdit = can("role","edit");
-
+  
+//Permission Count Function
   const countPermissions = (permissions: Permissions) => {
     let count = 0;
 

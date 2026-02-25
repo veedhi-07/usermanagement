@@ -80,7 +80,7 @@ export default function MyProfile() {
       <div className="flex-1 flex flex-col">
         <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-        <main className="p-8 bg-gradient-to-br from-blue-100 to-blue-200 flex-1">
+        <main className="p-8 bg-linear-to-br from-blue-100 to-blue-200 flex-1">
 
           {/* PROFILE HEADER */}
           <Card className="mb-6 bg-white! shadow-lg rounded-xl border-none">

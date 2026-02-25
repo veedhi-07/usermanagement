@@ -10,7 +10,7 @@ const AuthLayout = ({ title, image, children }: AuthLayoutProps) => {
     <div className="min-h-screen w-screen bg-linear-to-b from-rose-200 via-pink-100 to-purple-200 flex items-center justify-center p-6">
 
       {/* Content container */}
-      <div className="flex flex-col md:flex-row items-center gap-12 max-w-4xl w-full border border-black/20 rounded-3xl p-8 bg-transparent">
+      <div className="flex flex-col md:flex-row items-center gap-12 max-w-4xl w-full border border-black/20 rounded-3xl p-8 bg-transparent!">
 
         {/* LEFT FORM SECTION */}
         <div className="w-full md:w-100 flex flex-col gap-6 text-black">

@@ -3,9 +3,8 @@ import { FormField, loginFields } from "../../../components/form-field";
 import { Button, Modal, Label, TextInput } from "flowbite-react";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
-import {doc,getDoc,collection,getDocs} from "firebase/firestore";
+import {doc,getDoc} from "firebase/firestore";
 import {db} from "../../../components/firebase";
-import type { UseDispatch } from "react-redux";
 import { setPermissions } from "../../../redux/reducer/permissionSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,7 +16,7 @@ import { signInWithEmailAndPassword, getAuth, sendPasswordResetEmail } from "fir
 import { auth } from "../../../components/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type {ChangeEvent} from "react";
 
 const Login = () => {

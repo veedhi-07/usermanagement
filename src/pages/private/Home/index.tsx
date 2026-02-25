@@ -7,7 +7,7 @@ const Home = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 dark:bg-gray-800">
+    <div className="min-h-screen bg-linear-to-br from-blue-100 to-blue-200 dark:bg-gray-800">
 
       {/* Navbar */}
       <Nav onMenuClick={() => setSidebarOpen(true)} />

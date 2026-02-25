@@ -53,7 +53,7 @@ const AddUserModal = ({ onClose }: AddUserModalProps) => {
         position: "top-center",
       });
 
-      onClose(); // close modal after success
+      onClose(); 
     } catch (error) {
       if (error instanceof Error) {
         console.error("Error:", error.message);

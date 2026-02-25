@@ -42,12 +42,13 @@ const Users = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showAddModal, setShowAddModal] = useState(false);
+
   const { can } = usePermission(); 
   const canDelete = can("user", "delete");
   const canEdit = can("user","edit")
+
   const itemsPerPage = 7;
-  
-  // Fetch Users & Hide Logged-in User
+
   useEffect(() => {
     const auth = getAuth();
 
@@ -257,7 +258,7 @@ const Users = () => {
                         <Trash
                           size={18}
                           className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                           onClick={canDelete ?() => handleDelete : undefined}
+                           onClick={canDelete ?() => handleDelete(user.id) : undefined}
                         />
                        
                       </td>

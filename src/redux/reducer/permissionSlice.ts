@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction} from "@reduxjs/toolkit"
 interface ModulePermission {
   add: boolean;
   edit: boolean;
@@ -17,11 +17,16 @@ export interface PermissionsState {
 export type ModuleKey = keyof PermissionsState;
 export type ActionKey = keyof ModulePermission;
 
-const initialState: PermissionsState = {}; 
+const initialState: PermissionsState = {
+  user: { add: false, edit: false, delete: false, view: false },
+  role: { add: false, edit: false, delete: false, view: false },
+  campaign: { add: false, edit: false, delete: false, view: false },
+  chat: { add: false, edit: false, delete: false, view: false },
+};
 
 const permissionSlice = createSlice({
   name: "permissions",
-  initialState, 
+  initialState,
   reducers: {
     setPermissions: (
       state,
@@ -29,9 +34,7 @@ const permissionSlice = createSlice({
     ) => {
       return action.payload;
     },
-    clearPermissions: () => {
-      return {};
-    },
+    clearPermissions: () => initialState,
   },
 });
 

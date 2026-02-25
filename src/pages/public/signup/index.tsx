@@ -1,22 +1,17 @@
-import React from "react";
+
 import AuthLayout from "../../../components/auth-layout";
 import { FormField, signupFields } from "../../../components/form-field";
 import { Button } from "flowbite-react";
 import signupImage from "../../../assets/signup.png";
-
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
-
 import { signupSchema } from "../../../components/validation";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-
 import { serverTimestamp } from "firebase/firestore";
 
 const Signup = () => {

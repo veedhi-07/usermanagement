@@ -30,23 +30,27 @@ const FormField = ({
 
   return (
     <div className="flex flex-col gap-1">
-      <Label htmlFor={id} className="!text-black">
+      <Label htmlFor={id} className="text-black!">
         {label}
       </Label>
 
       <div className="relative">
-        <TextInput
-          id={id}
-          type={isPassword && showPassword ? "text" : type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          className={`
-            !bg-white !text-black focus:!bg-white focus:!text-black
-            ${touched && error ? "[&_input]:!border-red-500" : "[&_input]:!border-gray-300"}
-          `}
-        />
+    <TextInput
+      id={id}
+      type={isPassword && showPassword ? "text" : type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      className={`
+        [&>div>input]:bg-white!
+        [&>div>input]:text-black!
+        [&>div>input]:focus:bg-white!
+        ${touched && error
+          ? "[&>div>input]:border-red-500!"
+          : "[&>div>input]:border-gray-300!"}
+      `}
+    />
 
         {isPassword && (
           <button
