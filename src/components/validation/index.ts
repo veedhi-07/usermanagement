@@ -19,7 +19,7 @@ export const signupSchema = Yup.object({
     .required("Email is required"),
 
     password: Yup.string()
-        .required("This field is required")
+        .required("Password is required")
         .min(5, "Password must be at least 5 characters")
         .matches(/[A-Za-z]/, "Password must contain an alphabet")
         .matches(/\d/, "Password must contain a number")
@@ -36,7 +36,7 @@ export const loginSchema = Yup.object({
     .required("Email is required"),
 
  password: Yup.string()
-        .required("This field is required")
+        .required("Password is required")
         .min(5, "Password must be at least 5 characters")
         .matches(/[A-Za-z]/, "Password must contain an alphabet")
         .matches(/\d/, "Password must contain a number")

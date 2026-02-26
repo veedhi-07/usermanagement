@@ -21,7 +21,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
   const canViewRoles = can("role", "view");
   const canViewCampaign = can("campaign", "view");
   const canViewChat = can("chat", "view");
-
   return (
     <>
       {/* Overlay */}

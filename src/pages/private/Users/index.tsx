@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   getDocs,
@@ -22,9 +22,14 @@ import { getAuth } from "firebase/auth";
 import EditUserModal from "../../../../src/modals/EditModal";
 import UserPagination from "../../../components/Pagination/userPagination";
 import AddUserModal from "../../../modals/AddUser";
+import DeleteModal from "../../../modals/DeleteModal";
+import { Spinner } from "flowbite-react";
 import Can from "../../../components/Can";
 import { usePermission } from "../../../hooks/usePermission";
-type User = {
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+export type User = {
   id: string;
   email: string;
   firstName: string;
@@ -34,6 +39,7 @@ type User = {
 };
 
 const Users = () => {
+  console.log("Users Rendered");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -42,10 +48,11 @@ const Users = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showAddModal, setShowAddModal] = useState(false);
-
-  const { can } = usePermission(); 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const { can } = usePermission();
   const canDelete = can("user", "delete");
-  const canEdit = can("user","edit")
+  const canEdit = can("user", "edit");
 
   const itemsPerPage = 7;
 
@@ -75,17 +82,21 @@ const Users = () => {
 
     return () => unsubscribe();
   }, []);
-  
-//DeleteUser
-  const handleDelete = async (userId: string) => {
+
+  //DeleteUser
+  const handleDelete = async () => {
+    if (!selectedUserId) return;
+
     try {
-      await deleteDoc(doc(db, "users", userId));
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      await deleteDoc(doc(db, "users", selectedUserId));
+      setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
+      setShowDeleteModal(false);
+      setSelectedUserId(null);
     } catch (error) {
-      console.error(error);
+      console.error("Delete failed:", error);
     }
   };
-
+  //Save
   const handleSave = async (values: Omit<User, "id">) => {
     if (!selectedUser) return;
 
@@ -94,9 +105,7 @@ const Users = () => {
       await updateDoc(userRef, values);
 
       setUsers((prev) =>
-        prev.map((u) =>
-          u.id === selectedUser.id ? { ...u, ...values } : u
-        )
+        prev.map((u) => (u.id === selectedUser.id ? { ...u, ...values } : u)),
       );
 
       setSelectedUser(null);
@@ -132,7 +141,8 @@ const Users = () => {
 
   const filteredAndSortedUsers = users
     .filter((user) => {
-      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      const fullName =
+        `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase();
       return fullName.includes(searchQuery.toLowerCase());
     })
     .sort((a, b) => {
@@ -159,138 +169,156 @@ const Users = () => {
     });
   };
 
-  if (loading) return <p className="p-6">Loading users...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="xl" aria-label="Loading users..." />
+      </div>
+    );
 
-  return (
-    <div className="flex min-h-screen">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+  return (   
+    <>
+      <ToastContainer position="top-center" autoClose={3000} />
+      <div className="flex min-h-screen">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col">
-        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        <div className="flex-1 flex flex-col">
+          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-        <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
-          <h1 className="text-2xl font-bold mb-6">Users List</h1>
+          <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
+            <h1 className="text-2xl font-bold mb-6">Users List</h1>
 
-          <div className="flex justify-between items-center mb-4">
-            {/* Search */}
-            <div className="relative w-full max-w-sm">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <SearchIcon size={18} />
-              </span>
-              <input
-                type="text"
-                placeholder="Search by name..."
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="flex justify-between items-center mb-4">
+              {/* Search */}
+              <div className="relative w-full max-w-sm">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <SearchIcon size={18} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search by name..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Add User */}
+              <Can module="user" action="add">
+                <div className="flex items-center gap-2">
+                  <span className="text-black font-bold">Add User</span>
+                  <PlusSquare
+                    size={28}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setShowAddModal(true);
+                    }}
+                  />
+                </div>
+              </Can>
             </div>
 
-            {/* Add User */}
-            <Can module="user" action="add">
-            <div className="flex items-center gap-2">
-              <span className="text-black font-bold">Add User</span>
-              <PlusSquare
-                size={28}
-                className="cursor-pointer"
-                onClick={() => {
-                 setShowAddModal(true);
-                }}
-              />
-            </div>
-            </Can>
-          </div>
-
-          {/* Table */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-300">
-                <tr>
-                  <th className="p-3 text-left">
-                    <div className="flex items-center gap-2">
-                      <ArrowUpDown
-                        size={18}
-                        onClick={toggleSort}
-                        className="cursor-pointer hover:text-blue-600"
-                      />
-                      <span>First Name</span>
-                    </div>
-                  </th>
-                  <th className="p-3 text-left">Last Name</th>
-                  <th className="p-3 text-left">Email</th>
-                  <th className="p-3 text-left">Role</th>
-                  <th className="p-3 text-left">Created At</th>
-                  <th className="p-3 text-left">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {paginatedUsers.length === 0 && (
+            {/* Table */}
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <table className="w-full border-collapse">
+                <thead className="bg-gray-300">
                   <tr>
-                    <td
-                      className="p-6 text-center text-gray-500"
-                    >
-                      No users found.
-                    </td>
+                    <th className="p-3 text-left">
+                      <div className="flex items-center gap-2">
+                        <ArrowUpDown
+                          size={18}
+                          onClick={toggleSort}
+                          className="cursor-pointer hover:text-blue-600"
+                        />
+                        <span>First Name</span>
+                      </div>
+                    </th>
+                    <th className="p-3 text-left">Last Name</th>
+                    <th className="p-3 text-left">Email</th>
+                    <th className="p-3 text-left">Role</th>
+                    <th className="p-3 text-left">Created At</th>
+                    <th className="p-3 text-left">Actions</th>
                   </tr>
-                )}
+                </thead>
 
-                {paginatedUsers.map((user) => (
-                  <tr key={user.id} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{user.firstName || "-"}</td>
-                    <td className="p-3">{user.lastName || "-"}</td>
-                    <td className="p-3">{user.email}</td>
-                    <td className="p-3">{user.role}</td>
-                    <td className="p-3">
-                      {user.createdAt
-                        ? formatDate(user.createdAt)
-                        : "-"}
-                    </td>
+                <tbody>
+                  {paginatedUsers.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="p-6  text-center text-gray-500"
+                      >
+                        No users found.
+                      </td>
+                    </tr>
+                  )}
+
+                  {paginatedUsers.map((user) => (
+                    <tr key={user.id} className="border-t hover:bg-gray-50">
+                      <td className="p-3">{user.firstName || "-"}</td>
+                      <td className="p-3">{user.lastName || "-"}</td>
+                      <td className="p-3">{user.email}</td>
+                      <td className="p-3">{user.role}</td>
+                      <td className="p-3">
+                        {user.createdAt ? formatDate(user.createdAt) : "-"}
+                      </td>
                       <td className="p-3 flex gap-3">
                         <Pencil
                           size={18}
                           className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                          onClick={canEdit ?() => setSelectedUser(user): undefined}
+                          onClick={
+                            canEdit ? () => setSelectedUser(user) : undefined
+                          }
                         />
                         <Trash
                           size={18}
                           className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                           onClick={canDelete ?() => handleDelete(user.id) : undefined}
+                          onClick={() => {
+                            setSelectedUserId(user.id);
+                            setShowDeleteModal(true);
+                          }}
                         />
-                       
                       </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <UserPagination
-            data={filteredAndSortedUsers}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-          />
-
-          {selectedUser && (
-            <EditUserModal
-              user={selectedUser}
-              onClose={() => setSelectedUser(null)}
-              onSave={handleSave}
+            <UserPagination
+              data={filteredAndSortedUsers}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
             />
-          )}
 
-          {showAddModal && (
-            <AddUserModal
-              onClose={() => setShowAddModal(false)}
-              onSave={handleAddUser}
-            />
-          )}
-        </main>
+            {selectedUser && (
+              <EditUserModal
+                user={selectedUser}
+                onClose={() => setSelectedUser(null)}
+                onSave={handleSave}
+              />
+            )}
+
+            {showAddModal && (
+              <AddUserModal
+                onClose={() => setShowAddModal(false)}
+                onSave={(newUser) => setUsers((prev) => [...prev, newUser])}
+              />
+            )}
+            {showDeleteModal && (
+              <DeleteModal
+                show={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDelete}
+              />
+            )}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

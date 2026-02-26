@@ -8,7 +8,10 @@ interface ForgotPasswordModalProps {
   onClose: () => void;
 }
 
-export default function ForgotPasswordModal({ show, onClose }: ForgotPasswordModalProps) {
+export default function ForgotPasswordModal({
+  show,
+  onClose,
+}: ForgotPasswordModalProps) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,19 +26,23 @@ export default function ForgotPasswordModal({ show, onClose }: ForgotPasswordMod
       setEmail("");
       onClose();
     } catch (err: any) {
-      toast.error(err.message || "Failed to send reset email", { position: "top-center" });
+      toast.error(err.message || "Failed to send reset email", {
+        position: "top-center",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal show={show} size="md" onClose={onClose}>
+    <Modal 
+    show={show} 
+    size="md" 
+    onClose={onClose}>
       {/* Modal content */}
-      <div className="p-6 space-y-4">
-        <h2 className="text-xl font-bold">Forgot Password</h2>
-        <p>Enter your registered email to receive a password reset link.</p>
-
+      <div className="p-6 space-y-4  text-white! dark:!text-white">
+        <h2 className="text-xl font-bold !text-white">Forgot Password</h2>
+        <p >Enter your registered email to receive a password reset link.</p>
         <div>
           <Label htmlFor="resetEmail">Email</Label>
           <TextInput

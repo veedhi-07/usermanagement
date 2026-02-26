@@ -49,7 +49,7 @@ console.log("Current user:", auth.currentUser);
       toast.success("User Registered Successfully!", {
         position: "top-center",
       });
-      navigate("/home");
+      navigate("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         console.error("Signup error:", error.message);
@@ -100,7 +100,7 @@ console.log("Current user:", auth.currentUser);
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-black! hover:bg-gray-900! text-white rounded-xl py-3"
+                className="bg-black! cursor-pointer hover:bg-gray-900! text-white rounded-xl py-3"
               >
                 {isSubmitting ? "Signing Up..." : "Sign Up"}
               </Button>

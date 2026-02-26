@@ -31,6 +31,7 @@ function UserPagination<T>({
     <div className="flex justify-center gap-2 mt-6 items-center">
       {/* Previous */}
       <Button
+      className="cursor-pointer"
         color="gray"
         onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}
@@ -41,6 +42,7 @@ function UserPagination<T>({
       {/* Page Numbers */}
       {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
         <Button
+        className="cursor-pointer"
           key={number}
           onClick={() => handlePageChange(number)}
           color={number === currentPage ? "blue" : "gray"}
@@ -51,6 +53,7 @@ function UserPagination<T>({
 
       {/* Next */}
       <Button
+      className="cursor-pointer"
         color="gray"
         onClick={() =>
           handlePageChange(Math.min(currentPage + 1, totalPages))

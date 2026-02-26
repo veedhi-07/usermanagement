@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setProfile } from "../../../redux/reducer/profileSlice";
@@ -9,14 +8,18 @@ import type { ProfileData } from "../../../services/userService";
 import Sidebar from "../../../components/sidebar/index";
 import Navbar from "../../../components/navbar/index";
 import FormField from "../../../components/form-field/FormField";
-
+import { Spinner } from "flowbite-react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { db } from "../../../components/firebase";
+import { getDocs, collection } from "firebase/firestore";
 
-export default function MyProfile() {
+const MyProfile = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile);
-
+  const [roles, setRoles] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editable, setEditable] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -29,15 +32,28 @@ export default function MyProfile() {
     role: "",
   });
 
-  //  Validation Schema 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "roles"));
+        const roleList = snapshot.docs.map((doc) => doc.data().name);
+        setRoles(roleList);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchRoles();
+  }, []);
+
+  //  Validation Schema
   const validationSchema = Yup.object({
     firstName: Yup.string().required("First name is required"),
     lastName: Yup.string().required("Last name is required"),
-    email: Yup.string()
-      .email("Invalid email")
-      .required("Email is required"),
-    phone: Yup.string()
-      .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    phone: Yup.string().matches(
+      /^\d{10}$/,
+      "Phone number must be exactly 10 digits",
+    ),
     role: Yup.string().required("Role is required"),
   });
 
@@ -49,7 +65,7 @@ export default function MyProfile() {
 
       const data = await userService.fetchUserProfile(
         user.uid,
-        user.email || ""
+        user.email || "",
       );
 
       dispatch(setProfile({ uid: user.uid, ...data }));
@@ -68,215 +84,225 @@ export default function MyProfile() {
     loadProfile();
   }, [dispatch]);
 
-  if (loading) return <p className="p-8">Loading profile...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="xl" aria-label="Loading users..." />
+      </div>
+    );
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+    <>
+      <ToastContainer />
+      <div className="flex min-h-screen bg-gray-100">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 flex flex-col">
-        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+        <div className="flex-1 flex flex-col">
+          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-        <main className="p-8 bg-linear-to-br from-blue-100 to-blue-200 flex-1">
+          <main className="p-8 bg-linear-to-br from-blue-100 to-blue-200 flex-1">
+            {/* PROFILE HEADER */}
+            <Card className="mb-6 bg-white! shadow-lg rounded-xl border-none">
+              <div className="flex items-center gap-5">
+                <Avatar
+                  img="/src/assets/pp1.jpg"
+                  alt="Avatar"
+                  rounded
+                  size="lg"
+                />
 
-          {/* PROFILE HEADER */}
-          <Card className="mb-6 bg-white! shadow-lg rounded-xl border-none">
-            <div className="flex items-center gap-5">
-              <Avatar
-                img="/src/assets/pp1.jpg"
-                alt="Avatar"
-                rounded
-                size="lg"
-              />
-
-              <div>
-                <h2 className="text-xl font-bold">
-                  {profile.firstName} {profile.lastName}
-                </h2>
-                <p className="text-gray-600">
-                  Email: {profile.email}
-                </p>
+                <div>
+                  <h2 className="text-xl font-bold">
+                    {profile.firstName} {profile.lastName}
+                  </h2>
+                  <p className="text-gray-600">Email: {profile.email}</p>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
 
-          {/* PERSONAL INFO */}
-          <Card className="shadow-lg bg-white! rounded-xl border-none">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800 pb-2 font-serif">
-                Personal Information
-              </h3>
+            {/* PERSONAL INFO */}
+            <Card className="shadow-lg bg-white! rounded-xl border-none">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 pb-2 font-serif">
+                  Personal Information
+                </h3>
 
-              {!editable && (
-                <Button
-                  className="bg-blue-600 hover:bg-gray-600! text-white"
-                  onClick={() => setEditable(true)}
-                >
-                  Edit
-                </Button>
-              )}
-            </div>
+                {!editable && (
+                  <Button
+                    className="bg-blue-600 cursor-pointer hover:bg-gray-600! text-white"
+                    onClick={() => setEditable(true)}
+                  >
+                    Edit
+                  </Button>
+                )}
+              </div>
 
-            <Formik
-              enableReinitialize
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={async (values) => {
-                try {
-                  const auth = getAuth();
-                  const user = auth.currentUser;
-                  if (!user) return;
+              <Formik
+                enableReinitialize
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={async (values) => {
+                  try {
+                    const auth = getAuth();
+                    const user = auth.currentUser;
+                    if (!user) return;
 
-                  const updated =
-                    await userService.updateUserProfile({
+                    const updated = await userService.updateUserProfile({
                       uid: user.uid,
                       data: values,
                     });
 
-                  dispatch(setProfile({ uid: user.uid, ...updated }));
-                  setEditable(false);
-                  alert("Profile updated successfully!");
-                } catch (err) {
-                  console.error(err);
-                  alert("Failed to update profile.");
-                }
-              }}
-            >
-              {({
-                values,
-                handleChange,
-                handleBlur,
-                errors,
-                touched,
-              }) => (
-                <Form>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* First Name */}
-                    <div>
-                      {editable ? (
-                        <FormField
-                          id="firstName"
-                          label="First Name"
-                          placeholder="Enter first name"
-                          value={values.firstName}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={errors.firstName}
-                          touched={touched.firstName}
-                        />
-                      ) : (
-                        <>
-                          <p className="text-sm text-gray-500">First Name</p>
-                          <p>{profile.firstName}</p>
-                        </>
-                      )}
-                    </div>
+                    dispatch(setProfile({ uid: user.uid, ...updated }));
+                    setEditable(false);
+                    toast.success("Profile Updated Successfully!", {
+                      position: "top-center",
+                    });
+                  } catch (err) {
+                    console.error(err);
+                    toast.error("Failed to update profile!", {
+                      position: "top-center",
+                    });
+                  }
+                }}
+              >
+                {({
+                  values,
+                  handleChange,
+                  handleBlur,
+                  errors,
+                  touched,
+                  setFieldValue,
+                }) => (
+                  <Form>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* First Name */}
+                      <div>
+                        {editable ? (
+                          <FormField
+                            id="firstName"
+                            label="First Name"
+                            placeholder="Enter first name"
+                            value={values.firstName}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={errors.firstName}
+                            touched={touched.firstName}
+                          />
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-500">First Name</p>
+                            <p>{profile.firstName}</p>
+                          </>
+                        )}
+                      </div>
 
-                    {/* Last Name */}
-                    <div>
-                      {editable ? (
-                        <FormField
-                          id="lastName"
-                          label="Last Name"
-                          placeholder="Enter last name"
-                          value={values.lastName}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={errors.lastName}
-                          touched={touched.lastName}
-                        />
-                      ) : (
-                        <>
-                          <p className="text-sm text-gray-500">Last Name</p>
-                          <p>{profile.lastName}</p>
-                        </>
-                      )}
-                    </div>
+                      {/* Last Name */}
+                      <div>
+                        {editable ? (
+                          <FormField
+                            id="lastName"
+                            label="Last Name"
+                            placeholder="Enter last name"
+                            value={values.lastName}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={errors.lastName}
+                            touched={touched.lastName}
+                          />
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-500">Last Name</p>
+                            <p>{profile.lastName}</p>
+                          </>
+                        )}
+                      </div>
 
-                    {/* Email */}
-                    <div>
-                      {editable ? (
-                        <FormField
-                          id="email"
-                          label="Email"
-                          type="email"
-                          placeholder="Enter email"
-                          value={values.email}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={errors.email}
-                          touched={touched.email}
-                        />
-                      ) : (
-                        <>
-                          <p className="text-sm text-gray-500">Email</p>
-                          <p>{profile.email}</p>
-                        </>
-                      )}
-                    </div>
+                      {/* Email */}
+                      <div>
+                        {editable ? (
+                          <FormField
+                            id="email"
+                            label="Email"
+                            type="email"
+                            placeholder="Enter email"
+                            value={values.email}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={errors.email}
+                            touched={touched.email}
+                          />
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-500">Email</p>
+                            <p>{profile.email}</p>
+                          </>
+                        )}
+                      </div>
 
-                    {/* Phone */}
-                    <div>
-                      {editable ? (
-                        <FormField
-                          id="phone"
-                          label="Phone"
-                          placeholder="Enter phone number"
-                          value={values.phone}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={errors.phone}
-                          touched={touched.phone}
-                        />
-                      ) : (
-                        <>
-                          <p className="text-sm text-gray-500">Phone</p>
-                          <p>{profile.phone}</p>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Role */}
-                    <div>
-                      {editable ? (
-                        <FormField
-                          id="role"
-                          label="Role"
-                          placeholder="Enter role"
+                      {/* Phone */}
+                      <div>
+                        {editable ? (
+                          <FormField
+                            id="phone"
+                            label="Phone"
+                            placeholder="Enter phone number"
+                            value={values.phone}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            error={errors.phone}
+                            touched={touched.phone}
+                          />
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray-500">Phone</p>
+                            <p>{profile.phone}</p>
+                          </>
+                        )}
+                      </div>
+                      {/* 
+                      Role
+                      <div>
+                        <label className="text-sm text-gray-600">Role</label>
+                        <select
                           value={values.role}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={errors.role}
-                          touched={touched.role}
-                        />
-                      ) : (
-                        <>
-                          <p className="text-sm text-gray-500">Role</p>
-                          <p>{profile.role}</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
+                          onChange={(e) =>
+                            setFieldValue("role", e.target.value)
+                          }
+                          className="border rounded-lg p-2 w-full"
+                        >
+                          <option value="">Select Role</option>
 
-                  {editable && (
-                    <div className="mt-6">
-                      <Button
-                        type="submit"
-                        className="bg-blue-600 hover:bg-gray-600! text-white"
-                      >
-                        Save
-                      </Button>
+                          {roles.map((role) => (
+                            <option key={role} value={role}>
+                              {role}
+                            </option>
+                          ))}
+                        </select>
+
+                        {touched.role && errors.role && (
+                          <p className="text-red-500 text-sm">{errors.role}</p>
+                        )}
+                      </div> */}
                     </div>
-                  )}
-                </Form>
-              )}
-            </Formik>
-          </Card>
-        </main>
+
+                    {editable && (
+                      <div className="mt-6">
+                        <Button
+                          type="submit"
+                          className="bg-blue-600 cursor-pointer hover:bg-gray-600! text-white"
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    )}
+                  </Form>
+                )}
+              </Formik>
+            </Card>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
-}
+};
+export default MyProfile;

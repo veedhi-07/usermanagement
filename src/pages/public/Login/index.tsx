@@ -3,8 +3,8 @@ import { FormField, loginFields } from "../../../components/form-field";
 import { Button, Modal, Label, TextInput } from "flowbite-react";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
-import {doc,getDoc} from "firebase/firestore";
-import {db} from "../../../components/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../components/firebase";
 import { setPermissions } from "../../../redux/reducer/permissionSlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,12 +12,16 @@ import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../components/validation";
 
-import { signInWithEmailAndPassword, getAuth, sendPasswordResetEmail } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  getAuth,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { auth } from "../../../components/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import type {ChangeEvent} from "react";
+import type { ChangeEvent } from "react";
 
 const Login = () => {
   const initialValues = { email: "", password: "" };
@@ -28,32 +32,32 @@ const Login = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [loadingReset, setLoadingReset] = useState(false);
 
-  // Handle Formik Login 
+  // Handle Formik Login
   const handleLogin = async (
-  values: typeof initialValues,
-  { setSubmitting }: FormikHelpers<typeof initialValues>
-) => {
-  try {
-    //  Login with Firebase
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      values.email,
-      values.password
-    );
-    
-    const uid = userCredential.user.uid;
+    values: typeof initialValues,
+    { setSubmitting }: FormikHelpers<typeof initialValues>,
+  ) => {
+    try {
+      //  Login with Firebase
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password,
+      );
 
-    // Fetch user profile from Firestore
-    const userDoc = await getDoc(doc(db, "users", uid));
+      const uid = userCredential.user.uid;
 
-    if (!userDoc.exists()) {
-      throw new Error("User profile not found");
-    }
+      // Fetch user profile from Firestore
+      const userDoc = await getDoc(doc(db, "users", uid));
 
-    const userData = userDoc.data();
-    const userRole = userData.role;
+      if (!userDoc.exists()) {
+        throw new Error("User profile not found");
+      }
 
-    // Fetch role permissions directly by document ID
+      const userData = userDoc.data();
+      const userRole = userData.role;
+
+      // Fetch role permissions directly by document ID
       const roleDocRef = doc(db, "roles", userRole);
       const roleDocSnap = await getDoc(roleDocRef);
 
@@ -63,20 +67,19 @@ const Login = () => {
         console.log("Role not found in Firestore");
       }
 
-    toast.success("Login successful!", { position: "top-center" });
+      toast.success("Login successful!", { position: "top-center" });
 
-    navigate("/home");
-
-  } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message, { position: "top-center" });
+      navigate("/dashboard");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message, { position: "top-center" });
+      }
+    } finally {
+      setSubmitting(false);
     }
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
-  // Handle Forgot Password 
+  // Handle Forgot Password
   const handleForgotPassword = async () => {
     if (!resetEmail) return;
     setLoadingReset(true);
@@ -88,7 +91,9 @@ const Login = () => {
       setResetEmail("");
       setShowForgotModal(false);
     } catch (error: any) {
-      toast.error(error.message || "Failed to send reset email", { position: "top-center" });
+      toast.error(error.message || "Failed to send reset email", {
+        position: "top-center",
+      });
     } finally {
       setLoadingReset(false);
     }
@@ -104,7 +109,14 @@ const Login = () => {
           validationSchema={loginSchema}
           onSubmit={handleLogin}
         >
-          {({ values, handleChange, handleBlur, errors, touched, isSubmitting }) => (
+          {({
+            values,
+            handleChange,
+            handleBlur,
+            errors,
+            touched,
+            isSubmitting,
+          }) => (
             <Form className="flex flex-col gap-5">
               {loginFields.map((field) => (
                 <FormField
@@ -121,7 +133,7 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-black! hover:bg-gray-900! text-white rounded-xl py-3"
+                className="bg-black! cursor-pointer hover:bg-gray-900! text-white rounded-xl py-3"
               >
                 {isSubmitting ? "Logging in..." : "Login"}
               </Button>
@@ -140,7 +152,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowForgotModal(true)}
-                  className="text-sm text-blue-600 hover:underline"
+                  className=" cursor-pointer text-sm text-blue-600 hover:underline"
                 >
                   Forgot Password?
                 </button>
@@ -151,7 +163,11 @@ const Login = () => {
       </AuthLayout>
 
       {/* Forgot Password Modal */}
-      <Modal show={showForgotModal} size="md" onClose={() => setShowForgotModal(false)}>
+      <Modal
+        show={showForgotModal}
+        size="md"
+        onClose={() => setShowForgotModal(false)}
+      >
         <div className="p-6 space-y-4">
           <h2 className="text-xl font-bold">Forgot Password</h2>
           <p>Enter your registered email to receive a password reset link.</p>
@@ -163,7 +179,9 @@ const Login = () => {
               type="email"
               placeholder="Enter your email"
               value={resetEmail}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setResetEmail(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setResetEmail(e.target.value)
+              }
             />
           </div>
 

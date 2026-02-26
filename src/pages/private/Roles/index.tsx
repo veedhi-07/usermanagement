@@ -14,7 +14,11 @@ import { SearchIcon, Trash, PlusSquare, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Can from "../../../components/Can";
 import { usePermission } from "../../../hooks/usePermission";
-
+import DeleteModal from "../../../modals/DeleteModal";
+import { useLocation } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Spinner } from "flowbite-react";
 type Role = {
   id: string;
   name: string;
@@ -23,22 +27,33 @@ type Role = {
 };
 
 const Roles = () => {
-const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<Role | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const itemsPerPage = 7;
 
-  const { can } = usePermission(); 
-  const canDelete = can("role","delete");
-  const canEdit = can("role","edit");
-  
-//Permission Count Function
+  const { can } = usePermission();
+  const canDelete = can("role", "delete");
+  const canEdit = can("role", "edit");
+  //toastmsg
+  useEffect(() => {
+    if (location.state?.message) {
+      toast.success(location.state.message);
+
+      // clear message so it doesn't show again on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+  //Permission Count Function
   const countPermissions = (permissions: Permissions) => {
     let count = 0;
 
@@ -48,8 +63,8 @@ const navigate = useNavigate();
       });
     });
 
-  return count;
-};
+    return count;
+  };
 
   // Fetch Roles
   useEffect(() => {
@@ -64,7 +79,7 @@ const navigate = useNavigate();
         ...(doc.data() as Omit<Role, "id">),
       }));
 
-      setRoles(data); 
+      setRoles(data);
     } catch (error) {
       console.error("Error fetching roles:", error);
     } finally {
@@ -72,11 +87,15 @@ const navigate = useNavigate();
     }
   };
 
-  // Delete Role
-  const handleDelete = async (id: string) => {
+  // DeleteRole
+  const handleDelete = async () => {
+    if (!selectedUserId) return;
+
     try {
-      await deleteDoc(doc(db, "roles", id));
-      setRoles((prev) => prev.filter((r) => r.id !== id));
+      await deleteDoc(doc(db, "roles", selectedUserId));
+      setRoles((prev) => prev.filter((r) => r.id !== selectedUserId));
+      setShowDeleteModal(false);
+      setSelectedUserId(null);
     } catch (error) {
       console.error("Delete failed:", error);
     }
@@ -89,7 +108,7 @@ const navigate = useNavigate();
   // search + sort
   const filteredAndSortedRoles = roles
     .filter((role) =>
-      role.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      role.name?.toLowerCase().includes(searchQuery.toLowerCase()),
     )
     .sort((a, b) => {
       const nameA = a.name?.toLowerCase() || "";
@@ -113,112 +132,137 @@ const navigate = useNavigate();
     });
   };
 
-  if (loading) return <p className="p-6">Loading roles...</p>;
-
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="xl" aria-label="Loading users..." />
+      </div>
+    );
   return (
-    <div className="flex min-h-screen">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <>
+      <ToastContainer position="top-center" autoClose={3000} />
 
-      <div className="flex-1 flex flex-col">
-        <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+      <div className="flex min-h-screen">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
-          <h1 className="text-2xl font-bold mb-6">Roles List</h1>
+        <div className="flex-1 flex flex-col">
+          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-          {/* Search + Add */}
-          <div className="flex justify-between items-center mb-4">
-            <div className="relative w-full max-w-sm">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <SearchIcon size={18} />
-              </span>
-              <input
-                type="text"
-                placeholder="Search Roles"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
+            <h1 className="text-2xl font-bold mb-6">Roles List</h1>
+
+            {/* Search + Add */}
+            <div className="flex justify-between items-center mb-4">
+              <div className="relative w-full max-w-sm">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <SearchIcon size={18} />
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search Roles"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Can module="role" action="add">
+                  <span className="text-black font-bold">Add Roles</span>
+                  <PlusSquare
+                    className="cursor-pointer"
+                    size={28}
+                    onClick={() => navigate("/add-role")}
+                  />
+                </Can>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-             <Can module="role" action="add">
-              <span className="text-black font-bold">Add Roles</span>
-              <PlusSquare
-                size={28}
-                onClick={() => navigate("/add-role")}
-              />
-              </Can>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <table className="w-full border-collapse">
-              <thead className="bg-gray-300">
-                <tr>
-                  <th
-                    className="p-3 text-left cursor-pointer"
-                    onClick={toggleSort}
-                  >
-                    Role Name
-                  </th>
-                  <th className="p-3 text-left">Date</th>
-                  <th className="p-3 text-left">Role Permission</th>
-                  <th className="p-3 text-left">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {paginatedRoles.length === 0 && (
+            {/* Table */}
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <table className="w-full border-collapse">
+                <thead className="bg-gray-300">
                   <tr>
-                    <td
-                      className="p-6 text-center text-gray-500"
+                    <th
+                      className="p-3 text-left cursor-pointer"
+                      onClick={toggleSort}
                     >
-                      No roles found.
-                    </td>
+                      Role Name
+                    </th>
+                    <th className="p-3 text-left">Date</th>
+                    <th className="p-3 text-left">Role Permission</th>
+                    <th className="p-3 text-left">Actions</th>
                   </tr>
-                )}
+                </thead>
 
-                {paginatedRoles.map((role) => (
-                  <tr key={role.id} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{role.name}</td>
-                    <td className="p-3">
-                      {role.createdAt
-                        ? formatDate(role.createdAt)
-                        : "-"}
-                    </td>
-                    <td className="p-3">{role.permissions ? countPermissions(role.permissions) : 0}</td>
+                <tbody>
+                  {paginatedRoles.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={4}
+                        className="  p-6 text-center text-gray-500"
+                      >
+                        No roles found.
+                      </td>
+                    </tr>
+                  )}
+
+                  {paginatedRoles.map((role) => (
+                    <tr key={role.id} className="border-t hover:bg-gray-50">
+                      <td className="p-3">{role.name}</td>
+                      <td className="p-3">
+                        {role.createdAt ? formatDate(role.createdAt) : "-"}
+                      </td>
+                      <td className="p-3">
+                        {role.permissions
+                          ? countPermissions(role.permissions)
+                          : 0}
+                      </td>
                       <td className="p-3 flex gap-3">
-                    
                         <Pencil
                           size={20}
                           className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                          onClick={canEdit ?() => navigate(`/edit-role/${role.id}`): undefined}
+                          onClick={
+                            canEdit
+                              ? () => navigate(`/edit-role/${role.id}`)
+                              : undefined
+                          }
                         />
 
                         <Trash
-                          size={20}
-                          className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer":"opacity-40 cursor-not-allowed"}`}
-                          onClick={canDelete ?() => handleDelete(role.id) : undefined}
+                          size={18}
+                          className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                          onClick={() => {
+                            setSelectedUserId(role.id);
+                            setShowDeleteModal(true);
+                          }}
                         />
                       </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <UserPagination
-            data={filteredAndSortedRoles}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-          />
-        </main>
+            <UserPagination
+              data={filteredAndSortedRoles}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
+            {showDeleteModal && (
+              <DeleteModal
+                show={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDelete}
+              />
+            )}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
