@@ -25,10 +25,7 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
     <>
       {/* Overlay */}
       {open && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />
       )}
 
       {/* Sidebar */}
@@ -46,7 +43,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
         </div>
 
         <nav className="flex flex-col gap-4 p-6 text-black dark:text-black">
-
           {/* Dashboard Always Visible */}
           <Link to="/dashboard" className="flex items-center gap-4">
             <LayoutDashboard size={18} className="cursor-pointer text-black" />
@@ -90,7 +86,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
             <UserPen size={18} className="cursor-pointer text-black" />
             <span>Edit Profile</span>
           </Link>
-
         </nav>
       </div>
     </>

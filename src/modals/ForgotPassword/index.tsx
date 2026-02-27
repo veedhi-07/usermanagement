@@ -26,7 +26,7 @@ export default function ForgotPasswordModal({
       setEmail("");
       onClose();
     } catch (err: any) {
-      toast.error(err.message || "Failed to send reset email", {
+      toast.error("Failed to send reset email", {
         position: "top-center",
       });
     } finally {
@@ -40,8 +40,8 @@ export default function ForgotPasswordModal({
     size="md" 
     onClose={onClose}>
       {/* Modal content */}
-      <div className="p-6 space-y-4  text-white! dark:!text-white">
-        <h2 className="text-xl font-bold !text-white">Forgot Password</h2>
+      <div className="p-6 space-y-4  text-white! dark:text-white!">
+        <h2 className="text-xl font-bold text-white!">Forgot Password</h2>
         <p >Enter your registered email to receive a password reset link.</p>
         <div>
           <Label htmlFor="resetEmail">Email</Label>

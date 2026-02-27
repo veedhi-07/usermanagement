@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../src/components/firebase";
 import { fetchUserProfile } from "./services/userService";
@@ -9,12 +9,15 @@ import type { RootState } from "./redux/store";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "./components/firebase";
 import { setProfile, clearProfile } from "../src/redux/reducer/profileSlice";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   setPermissions,
   clearPermissions,
 } from "../src/redux/reducer/permissionSlice";
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { Spinner } from "flowbite-react";
 
 const Login = React.lazy(() => import("./pages/public/Login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
@@ -23,9 +26,10 @@ const MyProfile = React.lazy(() => import("./pages/private/MyProfile"));
 const Users = React.lazy(() => import("./pages/private/Users"));
 const Roles = React.lazy(() => import("./pages/private/Roles"));
 const AddRole = React.lazy(() => import("./pages/private/AddRole"));
-
+const Chat = React.lazy(() => import("./pages/private/Chat"));
 
 const App = () => {
+  const [authLoading, setAuthLoading] = useState(true);
   const dispatch = useDispatch();
   const profile = useSelector((state: RootState) => state.profile);
 
@@ -45,6 +49,7 @@ const App = () => {
         dispatch(clearProfile());
         dispatch(clearPermissions());
       }
+      setAuthLoading(false);
     });
 
     return () => unsubscribe();
@@ -76,28 +81,39 @@ const App = () => {
 
     loadRolePermissions();
   }, [profile?.role, dispatch]);
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="xl" aria-label="Loading users..." />
+      </div>
+    );
+  }
   return (
-    <Routes>
-      {!profile?.uid ? (
-        <>
-          <Route path="/" element={<Login />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="*" element={<Navigate to="/login" />} />
-        </>
-      ) : (
-        <>
-         <Route path="/" element={<Navigate to="/dashboard" />} />
-
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/myprofile" element={<MyProfile />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/roles" element={<Roles />} />
-          <Route path="/add-role" element={<AddRole />} />
-          <Route path="/edit-role/:id" element={<AddRole />} />
-        </>
-      )}
-    </Routes>
+    <>
+      <ToastContainer position="top-center" autoClose={2000} />
+      <Routes>
+        {!profile?.uid ? (
+          <>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/myprofile" element={<MyProfile />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/roles" element={<Roles />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/add-role" element={<AddRole />} />
+            <Route path="/edit-role/:id" element={<AddRole />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </>
+        )}
+      </Routes>
+    </>
   );
 };
 export default App;

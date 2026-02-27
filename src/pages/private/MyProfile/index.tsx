@@ -11,7 +11,7 @@ import FormField from "../../../components/form-field/FormField";
 import { Spinner } from "flowbite-react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "../../../components/firebase";
 import { getDocs, collection } from "firebase/firestore";
@@ -93,7 +93,7 @@ const MyProfile = () => {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer position="top-center" autoClose={2000} /> */}
       <div className="flex min-h-screen bg-gray-100">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -110,7 +110,6 @@ const MyProfile = () => {
                   rounded
                   size="lg"
                 />
-
                 <div>
                   <h2 className="text-xl font-bold">
                     {profile.firstName} {profile.lastName}
@@ -154,25 +153,14 @@ const MyProfile = () => {
 
                     dispatch(setProfile({ uid: user.uid, ...updated }));
                     setEditable(false);
-                    toast.success("Profile Updated Successfully!", {
-                      position: "top-center",
-                    });
+                    toast.success("Profile Updated Successfully!");
                   } catch (err) {
                     console.error(err);
-                    toast.error("Failed to update profile!", {
-                      position: "top-center",
-                    });
+                    toast.error("Failed to update profile!");
                   }
                 }}
               >
-                {({
-                  values,
-                  handleChange,
-                  handleBlur,
-                  errors,
-                  touched,
-                  setFieldValue,
-                }) => (
+                {({ values, handleChange, handleBlur, errors, touched }) => (
                   <Form>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* First Name */}

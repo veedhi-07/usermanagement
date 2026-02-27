@@ -6,12 +6,11 @@ import loginImage from "../../../assets/login.png";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../components/firebase";
 import { setPermissions } from "../../../redux/reducer/permissionSlice";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../components/validation";
-
 import {
   signInWithEmailAndPassword,
   getAuth,
@@ -63,16 +62,14 @@ const Login = () => {
 
       if (roleDocSnap.exists()) {
         dispatch(setPermissions(roleDocSnap.data().permissions));
+        navigate("/dashboard", { replace: true });
+          toast.success("Login successful!");
       } else {
         console.log("Role not found in Firestore");
       }
-
-      toast.success("Login successful!", { position: "top-center" });
-
-      navigate("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message, { position: "top-center" });
+        toast.error("Login Failed", { position: "top-center" });
       }
     } finally {
       setSubmitting(false);
@@ -101,8 +98,6 @@ const Login = () => {
 
   return (
     <>
-      <ToastContainer />
-
       <AuthLayout title="Welcome Back" image={loginImage}>
         <Formik
           initialValues={initialValues}

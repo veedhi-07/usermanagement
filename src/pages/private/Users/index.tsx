@@ -39,7 +39,6 @@ export type User = {
 };
 
 const Users = () => {
-  console.log("Users Rendered");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -113,7 +112,6 @@ const Users = () => {
       console.error("Update failed:", error);
     }
   };
-
   //  Add User
   const handleAddUser = async (values: Omit<User, "id">) => {
     try {
@@ -176,9 +174,9 @@ const Users = () => {
       </div>
     );
 
-  return (   
+  return (
     <>
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={2000} />
       <div className="flex min-h-screen">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

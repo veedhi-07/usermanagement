@@ -1,7 +1,7 @@
 import { FormField, signupFields } from "../../components/form-field";
 import { Button } from "flowbite-react";
 import { X } from "lucide-react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
@@ -66,7 +66,6 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
       };
 
       onSave(newUser);
-
       toast.success("New User Created");
 
       onClose();
@@ -93,15 +92,13 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
   }, []);
   return (
     <div>
-      <ToastContainer />
-
       <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-115 relative">
-          <button onClick={onClose} className="absolute top-1 right-3">
+        <div className="bg-gray-200 p-6 rounded-lg  shadow-lg w-115 relative">
+          <button onClick={onClose} className="absolute bottom-168 right-2">
             <X size={25} />
           </button>
 
-          <div className="bg-white p-6 rounded-lg shadow-lg w-105">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-105 border">
             <h2 className="text-xl font-bold mb-4">Add User</h2>
 
             <Formik
