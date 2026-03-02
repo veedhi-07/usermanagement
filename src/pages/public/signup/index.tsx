@@ -67,9 +67,6 @@ console.log("Current user:", auth.currentUser);
 
   return (
     <>
-     
-      <ToastContainer />
-
       <AuthLayout title="Create Account" image={signupImage}>
         <Formik
           initialValues={initialValues}

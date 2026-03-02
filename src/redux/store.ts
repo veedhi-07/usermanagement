@@ -26,6 +26,5 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>; //Take whatever store.getState() returns and make that a type.
 export type AppDispatch = typeof store.dispatch;

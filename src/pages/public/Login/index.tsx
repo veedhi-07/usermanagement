@@ -62,14 +62,16 @@ const Login = () => {
 
       if (roleDocSnap.exists()) {
         dispatch(setPermissions(roleDocSnap.data().permissions));
-        navigate("/dashboard", { replace: true });
-          toast.success("Login successful!");
+        toast.success("Login successful!");
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 500);
       } else {
         console.log("Role not found in Firestore");
       }
     } catch (error) {
       if (error instanceof Error) {
-        toast.error("Login Failed", { position: "top-center" });
+        toast.error("Invalid Login Credentials", { position: "top-center" });
       }
     } finally {
       setSubmitting(false);
