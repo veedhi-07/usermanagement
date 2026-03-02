@@ -4,14 +4,14 @@ import FormField from "../../components/form-field/FormField";
 import { db } from "../../components/firebase";
 import { getDocs, collection } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 type User = {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: string ;
+  role: string;
 };
 
 type Props = {
@@ -29,6 +29,7 @@ const validationSchema = Yup.object({
 
 export default function EditUserModal({ user, onClose, onSave }: Props) {
   const [roles, setRoles] = useState<string[]>([]);
+
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -56,7 +57,7 @@ export default function EditUserModal({ user, onClose, onSave }: Props) {
           validationSchema={validationSchema}
           onSubmit={async (values) => {
             try {
-              await onSave(values); // make sure onSave returns a promise
+              await onSave(values);
 
               toast.success("User Edited Successfully!", {
                 position: "top-center",
