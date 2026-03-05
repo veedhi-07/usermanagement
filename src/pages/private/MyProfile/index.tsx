@@ -93,7 +93,6 @@ const MyProfile = () => {
 
   return (
     <>
-      {/* <ToastContainer position="top-center" autoClose={2000} /> */}
       <div className="flex min-h-screen bg-gray-100">
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -247,30 +246,6 @@ const MyProfile = () => {
                           </>
                         )}
                       </div>
-                      {/* 
-                      Role
-                      <div>
-                        <label className="text-sm text-gray-600">Role</label>
-                        <select
-                          value={values.role}
-                          onChange={(e) =>
-                            setFieldValue("role", e.target.value)
-                          }
-                          className="border rounded-lg p-2 w-full"
-                        >
-                          <option value="">Select Role</option>
-
-                          {roles.map((role) => (
-                            <option key={role} value={role}>
-                              {role}
-                            </option>
-                          ))}
-                        </select>
-
-                        {touched.role && errors.role && (
-                          <p className="text-red-500 text-sm">{errors.role}</p>
-                        )}
-                      </div> */}
                     </div>
 
                     {editable && (

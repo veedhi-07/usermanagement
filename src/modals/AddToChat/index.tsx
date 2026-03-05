@@ -1,10 +1,18 @@
 import { db } from "../../components/firebase";
 import { getAuth } from "firebase/auth";
-import { getDocs, collection } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { X, User } from "lucide-react";
-// import { HiUserCircle } from "react-icons/hi";
-// import { ListGroup, ListGroupItem } from "flowbite-react";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
+import type { DocumentData } from "firebase/firestore";
+import { useEffect, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { X, User as UserIcon, SearchIcon } from "lucide-react";
 
 type AddToChatModalProps = {
   onClose: () => void;
@@ -18,105 +26,146 @@ export type User = {
 
 const AddToChatModal = ({ onClose }: AddToChatModalProps) => {
   const [users, setUsers] = useState<User[]>([]);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const toggleSort = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  const [lastDoc, setLastDoc] =
+    useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hasMore, setHasMore] = useState(true);
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const itemsPerPage = 5;
+
+  const fetchUsers = async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    let q;
+
+    if (lastDoc) {
+      q = query(
+        collection(db, "users"),
+        orderBy("firstName"),
+        startAfter(lastDoc),
+        limit(itemsPerPage),
+      );
+    } else {
+      q = query(
+        collection(db, "users"),
+        orderBy("firstName"),
+        limit(itemsPerPage),
+      );
+    }
+
+    const snapshot = await getDocs(q);
+
+    const newUsers: User[] = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<User, "id">),
+    }));
+
+    const filtered = newUsers.filter((u) => u.id !== currentUser?.uid);
+
+    setUsers((prev) => [...prev, ...filtered]);
+    setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+    setHasMore(snapshot.docs.length === itemsPerPage);
+
+    setLoading(false);
   };
 
   useEffect(() => {
-    const auth = getAuth();
-
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          const querySnapshot = await getDocs(collection(db, "users"));
-
-          const data: User[] = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...(doc.data() as Omit<User, "id">),
-          }));
-
-          const filteredUsers = data.filter((u) => u.id !== user.uid);
-
-          setUsers(filteredUsers);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-        }
-      }
-    });
-    return () => unsubscribe();
+    fetchUsers();
   }, []);
 
+  const filteredUsers = users.filter((user) => {
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    return fullName.includes(searchQuery.toLowerCase());
+  });
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredUsers.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 60,
+  });
+
+  useEffect(() => {
+    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
+
+    if (lastItem && lastItem.index >= users.length - 1 && hasMore && !loading) {
+      fetchUsers();
+    }
+  }, [rowVirtualizer.getVirtualItems(), users, hasMore, loading]);
+
   return (
-    <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="bg-blue-200 rounded-lg shadow-lg w-[400px] h-[800px] p-6 relative">
-          <h1 className="text-2xl font-black">Users List</h1>
-          <button onClick={onClose} className="absolute right-2 top-5">
-            <X size={25} />
-          </button>
-          {users.map((user) => (
-            <ol space-y-2>
-              <li>
-                <div className="flex flex-row p-1">
-                <span className="pt-1">
-                <User size={18} />
-                </span>
-                <span>
-                 {user.firstName} {user.lastName}{" "}
-                </span>
-                </div>
-              </li>
-            </ol>
-          ))}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-gray-900 rounded-lg shadow-lg w-96 p-6 relative">
+        <h1 className="text-2xl font-black mb-4 text-white">Users List</h1>
+
+        <button
+          onClick={onClose}
+          className="absolute right-2 top-5 text-white "
+        >
+          <X size={25} />
+        </button>
+
+        <div className="relative w-full max-w-sm bg-blue-100 rounded-4xl">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
+            <SearchIcon size={18} />
+          </span>
+          <input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
+          />
         </div>
+        <div
+          ref={parentRef}
+          className="h-75 overflow-auto border rounded bg-white hide-scrollbar"
+        >
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              position: "relative",
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const user = filteredUsers[virtualRow.index];
+
+              return (
+                <div
+                  key={virtualRow.key}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  className="flex items-center p-2 border-b cursor-pointer"
+                >
+                  <UserIcon size={18} className="mr-2" />
+                  <span className="font-semibold">
+                    {user?.firstName} {user?.lastName}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {loading && <p className="mt-2 text-sm">Loading...</p>}
+        {/* {!hasMore && <p className="mt-2 text-sm">No more users</p>} */}
       </div>
-    </>
+    </div>
   );
 };
+
 export default AddToChatModal;
-
-// import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Select } from "flowbite-react";
-// import { useState } from "react";
-
-// export function Component() {
-//   const [openModal, setOpenModal] = useState(true);
-//   const [modalPlacement, setModalPlacement] = useState("center");
-
-//   return (
-//     <>
-//       <div className="flex flex-wrap gap-4">
-//         <div className="w-40">
-//           <Select defaultValue="center" onChange={(event) => setModalPlacement(event.target.value)}>
-//             <option value="center">Center</option>
-//             <option value="top-left">Top left</option>
-//             <option value="top-center">Top center</option>
-//             <option value="top-right">Top right</option>
-//             <option value="center-left">Center left</option>
-//             <option value="center-right">Center right</option>
-//             <option value="bottom-right">Bottom right</option>
-//             <option value="bottom-center">Bottom center</option>
-//             <option value="bottom-left">Bottom left</option>
-//           </Select>
-//         </div>
-//         <Button onClick={() => setOpenModal(true)}>Toggle modal</Button>
-//       </div>
-//       <Modal show={openModal} position={modalPlacement} onClose={() => setOpenModal(false)}>
-//         <ModalHeader>Small modal</ModalHeader>
-//         <ModalBody>
-//           <div className="space-y-6 p-6">
-//             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-//               With less than a month to go before the European Union enacts new consumer privacy laws for its citizens,
-//               companies around the world are updating their terms of service agreements to comply.
-//             </p>
-//             <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-//               The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant
-//               to ensure a common set of data rights in the European Union. It requires organizations to notify users as
-//               soon as possible of high-risk data breaches that could personally affect them.
-//             </p>
-//           </div>
-//         </ModalBody>
-//       </Modal>
-//     </>
-//   );
-// }

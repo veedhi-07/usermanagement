@@ -26,7 +26,7 @@ const MyProfile = React.lazy(() => import("./pages/private/MyProfile"));
 const Users = React.lazy(() => import("./pages/private/Users"));
 const Roles = React.lazy(() => import("./pages/private/Roles"));
 const AddRole = React.lazy(() => import("./pages/private/AddRole"));
-const Chat = React.lazy(() => import("./pages/private/Chat"));
+const Chat = React.lazy(() => import("./pages/private/Chats/index"));
 
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);

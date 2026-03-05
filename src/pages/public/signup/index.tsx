@@ -45,6 +45,9 @@ const Signup = () => {
         createdAt: serverTimestamp(),
       });
 
+      await setDoc(doc(db,"chat", user.uid ),{
+      });
+
       toast.success("User Registered Successfully!", {
         position: "top-center",
       });
