@@ -1,9 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState,useEffect } from "react";
 import { db } from "../../../components/firebase";
-import { collection, getDocs } from "firebase/firestore";
-import { Spinner } from "flowbite-react";
+import {
+  collection,
+  // getDocs,
+  // doc,
+  addDoc,
+  // setDoc,
+  // updateDoc,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { PlusIcon, ChevronDown } from "lucide-react";
 import AddToChatModal from "../../../modals/AddToChat";
+import { Timestamp } from "firebase/firestore";
+// import Keyboard from "react-simple-keyboard";
+import "react-simple-keyboard/build/css/index.css";
+// import Input from "../../../components/form/input/InputField";
+
 type Props = {
   sidebarOpen: boolean;
 };
@@ -15,43 +27,86 @@ export type User = {
   role: string;
 };
 
-export type Message = {
+export type conversation = {
   id: string;
-  text: string;
+  time: Timestamp;
   senderId: string;
   receiverId: string;
-  createdAt: any;
+  text: string;
 };
 
 const ChatSection = ({ sidebarOpen }: Props) => {
-  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<conversation[]>([]);
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-
+  const [loading] = useState(true);
   const [messageInput, setMessageInput] = useState("");
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const snapshot = await getDocs(collection(db, "users"));
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
 
-      const data: User[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<User, "id">),
-      }));
-      setUsers(data);
-      setLoading(false);
+  const handleSendMessage = async () => {
+    if (!messageInput.trim() || !selectedUser || !currentUser) return;
+
+    const newMessage = {
+      receiverId: selectedUser.id,
+      senderId: currentUser.uid,
+      text: messageInput,
+      time: Timestamp.now(),
     };
-    fetchUsers();
-  }, []);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Spinner size="xl" />
-      </div>
-    );
+    try {
+      const docRef = await addDoc(collection(db, "message"), newMessage);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: docRef.id,
+          ...newMessage,
+        },
+      ]);
+
+      setMessageInput("");
+    } catch (error) {
+      console.log("Error Sending Message", error);
+    }
+  };
+
+useEffect(() => {
+  setMessages([]);
+}, [selectedUser]);
+
+  // useEffect(() => {
+
+  //   const unsubscribe = auth.onAuthStateChanged(async (user) => {
+  //     if (user) {
+  //       try {
+  //         const querySnapshot = await getDocs(collection(db, "chat"));
+
+  //         const data: User[] = querySnapshot.docs.map((doc) => ({
+  //           id: doc.id,
+  //           ...(doc.data() as Omit<User, "id">),
+  //         }));
+  //         setUsers(data);
+  //       } catch (error) {
+  //         console.log("Error Fetching Data", error);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
+  //   });
+
+  //   return () => unsubscribe();
+  // }, []);
+
+  // if (loading)
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <Spinner size="xl" />
+  //     </div>
+  //   );
+  // onchange = (Input) => {
+  //   console.log("Input changed", Input);
+  // };
 
   return (
     <div
@@ -102,28 +157,53 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             <p className="text-white">Select a user to start conversation.</p>
           )}
         </div>
-        <div className="flex-1 overflow-y-auto p-6 space-y-7 bg-gray-50">
-          {selectedUser && messages.length && (
-            <p className="text-center text-gray-500">No messages yet</p>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 border-4">
+          {selectedUser && messages.length == 0 && (
+            <p className="text-center text-black">No messages yet</p>
           )}
           {messages.map((msg) => (
             <div
               key={msg.id}
               className={`max-w-xs p-3 rounded-lg ${
-                msg.senderId === selectedUser?.id
-                  ? "bg-gray-200"
-                  : "bg-blue-500 text-white ml-auto"
+                msg.senderId === currentUser?.uid
+                  ? "bg-blue-500 text-white ml-auto"
+                  : "bg-gray-200 text-black"
               }`}
             >
               {msg.text}
             </div>
           ))}
         </div>
-
-        {ShowAddToChatModal && (
-          <AddToChatModal onClose={() => setShowAddToChatModal(false)} />
+        {selectedUser && (
+          <div className="flex items-center gap-4 p-4 bg-gray-100 border-t">
+            <input
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              className="flex-1  border-2 rounded-lg p-2"
+              placeholder="Type a message"
+              type="text"
+            />
+            <button
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg"
+              type="submit"
+              onClick={handleSendMessage}
+            >
+              Send
+            </button>
+          </div>
         )}
       </div>
+
+      {ShowAddToChatModal && (
+        <AddToChatModal
+          onClose={() => setShowAddToChatModal(false)}
+          onUserSelect={(user) => {
+            setSelectedUser(user);
+            setShowAddToChatModal(false);
+          }}
+        />
+      )}
     </div>
   );
 };

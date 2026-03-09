@@ -104,7 +104,7 @@ const MyProfile = () => {
             <Card className="mb-6 bg-white! shadow-lg rounded-xl border-none">
               <div className="flex items-center gap-5">
                 <Avatar
-                  img="/src/assets/pp1.jpg"
+                  img=""
                   alt="Avatar"
                   rounded
                   size="lg"

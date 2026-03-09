@@ -16,22 +16,24 @@ import { X, User as UserIcon, SearchIcon } from "lucide-react";
 
 type AddToChatModalProps = {
   onClose: () => void;
+  onUserSelect: (user: User) => void;
 };
 
 export type User = {
   id: string;
   firstName: string;
   lastName: string;
+  role:string;
 };
 
-const AddToChatModal = ({ onClose }: AddToChatModalProps) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [lastDoc, setLastDoc] =
+const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
+const [users, setUsers] = useState<User[]>([]);
+const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [hasMore, setHasMore] = useState(true);
-  const parentRef = useRef<HTMLDivElement>(null);
+const [loading, setLoading] = useState(false);
+const [searchQuery, setSearchQuery] = useState("");
+const [hasMore, setHasMore] = useState(true);
+const parentRef = useRef<HTMLDivElement>(null);
 
   const itemsPerPage = 5;
 
@@ -149,7 +151,8 @@ const AddToChatModal = ({ onClose }: AddToChatModalProps) => {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  className="flex items-center p-2 border-b cursor-pointer"
+                  onClick={() => onUserSelect(user)}
+                  className="flex items-center p-2 border-b cursor-pointer hover:bg-gray-200"
                 >
                   <UserIcon size={18} className="mr-2" />
                   <span className="font-semibold">

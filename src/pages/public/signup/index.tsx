@@ -13,6 +13,7 @@ import { auth, db } from "../../../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
+
 const Signup = () => {
   const navigate = useNavigate();
   const initialValues = {
@@ -22,7 +23,7 @@ const Signup = () => {
     password: "",
   };
 
-  console.log("Current user:", auth.currentUser);
+  // console.log("Current user:", auth.currentUser);
 
   const handleRegister = async (
     values: typeof initialValues,
@@ -45,8 +46,8 @@ const Signup = () => {
         createdAt: serverTimestamp(),
       });
 
-      await setDoc(doc(db,"chat", user.uid ),{
-      });
+      // await setDoc(doc(db,"chat", user.uid ),{
+      // });
 
       toast.success("User Registered Successfully!", {
         position: "top-center",
