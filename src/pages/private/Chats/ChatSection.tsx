@@ -1,16 +1,18 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../../../components/firebase";
 import {
   collection,
   // getDocs,
-  // doc,
+  doc,
   addDoc,
+  updateDoc,
   // setDoc,
   // updateDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { PlusIcon, ChevronDown } from "lucide-react";
 import AddToChatModal from "../../../modals/AddToChat";
+import CreateGroupModal from "../../../modals/CreateGroupModal";
 import { Timestamp } from "firebase/firestore";
 // import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
@@ -29,71 +31,111 @@ export type User = {
 
 export type conversation = {
   id: string;
-  time: Timestamp;
+  type: string;
+  createdAt: Timestamp;
+  participant: string;
+  lastMessage: string;
   senderId: string;
-  receiverId: string;
+  // receiverId: string;
   text: string;
+  read: boolean;
 };
 
 const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<conversation[]>([]);
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
-  const [loading] = useState(true);
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  // const [loading] = useState(true);
   const [messageInput, setMessageInput] = useState("");
 
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
+  const createConversation = async (userId: string) => {
+    if (!currentUser) return;
+
+    try {
+      const conversationRef = await addDoc(collection(db, "conversation"), {
+        type: "private",
+        participants: [currentUser.uid, userId],
+        lastMessage: messageInput,
+        createdAt: Timestamp.now(),
+        createdBy: userId,
+      });
+      return conversationRef.id;
+    } catch (error) {
+      console.log("Error Creating Conversation", error);
+    }
+  };
   const handleSendMessage = async () => {
-    if (!messageInput.trim() || !selectedUser || !currentUser) return;
+    if (
+      !messageInput.trim() ||
+      !selectedUser ||
+      !currentUser ||
+      !conversationId
+    )
+      return;
 
     const newMessage = {
       receiverId: selectedUser.id,
       senderId: currentUser.uid,
       text: messageInput,
-      time: Timestamp.now(),
+      type: "private",
+      createdAt: Timestamp.now(),
     };
 
     try {
-      const docRef = await addDoc(collection(db, "message"), newMessage);
+      const msgRef = await addDoc(
+        collection(db, "conversation", conversationId, "messages"),
+        newMessage,
+      );
+
+      const docRef = doc(db, "conversation", conversationId);
+      await updateDoc(docRef, {
+        lastMessage: messageInput,
+        lastMessageAt: Timestamp.now(),
+      });
       setMessages((prev) => [
         ...prev,
         {
-          id: docRef.id,
+          id: msgRef.id,
           ...newMessage,
-        },
+        } as any,
       ]);
-
       setMessageInput("");
     } catch (error) {
       console.log("Error Sending Message", error);
     }
   };
+  //Used when new user is selected to clear the messages
+  useEffect(() => {
+    setMessages([]);
+  }, [selectedUser]);
 
-useEffect(() => {
-  setMessages([]);
-}, [selectedUser]);
+  useEffect(() => {
+    if (!conversationId) {
+      return;
+    }
+  });
+  // let q;
+  //  q = query()
+  //     const unsubscribe = auth.onAuthStateChanged(async (user) => {
+  //       if (user) {
+  //         try {
+  //           const querySnapshot = await getDocs(collection(db, "chat"));
 
-  // useEffect(() => {
-
-  //   const unsubscribe = auth.onAuthStateChanged(async (user) => {
-  //     if (user) {
-  //       try {
-  //         const querySnapshot = await getDocs(collection(db, "chat"));
-
-  //         const data: User[] = querySnapshot.docs.map((doc) => ({
-  //           id: doc.id,
-  //           ...(doc.data() as Omit<User, "id">),
-  //         }));
-  //         setUsers(data);
-  //       } catch (error) {
-  //         console.log("Error Fetching Data", error);
-  //       } finally {
-  //         setLoading(false);
+  //           const data: conversation[] = querySnapshot.docs.map((doc) => ({
+  //             id: doc.id,
+  //             ...(doc.data() as Omit<conversation, "id">),
+  //           }));
+  //           setMessages(data);
+  //         } catch (error) {
+  //           console.log("Error Fetching Data", error);
+  //         }
   //       }
-  //     }
-  //   });
+  //     });
 
   //   return () => unsubscribe();
   // }, []);
@@ -140,6 +182,14 @@ useEffect(() => {
           <span>
             <div className="  pt-48 text-lg cursor-pointer text-white">
               Spaces
+            </div>
+          </span>
+          <span>
+            <div className="pt-48 ml-34 cursor-pointer text-white">
+              <PlusIcon
+                size={24}
+                onClick={() => setShowCreateGroupModal(true)}
+              />
             </div>
           </span>
         </div>
@@ -198,11 +248,19 @@ useEffect(() => {
       {ShowAddToChatModal && (
         <AddToChatModal
           onClose={() => setShowAddToChatModal(false)}
-          onUserSelect={(user) => {
+          onUserSelect={async (user) => {
             setSelectedUser(user);
+            const convoId = await createConversation(user.id);
+
+            if (convoId) {
+              setConversationId(convoId);
+            }
             setShowAddToChatModal(false);
           }}
         />
+      )}
+      {showCreateGroupModal && (
+        <CreateGroupModal onClose={() => setShowCreateGroupModal(false)} />
       )}
     </div>
   );

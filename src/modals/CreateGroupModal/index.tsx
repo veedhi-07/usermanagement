@@ -14,11 +14,10 @@ import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { X, User as UserIcon, SearchIcon } from "lucide-react";
 
-type AddToChatModalProps = {
+type CreateGroupModalProps = {
   onClose: () => void;
   onUserSelect: (user: User) => void;
 };
-
 export type User = {
   id: string;
   firstName: string;
@@ -26,13 +25,16 @@ export type User = {
   role: string;
 };
 
-const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
+const CreateGroupModal = ({ onClose, onUserSelect }: CreateGroupModalProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [groupChatName, setGroupChatName] = useState();
+  const [selectedUser, setSelectedUser] = useState();
   const [hasMore, setHasMore] = useState(true);
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   const itemsPerPage = 5;
@@ -104,7 +106,9 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-gray-900 rounded-lg shadow-lg w-96 p-6 relative">
-        <h1 className="text-2xl font-black mb-4 text-white">Users List</h1>
+        <h1 className="text-2xl font-black mb-4 text-white">
+          Create Group Chat
+        </h1>
 
         <button
           onClick={onClose}
@@ -112,8 +116,17 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
         >
           <X size={25} />
         </button>
-
-        <div className="relative w-full max-w-sm bg-blue-100 rounded-4xl">
+        <div className="bg-white relative w-full max-w-sm  mb-1 rounded-3xl h-10">
+          <input
+            placeholder="Enter Chat Name"
+            onChange={(e) => setGroupChatName(e.target.value)}
+            className="pl-5 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
+          />
+        </div>
+        <div className="text-white">
+          <p>Add User:</p>
+        </div>
+        <div className="relative w-full max-w-sm bg-blue-200 mb-1 rounded-3xl">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
             <SearchIcon size={18} />
           </span>
@@ -163,7 +176,11 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
             })}
           </div>
         </div>
-
+        <div>
+          <button className="bg-amber-400 h-10 w-full align-middle">
+            Create Group{" "}
+          </button>
+        </div>
         {loading && <p className="mt-2 text-sm">Loading...</p>}
         {/* {!hasMore && <p className="mt-2 text-sm">No more users</p>} */}
       </div>
@@ -171,4 +188,4 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
   );
 };
 
-export default AddToChatModal;
+export default CreateGroupModal;
