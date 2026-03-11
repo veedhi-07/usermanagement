@@ -33,10 +33,6 @@ const App = () => {
   const dispatch = useDispatch();
   const profile = useSelector((state: RootState) => state.profile);
 
-  // useEffect(() => {
-  //   console.log("PROFILE CHANGED:", profile);
-  // }, [profile?.role, dispatch]);
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {

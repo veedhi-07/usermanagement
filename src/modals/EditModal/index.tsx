@@ -64,7 +64,7 @@ export default function EditUserModal({ user, onClose, onSave }: Props) {
                 position: "top-center",
               });
 
-              onClose(); // close modal after success
+              onClose(); 
             } catch (error) {
               toast.error("Failed to update user");
             }

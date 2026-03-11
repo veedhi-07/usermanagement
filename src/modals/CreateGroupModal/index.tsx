@@ -17,7 +17,7 @@ import Button from "../../components/Button";
 
 type CreateGroupModalProps = {
   onClose: () => void;
-  // onUserSelect: (user: User) => void;
+ 
 };
 export type User = {
   id: string;
@@ -119,7 +119,7 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
         <div className="bg-white relative w-full max-w-sm  mb-1 rounded-3xl h-10">
           <input
             placeholder="Enter Chat Name"
-            // onChange={(e) => setGroupChatName(e.target.value)}
+           
             className="pl-5 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
           />
         </div>
@@ -164,7 +164,7 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  // onClick={() => handleUserSelect(user)}
+                
                   className="flex items-center p-2 border-b cursor-pointer hover:bg-gray-200"
                 >
                   <UserIcon size={18} className="mr-2" />

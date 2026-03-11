@@ -1,5 +1,4 @@
 import { Button, Modal, ModalBody, ModalHeader } from "flowbite-react";
-import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 interface DeleteModalProps {
@@ -8,7 +7,7 @@ interface DeleteModalProps {
   onConfirm: () => void;
 }
 
-// export function Component() {
+
 const DeleteModal = ({ show, onClose, onConfirm }: DeleteModalProps) => {
 
     return (

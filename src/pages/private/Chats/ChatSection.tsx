@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { db } from "../../../components/firebase";
 import {
   collection,
-  getDocs,
   doc,
   query,
   addDoc,
@@ -37,7 +36,6 @@ export type conversation = {
   participant: string;
   lastMessage: string;
   senderId: string;
-  // receiverId: string;
   text: string;
   read: boolean;
 };
@@ -48,7 +46,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const [messages, setMessages] = useState<conversation[]>([]);
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
-  // const [loading] = useState(true);
   const [messageInput, setMessageInput] = useState("");
 
   const auth = getAuth();

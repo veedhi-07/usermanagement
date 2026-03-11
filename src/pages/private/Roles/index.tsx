@@ -36,7 +36,6 @@ const Roles = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  // const [selectedUser, setSelectedUser] = useState<Role | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const itemsPerPage = 7;
