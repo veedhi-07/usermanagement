@@ -8,7 +8,7 @@ interface Props {
   type?: string;
   placeholder: string;
   value: string;
-  onChange: any;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: any;
   error?: string;
   touched?: boolean;
@@ -35,22 +35,24 @@ const FormField = ({
       </Label>
 
       <div className="relative">
-    <TextInput
-      id={id}
-      type={isPassword && showPassword ? "text" : type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      onBlur={onBlur}
-      className={`
+        <TextInput
+          id={id}
+          type={isPassword && showPassword ? "text" : type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          className={`
         [&>div>input]:bg-white!
         [&>div>input]:text-black!
         [&>div>input]:focus:bg-white!
-        ${touched && error
-          ? "[&>div>input]:border-red-500!"
-          : "[&>div>input]:border-gray-300!"}
+        ${
+          touched && error
+            ? "[&>div>input]:border-red-500!"
+            : "[&>div>input]:border-gray-300!"
+        }
       `}
-    />
+        />
 
         {isPassword && (
           <button
@@ -63,9 +65,7 @@ const FormField = ({
         )}
       </div>
 
-      {touched && error && (
-        <p className="text-red-500 text-sm">{error}</p>
-      )}
+      {touched && error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 };

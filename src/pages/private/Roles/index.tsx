@@ -18,7 +18,7 @@ import DeleteModal from "../../../modals/DeleteModal";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Spinner } from "flowbite-react";
+import LoadSpinner from "../../../components/Spinner";
 type Role = {
   id: string;
   name: string;
@@ -134,9 +134,7 @@ const Roles = () => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="xl" aria-label="Loading users..." />
-      </div>
+     <LoadSpinner/>
     );
   return (
     <>

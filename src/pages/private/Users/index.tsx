@@ -23,7 +23,7 @@ import EditUserModal from "../../../../src/modals/EditModal";
 import UserPagination from "../../../components/Pagination/userPagination";
 import AddUserModal from "../../../modals/AddUser";
 import DeleteModal from "../../../modals/DeleteModal";
-import { Spinner } from "flowbite-react";
+import LoadSpinner from "../../../components/Spinner";
 import Can from "../../../components/Can";
 import { usePermission } from "../../../hooks/usePermission";
 import { ToastContainer } from "react-toastify";
@@ -167,12 +167,7 @@ const Users = () => {
     });
   };
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="xl" aria-label="Loading users..." />
-      </div>
-    );
+  if (loading) return <LoadSpinner />;
 
   return (
     <>

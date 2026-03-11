@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../../components/firebase";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Button from "../../../components/Button";
 
 type Module = "user" | "chat" | "role" | "campaign";
 type Action = "view" | "add" | "edit" | "delete";
@@ -90,15 +91,14 @@ const AddRole = () => {
           createdAt: Timestamp.now(),
         });
       }
-     navigate("/roles", {
-  state: {
-    message: isEditMode
-      ? "Role updated successfully!"
-      : "Role created successfully!",
-  },
-});
-    } 
-    catch (error) {
+      navigate("/roles", {
+        state: {
+          message: isEditMode
+            ? "Role updated successfully!"
+            : "Role created successfully!",
+        },
+      });
+    } catch (error) {
       console.error("Error saving role:", error);
     }
   };
@@ -158,19 +158,9 @@ const AddRole = () => {
 
           {/* Buttons */}
           <div className="flex justify-end gap-4 mt-6">
-            <button
-              onClick={() => navigate("/roles")}
-              className="bg-gray-500 text-white px-4 py-2 rounded-lg"
-            >
-              Cancel
-            </button>
+            <Button onClick={() => navigate("/roles")}>Cancel</Button>
 
-            <button
-              onClick={handleSave}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-            >
-              Save
-            </button>
+            <Button onClick={handleSave}>Save</Button>
           </div>
         </div>
       </div>

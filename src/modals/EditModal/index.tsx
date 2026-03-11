@@ -6,6 +6,7 @@ import { getDocs, collection } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Button from "../../components/Button";
 type User = {
   id: string;
   email: string;
@@ -143,12 +144,10 @@ export default function EditUserModal({ user, onClose, onSave }: Props) {
                   Cancel
                 </button>
 
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-gray-600! text-white"
-                >
+                <Button
+                  type="submit" >
                   Save
-                </button>
+                </Button>
               </div>
             </Form>
           )}

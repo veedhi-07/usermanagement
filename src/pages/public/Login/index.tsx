@@ -1,6 +1,6 @@
 import AuthLayout from "../../../components/auth-layout";
-import { FormField, loginFields } from "../../../components/form-field";
-import { Button, Modal, Label, TextInput } from "flowbite-react";
+import { FormField } from "../../../components/form-field";
+import { Modal, Label, TextInput } from "flowbite-react";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
 import { doc, getDoc } from "firebase/firestore";
@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import Button from "../../../components/Button";
 
 const Login = () => {
   const initialValues = { email: "", password: "" };
@@ -115,7 +116,7 @@ const Login = () => {
             isSubmitting,
           }) => (
             <Form className="flex flex-col gap-5">
-              {loginFields.map((field) => (
+              {/* {loginFields.map((field) => (
                 <FormField
                   key={field.id}
                   {...field}
@@ -125,13 +126,34 @@ const Login = () => {
                   error={errors[field.id as keyof typeof errors]}
                   touched={touched[field.id as keyof typeof touched]}
                 />
-              ))}
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-black! cursor-pointer hover:bg-gray-900! text-white rounded-xl py-3"
-              >
+              ))} */}
+              <div>
+                <div>
+                  <FormField
+                    id="email"
+                    label="Email"
+                    placeholder="name@email.com"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors.email}
+                    touched={touched.email}
+                  />
+                </div>
+                <div>
+                  <FormField
+                    id="password"
+                    label="Password"
+                    placeholder="Enter Password"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors.password}
+                    touched={touched.password}
+                  />
+                </div>
+              </div>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Logging in..." : "Login"}
               </Button>
 
@@ -184,15 +206,12 @@ const Login = () => {
 
           <div className="flex justify-end gap-2 mt-4">
             <Button
-              color="light"
               onClick={handleForgotPassword}
               disabled={!resetEmail || loadingReset}
             >
               {loadingReset ? "Sending..." : "Send Reset Link"}
             </Button>
-            <Button color="gray" onClick={() => setShowForgotModal(false)}>
-              Cancel
-            </Button>
+            <Button onClick={() => setShowForgotModal(false)}>Cancel</Button>
           </div>
         </div>
       </Modal>

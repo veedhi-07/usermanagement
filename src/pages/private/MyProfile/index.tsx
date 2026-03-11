@@ -3,18 +3,19 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setProfile } from "../../../redux/reducer/profileSlice";
 import userService from "../../../services/userService";
 import { getAuth } from "firebase/auth";
-import { Card, Avatar, Button } from "flowbite-react";
+import { Card, Avatar } from "flowbite-react";
 import type { ProfileData } from "../../../services/userService";
 import Sidebar from "../../../components/sidebar/index";
 import Navbar from "../../../components/navbar/index";
 import FormField from "../../../components/form-field/FormField";
-import { Spinner } from "flowbite-react";
+import LoadSpinner from "../../../components/Spinner";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { db } from "../../../components/firebase";
 import { getDocs, collection } from "firebase/firestore";
+import Button from "../../../components/Button";
 
 const MyProfile = () => {
   const dispatch = useAppDispatch();
@@ -86,9 +87,7 @@ const MyProfile = () => {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="xl" aria-label="Loading users..." />
-      </div>
+    <LoadSpinner/>
     );
 
   return (
@@ -103,12 +102,7 @@ const MyProfile = () => {
             {/* PROFILE HEADER */}
             <Card className="mb-6 bg-white! shadow-lg rounded-xl border-none">
               <div className="flex items-center gap-5">
-                <Avatar
-                  img=""
-                  alt="Avatar"
-                  rounded
-                  size="lg"
-                />
+                <Avatar img="" alt="Avatar" rounded size="lg" />
                 <div>
                   <h2 className="text-xl font-bold">
                     {profile.firstName} {profile.lastName}
@@ -126,10 +120,7 @@ const MyProfile = () => {
                 </h3>
 
                 {!editable && (
-                  <Button
-                    className="bg-blue-600 cursor-pointer hover:bg-gray-600! text-white"
-                    onClick={() => setEditable(true)}
-                  >
+                  <Button type="submit" onClick={() => setEditable(true)}>
                     Edit
                   </Button>
                 )}
@@ -250,12 +241,7 @@ const MyProfile = () => {
 
                     {editable && (
                       <div className="mt-6">
-                        <Button
-                          type="submit"
-                          className="bg-blue-600 cursor-pointer hover:bg-gray-600! text-white"
-                        >
-                          Save
-                        </Button>
+                        <Button type="submit">Save</Button>
                       </div>
                     )}
                   </Form>

@@ -1,6 +1,5 @@
 import AuthLayout from "../../../components/auth-layout";
-import { FormField, signupFields } from "../../../components/form-field";
-import { Button } from "flowbite-react";
+import { FormField } from "../../../components/form-field";
 import signupImage from "../../../assets/signup.png";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +12,7 @@ import { auth, db } from "../../../components/firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import Button from "../../../components/Button";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -22,8 +22,6 @@ const Signup = () => {
     email: "",
     password: "",
   };
-
-  // console.log("Current user:", auth.currentUser);
 
   const handleRegister = async (
     values: typeof initialValues,
@@ -45,9 +43,6 @@ const Signup = () => {
         role: "user",
         createdAt: serverTimestamp(),
       });
-
-      // await setDoc(doc(db,"chat", user.uid ),{
-      // });
 
       toast.success("User Registered Successfully!", {
         position: "top-center",
@@ -85,8 +80,7 @@ const Signup = () => {
             isSubmitting,
           }) => (
             <Form className="flex flex-col gap-5">
-              {signupFields.map((field) => (
-                <FormField
+              {/* <FormField
                   key={field.id}
                   {...field}
                   value={values[field.id as keyof typeof values] ?? ""}
@@ -94,18 +88,73 @@ const Signup = () => {
                   onBlur={handleBlur}
                   error={errors[field.id as keyof typeof errors]}
                   touched={touched[field.id as keyof typeof touched]}
+                /> */}
+              <div>
+                <FormField
+                  id="firstname"
+                  label="First Name"
+                  placeholder="Enter first name"
+                  value={values.firstname}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.firstname}
+                  touched={touched.firstname}
                 />
-              ))}
+              </div>
+              <div>
+                <FormField
+                  id="lastname"
+                  label="Last Name"
+                  placeholder="Enter last name"
+                  value={values.lastname}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.lastname}
+                  touched={touched.lastname}
+                />
+              </div>
+              <div>
+                <FormField
+                  id="email"
+                  label="Email"
+                  placeholder="name@email.com"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.email}
+                  touched={touched.email}
+                />
+              </div>
+              <div>
+                <FormField
+                  id="password"
+                  label="Password"
+                  placeholder="Enter Password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.password}
+                  touched={touched.password}
+                />
+              </div>
+              <div>
+                <FormField
+                  id="cpassword"
+                  label="Confirm Password"
+                  placeholder="Confirm password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={errors.password}
+                  touched={touched.password}
+                />
+              </div>
               <div className="flex flex-row">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-black! cursor-pointer hover:bg-gray-900! text-white rounded-xl py-3 w-48"
-                >
+                <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Signing Up..." : "Sign Up"}
                 </Button>
 
-                <div className="ml-3">
+                <div className="ml-3 pt-3">
                   <p className="text-black text-sm">
                     Don’t have an account?{" "}
                     <Link

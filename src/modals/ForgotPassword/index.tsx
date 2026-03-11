@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Modal, Button, Label, TextInput } from "flowbite-react";
+import { Modal, Label, TextInput } from "flowbite-react";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
-
+import Button from "../../components/Button";
 interface ForgotPasswordModalProps {
   show: boolean;
   onClose: () => void;
@@ -56,13 +56,12 @@ export default function ForgotPasswordModal({
 
         <div className="flex justify-end gap-2 mt-4">
           <Button
-            color="light"
             onClick={handleReset}
             disabled={!email || loading}
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </Button>
-          <Button color="gray" onClick={onClose}>
+          <Button  onClick={onClose}>
             Cancel
           </Button>
         </div>

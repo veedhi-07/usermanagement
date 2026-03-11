@@ -13,10 +13,11 @@ import type { DocumentData } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { X, User as UserIcon, SearchIcon } from "lucide-react";
+import Button from "../../components/Button";
 
 type CreateGroupModalProps = {
   onClose: () => void;
-  onUserSelect: (user: User) => void;
+  // onUserSelect: (user: User) => void;
 };
 export type User = {
   id: string;
@@ -25,14 +26,14 @@ export type User = {
   role: string;
 };
 
-const CreateGroupModal = ({ onClose, onUserSelect }: CreateGroupModalProps) => {
+const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [groupChatName, setGroupChatName] = useState();
-  const [selectedUser, setSelectedUser] = useState();
+  const [selectedUser, setSelectedUser] = useState<User[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
   const parentRef = useRef<HTMLDivElement>(null);
@@ -79,7 +80,6 @@ const CreateGroupModal = ({ onClose, onUserSelect }: CreateGroupModalProps) => {
 
     setLoading(false);
   };
-
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -119,12 +119,12 @@ const CreateGroupModal = ({ onClose, onUserSelect }: CreateGroupModalProps) => {
         <div className="bg-white relative w-full max-w-sm  mb-1 rounded-3xl h-10">
           <input
             placeholder="Enter Chat Name"
-            onChange={(e) => setGroupChatName(e.target.value)}
+            // onChange={(e) => setGroupChatName(e.target.value)}
             className="pl-5 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
           />
         </div>
-        <div className="text-white">
-          <p>Add User:</p>
+        <div className="text-white pt-1">
+          <p>Add Members:</p>
         </div>
         <div className="relative w-full max-w-sm bg-blue-200 mb-1 rounded-3xl">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
@@ -164,7 +164,7 @@ const CreateGroupModal = ({ onClose, onUserSelect }: CreateGroupModalProps) => {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                  onClick={() => onUserSelect(user)}
+                  // onClick={() => handleUserSelect(user)}
                   className="flex items-center p-2 border-b cursor-pointer hover:bg-gray-200"
                 >
                   <UserIcon size={18} className="mr-2" />
@@ -177,12 +177,12 @@ const CreateGroupModal = ({ onClose, onUserSelect }: CreateGroupModalProps) => {
           </div>
         </div>
         <div>
-          <button className="bg-amber-400 h-10 w-full align-middle">
+          <Button>
             Create Group{" "}
-          </button>
+          </Button>
         </div>
         {loading && <p className="mt-2 text-sm">Loading...</p>}
-        {/* {!hasMore && <p className="mt-2 text-sm">No more users</p>} */}
+        {!hasMore && <p className="mt-2 text-sm">No more users</p>}
       </div>
     </div>
   );

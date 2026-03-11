@@ -17,7 +17,7 @@ import {
 } from "../src/redux/reducer/permissionSlice";
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { Spinner } from "flowbite-react";
+import LoadSpinner from "./components/Spinner";
 
 const Login = React.lazy(() => import("./pages/public/Login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
@@ -83,9 +83,7 @@ const App = () => {
   }, [profile?.role, dispatch]);
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Spinner size="xl" aria-label="Loading users..." />
-      </div>
+        <LoadSpinner/>
     );
   }
   return (

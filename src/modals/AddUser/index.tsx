@@ -1,5 +1,5 @@
 import { FormField, signupFields } from "../../components/form-field";
-import { Button } from "flowbite-react";
+import Button from "../../components/Button";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -153,9 +153,7 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
                   {/* Buttons */}
                   <div className="flex justify-end gap-3">
                     <Button
-                      type="button"
                       onClick={onClose}
-                      className="bg-blue-600! hover:bg-gray-600! text-white py-3"
                     >
                       Cancel
                     </Button>
@@ -163,7 +161,6 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-blue-600! hover:bg-gray-600! text-white py-3"
                     >
                       {isSubmitting ? "Adding User..." : "Add User"}
                     </Button>

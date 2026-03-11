@@ -2,21 +2,22 @@ import { useState, useEffect } from "react";
 import { db } from "../../../components/firebase";
 import {
   collection,
-  // getDocs,
+  getDocs,
   doc,
+  query,
   addDoc,
   updateDoc,
-  // setDoc,
-  // updateDoc,
+  orderBy,
+  onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { PlusIcon, ChevronDown } from "lucide-react";
 import AddToChatModal from "../../../modals/AddToChat";
 import CreateGroupModal from "../../../modals/CreateGroupModal";
 import { Timestamp } from "firebase/firestore";
-// import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
-// import Input from "../../../components/form/input/InputField";
+import Button from "../../../components/Button";
+
 
 type Props = {
   sidebarOpen: boolean;
@@ -109,37 +110,40 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       console.log("Error Sending Message", error);
     }
   };
-  //Used when new user is selected to clear the messages
+  // Used when new user is selected to clear the messages
   useEffect(() => {
-    setMessages([]);
+    // setMessages([]);
+    setConversationId(conversationId);
   }, [selectedUser]);
 
   useEffect(() => {
-    if (!conversationId) {
-      return;
-    }
-  });
-  // let q;
-  //  q = query()
-  //     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-  //       if (user) {
-  //         try {
-  //           const querySnapshot = await getDocs(collection(db, "chat"));
+    if (!conversationId) return;
 
-  //           const data: conversation[] = querySnapshot.docs.map((doc) => ({
-  //             id: doc.id,
-  //             ...(doc.data() as Omit<conversation, "id">),
-  //           }));
-  //           setMessages(data);
-  //         } catch (error) {
-  //           console.log("Error Fetching Data", error);
-  //         }
-  //       }
-  //     });
+    const q = query(
+      collection(db, "conversation", conversationId, "messages"),
+      orderBy("createdAt", "asc"),
+    );
 
-  //   return () => unsubscribe();
-  // }, []);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<conversation, "id">),
+      }));
 
+      setMessages(msgs);
+    });
+    return () => unsubscribe();
+  }, [conversationId]);
+
+  //       const snapshot = onSnapshot((q,snapshot)=> {
+  //             const querySnapshot = getDocs(collection(db, "chat"));
+  //             const messages: conversation[] = querySnapshot.docs.map((doc) => ({
+  //               id: doc.id,
+  //               ...(doc.messages() as any),
+  //             }));
+  //             setMessages(messages);
+  //         })
+  // --------------------------------------------------------------
   // if (loading)
   //   return (
   //     <div className="flex items-center justify-center h-screen">
@@ -234,13 +238,13 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               placeholder="Type a message"
               type="text"
             />
-            <button
+            <Button
               className="bg-gray-600 text-white px-6 py-2 rounded-lg"
               type="submit"
               onClick={handleSendMessage}
             >
               Send
-            </button>
+            </Button>
           </div>
         )}
       </div>
