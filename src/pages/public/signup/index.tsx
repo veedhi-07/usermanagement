@@ -78,6 +78,7 @@ const Signup = () => {
             errors,
             touched,
             isSubmitting,
+            setFieldValue,
           }) => (
             <Form className="flex flex-col gap-5">
               {/* <FormField

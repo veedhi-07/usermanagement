@@ -12,6 +12,7 @@ interface Props {
   onBlur: any;
   error?: string;
   touched?: boolean;
+  disabled?: boolean;
 }
 
 const FormField = ({
@@ -24,6 +25,7 @@ const FormField = ({
   onBlur,
   error,
   touched,
+  disabled,
 }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -41,6 +43,7 @@ const FormField = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          disabled={disabled}
           onBlur={onBlur}
           className={`
         [&>div>input]:bg-white!

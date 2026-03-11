@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../../components/firebase";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FormField } from "../../../components/form-field";
 import Button from "../../../components/Button";
 
 type Module = "user" | "chat" | "role" | "campaign";
@@ -113,15 +114,31 @@ const AddRole = () => {
           </h2>
 
           {/* Role Name */}
-          <input
+          {/* <FormField
+            label="Role Name"
+            id="roleName"
+            type="text"
+            placeholder="Enter Role Name"
+            value={roleName}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setRoleName(e.target.value)
+            }
+            disabled={isEditMode}
+          /> */}
+          <h2 className="text-2xl font-bold mb-6">
+            {isEditMode ? "Edit Role" : "Add Role"}
+          </h2>
+
+          <FormField
+            id="roleName"
+            label="Role Name"
             type="text"
             placeholder="Enter Role Name"
             value={roleName}
             onChange={(e) => setRoleName(e.target.value)}
+            onBlur={() => {}}
             disabled={isEditMode}
-            className="border p-3 mb-6 w-full rounded-lg"
           />
-
           {/* Permissions Table */}
           <table className="w-full border-collapse text-center">
             <thead className="bg-gray-300">

@@ -1,6 +1,6 @@
 import AuthLayout from "../../../components/auth-layout";
 import { FormField } from "../../../components/form-field";
-import { Modal, Label, TextInput } from "flowbite-react";
+import { Modal, Label } from "flowbite-react";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
 import { doc, getDoc } from "firebase/firestore";
@@ -193,14 +193,16 @@ const Login = () => {
 
           <div>
             <Label htmlFor="resetEmail">Email</Label>
-            <TextInput
+            <FormField
               id="resetEmail"
+              label="Email"
               type="email"
               placeholder="Enter your email"
               value={resetEmail}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setResetEmail(e.target.value)
               }
+              onBlur={() => {}}
             />
           </div>
 

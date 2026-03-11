@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Modal, Label, TextInput } from "flowbite-react";
+import { Modal } from "flowbite-react";
+import { FormField } from "../../components/form-field";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
+import { Formik, Form } from "formik";
+import type { FormikHelpers } from "formik";
 import Button from "../../components/Button";
 interface ForgotPasswordModalProps {
   show: boolean;
@@ -35,37 +38,46 @@ export default function ForgotPasswordModal({
   };
 
   return (
-    <Modal 
-    show={show} 
-    size="md" 
-    onClose={onClose}>
-      {/* Modal content */}
-      <div className="p-6 space-y-4  text-white! dark:text-white!">
-        <h2 className="text-xl font-bold text-white!">Forgot Password</h2>
-        <p >Enter your registered email to receive a password reset link.</p>
-        <div>
-          <Label htmlFor="resetEmail">Email</Label>
-          <TextInput
-            id="resetEmail"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+    <>
+      <Modal show={show} size="md" onClose={onClose}>
+        {/* Modal content */}
+        <div className="p-6 space-y-4  text-white! dark:text-white!">
+          <h2 className="text-xl font-bold text-white!">Forgot Password</h2>
+          <p>Enter your registered email to receive a password reset link.</p>
+          <div>
+            <Formik initialValues={{ email: "" }} onSubmit={handleReset}>
+              {({
+                values,
+                handleChange,
+                handleBlur,
+                errors,
+                touched,
+                isSubmitting,
+              }) => (
+                <Form>
+                  <FormField
+                    id="email"
+                    label="Email"
+                    placeholder="name@email.com"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={errors.email}
+                    touched={touched.email}
+                  />
+                </Form>
+              )}
+            </Formik>
+          </div>
 
-        <div className="flex justify-end gap-2 mt-4">
-          <Button
-            onClick={handleReset}
-            disabled={!email || loading}
-          >
-            {loading ? "Sending..." : "Send Reset Link"}
-          </Button>
-          <Button  onClick={onClose}>
-            Cancel
-          </Button>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button onClick={handleReset} disabled={!email || loading}>
+              {loading ? "Sending..." : "Send Reset Link"}
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+    </>
   );
 }
