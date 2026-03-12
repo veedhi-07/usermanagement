@@ -4,7 +4,6 @@ import { FormField } from "../../components/form-field";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
 import { Formik, Form } from "formik";
-import type { FormikHelpers } from "formik";
 import Button from "../../components/Button";
 interface ForgotPasswordModalProps {
   show: boolean;
@@ -28,7 +27,7 @@ export default function ForgotPasswordModal({
       toast.success("Password reset email sent!", { position: "top-center" });
       setEmail("");
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error("Failed to send reset email", {
         position: "top-center",
       });
@@ -46,14 +45,7 @@ export default function ForgotPasswordModal({
           <p>Enter your registered email to receive a password reset link.</p>
           <div>
             <Formik initialValues={{ email: "" }} onSubmit={handleReset}>
-              {({
-                values,
-                handleChange,
-                handleBlur,
-                errors,
-                touched,
-                isSubmitting,
-              }) => (
+              {({ values, handleChange, handleBlur, errors, touched }) => (
                 <Form>
                   <FormField
                     id="email"

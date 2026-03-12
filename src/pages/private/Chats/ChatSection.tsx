@@ -17,7 +17,6 @@ import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
 import Button from "../../../components/Button";
 
-
 type Props = {
   sidebarOpen: boolean;
 };
@@ -36,14 +35,23 @@ export type conversation = {
   participant: string;
   lastMessage: string;
   senderId: string;
+  receiverId: string;
   text: string;
   read: boolean;
 };
 
+interface Message {
+  id: string;
+  text: string;
+  senderId: string;
+  receiverId: string;
+  type: string;
+  createdAt: Timestamp;
+}
 const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<conversation[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
@@ -100,7 +108,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         {
           id: msgRef.id,
           ...newMessage,
-        } as any,
+        },
       ]);
       setMessageInput("");
     } catch (error) {

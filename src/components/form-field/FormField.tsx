@@ -9,7 +9,7 @@ interface Props {
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur: any;
+  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
   error?: string;
   touched?: boolean;
   disabled?: boolean;

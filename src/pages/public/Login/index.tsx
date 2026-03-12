@@ -90,7 +90,7 @@ const Login = () => {
       toast.success("Password reset email sent!", { position: "top-center" });
       setResetEmail("");
       setShowForgotModal(false);
-    } catch (error: any) {
+    } catch (error:any) {
       toast.error(error.message || "Failed to send reset email", {
         position: "top-center",
       });

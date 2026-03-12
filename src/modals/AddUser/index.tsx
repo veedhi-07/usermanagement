@@ -1,4 +1,4 @@
-import { FormField, signupFields } from "../../components/form-field";
+import { FormField } from "../../components/form-field";
 import Button from "../../components/Button";
 import { X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -32,6 +32,7 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
     email: "",
     password: "",
     role: "",
+    cpassword: "",
   };
 
   const handleRegister = async (
@@ -116,7 +117,7 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
                 setFieldValue,
               }) => (
                 <Form className="flex flex-col gap-5">
-                  {signupFields.map((field) => (
+                  {/* {signupFields.map((field) => (
                     <FormField
                       key={field.id}
                       {...field}
@@ -126,7 +127,69 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
                       error={errors[field.id as keyof typeof errors]}
                       touched={touched[field.id as keyof typeof touched]}
                     />
-                  ))}
+                  ))} */}
+                  <div>
+                    <div>
+                      <FormField
+                        id="firstname"
+                        label="First Name"
+                        placeholder="Enter first name"
+                        value={values.firstname}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.firstname}
+                        touched={touched.firstname}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        id="lastname"
+                        label="Last Name"
+                        placeholder="Enter last name"
+                        value={values.lastname}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.lastname}
+                        touched={touched.lastname}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        id="email"
+                        label="Email"
+                        placeholder="name@email.com"
+                        value={values.email}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.email}
+                        touched={touched.email}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        id="password"
+                        label="Password"
+                        placeholder="Enter Password"
+                        value={values.password}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.password}
+                        touched={touched.password}
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        id="cpassword"
+                        label="Confirm Password"
+                        placeholder="Confirm password"
+                        value={values.cpassword}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={errors.password}
+                        touched={touched.password}
+                      />
+                    </div>
+                  </div>
                   <div>
                     <label className="text-sm text-gray-600">Role</label>
                     <select
@@ -152,16 +215,9 @@ const AddUserModal = ({ onClose, onSave }: AddUserModalProps) => {
 
                   {/* Buttons */}
                   <div className="flex justify-end gap-3">
-                    <Button
-                      onClick={onClose}
-                    >
-                      Cancel
-                    </Button>
+                    <Button onClick={onClose}>Cancel</Button>
 
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
+                    <Button type="submit" disabled={isSubmitting}>
                       {isSubmitting ? "Adding User..." : "Add User"}
                     </Button>
                   </div>

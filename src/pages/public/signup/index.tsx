@@ -21,6 +21,7 @@ const Signup = () => {
     lastname: "",
     email: "",
     password: "",
+    cpassword: "",
   };
 
   const handleRegister = async (
@@ -78,7 +79,6 @@ const Signup = () => {
             errors,
             touched,
             isSubmitting,
-            setFieldValue,
           }) => (
             <Form className="flex flex-col gap-5">
               {/* <FormField
@@ -144,7 +144,7 @@ const Signup = () => {
                     id="cpassword"
                     label="Confirm Password"
                     placeholder="Confirm password"
-                    value={values.password}
+                    value={values.cpassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     error={errors.password}
@@ -159,7 +159,7 @@ const Signup = () => {
 
                 <div className="ml-3 pt-3">
                   <p className="text-black text-sm">
-                    Don’t have an account?{" "}
+                    Already have an account?
                     <Link
                       to="/login"
                       className="font-semibold underline hover:text-[#FF859B]"
