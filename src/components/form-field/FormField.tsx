@@ -1,5 +1,6 @@
 import { Label, TextInput } from "flowbite-react";
 import { useState } from "react";
+import type { FC } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
@@ -15,7 +16,13 @@ interface Props {
   disabled?: boolean;
 }
 
-const FormField = ({
+type NativeFormProps = Omit<
+  React.FormHTMLAttributes<HTMLFormElement>,
+  keyof Props
+>;
+type FormComponentProps = Props & NativeFormProps;
+
+const FormField: FC<FormComponentProps> = ({
   id,
   label,
   type = "text",
@@ -26,6 +33,7 @@ const FormField = ({
   error,
   touched,
   disabled,
+  ...rest
 }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -45,6 +53,7 @@ const FormField = ({
           onChange={onChange}
           disabled={disabled}
           onBlur={onBlur}
+          {...rest}
           className={`
         [&>div>input]:bg-white!
         [&>div>input]:text-black!

@@ -223,7 +223,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
           )}
           {messages.map((msg) => (
             <div
-              key={msg.id}
               className={`max-w-xs p-3 rounded-lg ${
                 msg.senderId === currentUser?.uid
                   ? "bg-blue-500 text-white ml-auto"
