@@ -1,4 +1,4 @@
-import { db } from "../../components/firebase";
+import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {
   collection,
@@ -13,11 +13,11 @@ import type { DocumentData } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { X, User as UserIcon, SearchIcon } from "lucide-react";
-import Button from "../../components/Button";
+import Button from "../../components/button";
+import FormField from "../../components/form-field/formfield";
 
 type CreateGroupModalProps = {
   onClose: () => void;
- 
 };
 export type User = {
   id: string;
@@ -117,9 +117,9 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
           <X size={25} />
         </button>
         <div className="bg-white relative w-full max-w-sm  mb-1 rounded-3xl h-10">
-          <input
+          <FormField
+            id=""
             placeholder="Enter Chat Name"
-           
             className="pl-5 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
           />
         </div>
@@ -130,7 +130,8 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
             <SearchIcon size={18} />
           </span>
-          <input
+          <FormField
+            id=""
             type="text"
             placeholder="Search"
             value={searchQuery}
@@ -164,7 +165,6 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
-                
                   className="flex items-center p-2 border-b cursor-pointer hover:bg-gray-200"
                 >
                   <UserIcon size={18} className="mr-2" />
@@ -177,9 +177,7 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
           </div>
         </div>
         <div>
-          <Button>
-            Create Group{" "}
-          </Button>
+          <Button>Create Group </Button>
         </div>
         {loading && <p className="mt-2 text-sm">Loading...</p>}
         {!hasMore && <p className="mt-2 text-sm">No more users</p>}

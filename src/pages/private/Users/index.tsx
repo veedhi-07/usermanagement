@@ -4,11 +4,10 @@ import {
   getDocs,
   deleteDoc,
   doc,
-  updateDoc,
   Timestamp,
   addDoc,
 } from "firebase/firestore";
-import { db } from "../../../components/firebase";
+import { db } from "../../../services/firebase";
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
 import {
@@ -18,15 +17,15 @@ import {
   SearchIcon,
   PlusSquare,
 } from "lucide-react";
+import CommonModal from "../../../modals/commonmodal";
 import { getAuth } from "firebase/auth";
-import EditUserModal from "../../../../src/modals/EditModal";
-import UserPagination from "../../../components/Pagination/userPagination";
-import AddUserModal from "../../../modals/AddUser";
-import DeleteModal from "../../../modals/DeleteModal";
-import LoadSpinner from "../../../components/Spinner";
+import UserPagination from "../../../components/pagination";
+import DeleteModal from "../../../components/deletemodal";
+import LoadSpinner from "../../../components/spinner";
 import Can from "../../../components/Can";
 import { usePermission } from "../../../hooks/usePermission";
 import { ToastContainer } from "react-toastify";
+import FormField from "../../../components/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
 
 export type User = {
@@ -96,21 +95,12 @@ const Users = () => {
     }
   };
   //Save
-  const handleSave = async (values: Omit<User, "id">) => {
-    if (!selectedUser) return;
+  const handleSave = (updatedUser: User) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+    );
 
-    try {
-      const userRef = doc(db, "users", selectedUser.id);
-      await updateDoc(userRef, values);
-
-      setUsers((prev) =>
-        prev.map((u) => (u.id === selectedUser.id ? { ...u, ...values } : u)),
-      );
-
-      setSelectedUser(null);
-    } catch (error) {
-      console.error("Update failed:", error);
-    }
+    setSelectedUser(null);
   };
   //  Add User
   const handleAddUser = async (values: Omit<User, "id">) => {
@@ -187,8 +177,9 @@ const Users = () => {
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                   <SearchIcon size={18} />
                 </span>
-                <input
+                <FormField
                   type="text"
+                  id=""
                   placeholder="Search by name..."
                   value={searchQuery}
                   onChange={(e) => {
@@ -287,18 +278,25 @@ const Users = () => {
               onPageChange={setCurrentPage}
             />
 
-            {selectedUser && (
-              <EditUserModal
-                user={selectedUser}
-                onClose={() => setSelectedUser(null)}
-                onSave={handleSave}
+            {/* Add User */}
+            {/* Add User */}
+            {showAddModal && (
+              <CommonModal
+                isOpen={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                mode="add"
+                onSave={(newUser) => setUsers((prev) => [...prev, newUser])}
               />
             )}
 
-            {showAddModal && (
-              <AddUserModal
-                onClose={() => setShowAddModal(false)}
-                onSave={(newUser) => setUsers((prev) => [...prev, newUser])}
+            {/* Edit User */}
+            {selectedUser && (
+              <CommonModal
+                isOpen={selectedUser !== null}
+                onClose={() => setSelectedUser(null)}
+                mode="edit"
+                user={selectedUser}
+                onSave={handleSave}
               />
             )}
             {showDeleteModal && (

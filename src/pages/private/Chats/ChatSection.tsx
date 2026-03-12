@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { db } from "../../../components/firebase";
+import { db } from "../../../services/firebase";
 import {
   collection,
   doc,
@@ -11,11 +11,11 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { PlusIcon, ChevronDown } from "lucide-react";
-import AddToChatModal from "../../../modals/AddToChat";
-import CreateGroupModal from "../../../modals/CreateGroupModal";
+import AddToChatModal from "../../../modals/addtochat";
+import CreateGroupModal from "../../../modals/creategroupmodal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
-import Button from "../../../components/Button";
+import Button from "../../../components/button";
 
 type Props = {
   sidebarOpen: boolean;
@@ -223,6 +223,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
           )}
           {messages.map((msg) => (
             <div
+              key={msg.id}
               className={`max-w-xs p-3 rounded-lg ${
                 msg.senderId === currentUser?.uid
                   ? "bg-blue-500 text-white ml-auto"

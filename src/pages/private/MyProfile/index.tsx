@@ -7,15 +7,15 @@ import { Card, Avatar } from "flowbite-react";
 import type { ProfileData } from "../../../services/userService";
 import Sidebar from "../../../components/sidebar/index";
 import Navbar from "../../../components/navbar/index";
-import FormField from "../../../components/form-field/FormField";
-import LoadSpinner from "../../../components/Spinner";
+import FormField from "../../../components/form-field/formfield"
+import LoadSpinner from "../../../components/spinner";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { db } from "../../../components/firebase";
+import { db } from "../../../services/firebase";
 import { getDocs, collection } from "firebase/firestore";
-import Button from "../../../components/Button";
+import Button from "../../../components/button";
 
 const MyProfile = () => {
   const dispatch = useAppDispatch();
@@ -85,10 +85,7 @@ const MyProfile = () => {
     loadProfile();
   }, [dispatch]);
 
-  if (loading)
-    return (
-    <LoadSpinner/>
-    );
+  if (loading) return <LoadSpinner />;
 
   return (
     <>

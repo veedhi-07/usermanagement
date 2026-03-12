@@ -1,4 +1,4 @@
-import { db } from "../../components/firebase";
+import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {
   collection,
@@ -13,6 +13,7 @@ import type { DocumentData } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { X, User as UserIcon, SearchIcon } from "lucide-react";
+import FormField from "../../components/form-field/formfield";
 
 type AddToChatModalProps = {
   onClose: () => void;
@@ -117,7 +118,8 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
             <SearchIcon size={18} />
           </span>
-          <input
+          <FormField
+          id=""
             type="text"
             placeholder="Search"
             value={searchQuery}

@@ -11,7 +11,7 @@ import {
 } from "flowbite-react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
-import { auth } from "../../components/firebase/index";
+import { auth } from "../../services/firebase/index";
 import { useNavigate } from "react-router-dom";
 
 interface NavProps {

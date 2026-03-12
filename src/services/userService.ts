@@ -1,7 +1,6 @@
-
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import type { DocumentData, UpdateData } from "firebase/firestore";
-import { db } from "../components/firebase";
+import { db } from "./firebase";
 
 export interface ProfileData {
   firstName: string;
@@ -12,7 +11,10 @@ export interface ProfileData {
 }
 
 // Fetch user profile from Firestore
- export const fetchUserProfile = async (uid: string, email: string): Promise<ProfileData> => {
+export const fetchUserProfile = async (
+  uid: string,
+  email: string,
+): Promise<ProfileData> => {
   const userRef = doc(db, "users", uid);
   const userSnap = await getDoc(userRef);
 
@@ -20,7 +22,7 @@ export interface ProfileData {
     return userSnap.data() as ProfileData;
   } else {
     // Return default values if user document does not exist
-    return { firstName: "", lastName: "", email, phone: "", role:""};
+    return { firstName: "", lastName: "", email, phone: "", role: "" };
   }
 };
 

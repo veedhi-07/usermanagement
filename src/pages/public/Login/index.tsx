@@ -1,27 +1,28 @@
 import AuthLayout from "../../../components/auth-layout";
-import { FormField } from "../../../components/form-field";
+import FormField from "../../../components/form-field/formfield";
 import { Modal, Label } from "flowbite-react";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../../components/firebase";
+import { db } from "../../../services/firebase";
 import { setPermissions } from "../../../redux/reducer/permissionSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../components/validation";
+import ForgotPasswordModal from "../../../components/forgotpassword";
 import {
   signInWithEmailAndPassword,
   getAuth,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { auth } from "../../../components/firebase";
+import { auth } from "../../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import type { ChangeEvent } from "react";
-import Button from "../../../components/Button";
+import Button from "../../../components/button";
 
 const Login = () => {
   const initialValues = { email: "", password: "" };
@@ -79,25 +80,25 @@ const Login = () => {
     }
   };
 
-  // Handle Forgot Password
-  const handleForgotPassword = async () => {
-    if (!resetEmail) return;
-    setLoadingReset(true);
+  // // Handle Forgot Password
+  // const handleForgotPassword = async () => {
+  //   if (!resetEmail) return;
+  //   setLoadingReset(true);
 
-    try {
-      const authInstance = getAuth();
-      await sendPasswordResetEmail(authInstance, resetEmail);
-      toast.success("Password reset email sent!", { position: "top-center" });
-      setResetEmail("");
-      setShowForgotModal(false);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to send reset email", {
-        position: "top-center",
-      });
-    } finally {
-      setLoadingReset(false);
-    }
-  };
+  //   try {
+  //     const authInstance = getAuth();
+  //     await sendPasswordResetEmail(authInstance, resetEmail);
+  //     toast.success("Password reset email sent!", { position: "top-center" });
+  //     setResetEmail("");
+  //     setShowForgotModal(false);
+  //   } catch (error: any) {
+  //     toast.error(error.message || "Failed to send reset email", {
+  //       position: "top-center",
+  //     });
+  //   } finally {
+  //     setLoadingReset(false);
+  //   }
+  // };
 
   return (
     <>
@@ -138,7 +139,6 @@ const Login = () => {
                     onBlur={handleBlur}
                     error={errors.email}
                     touched={touched.email}
-                    
                   />
                 </div>
                 <div>
@@ -154,10 +154,18 @@ const Login = () => {
                   />
                 </div>
               </div>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Logging in..." : "Login"}
-              </Button>
-
+              <div>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Logging in..." : "Login"}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotModal(true)}
+                  className=" cursor-pointer text-sm text-blue-600 hover:underline pl-5"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="flex justify-between mt-2">
                 <p className="text-black text-sm">
                   Don’t have an account?{" "}
@@ -168,21 +176,13 @@ const Login = () => {
                     Sign up
                   </Link>
                 </p>
-
-                <button
-                  type="button"
-                  onClick={() => setShowForgotModal(true)}
-                  className=" cursor-pointer text-sm text-blue-600 hover:underline"
-                >
-                  Forgot Password?
-                </button>
               </div>
             </Form>
           )}
         </Formik>
       </AuthLayout>
 
-      {/* Forgot Password Modal */}
+      {/* Forgot Password Modal
       <Modal
         show={showForgotModal}
         size="md"
@@ -217,7 +217,11 @@ const Login = () => {
             <Button onClick={() => setShowForgotModal(false)}>Cancel</Button>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
+      <ForgotPasswordModal
+        isOpen={showForgotModal}
+        onClose={() => setShowForgotModal(false)}
+      />
     </>
   );
 };

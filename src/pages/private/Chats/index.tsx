@@ -1,7 +1,7 @@
 import Navbar from "../../../components/navbar";
 import Sidebar from "../../../components/sidebar";
 import { useState } from "react";
-import ChatSection from "./ChatSection";
+import ChatSection from "./chatsection";
 
 const Chat = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

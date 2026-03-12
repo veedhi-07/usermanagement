@@ -6,19 +6,20 @@ import {
   doc,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "../../../components/firebase";
+import { db } from "../../../services/firebase";
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
-import UserPagination from "../../../components/Pagination/userPagination";
+import UserPagination from "../../../components/pagination";
 import { SearchIcon, Trash, PlusSquare, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Can from "../../../components/Can";
 import { usePermission } from "../../../hooks/usePermission";
-import DeleteModal from "../../../modals/DeleteModal";
+import DeleteModal from "../../../components/deletemodal";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoadSpinner from "../../../components/Spinner";
+import LoadSpinner from "../../../components/spinner";
+import FormField from "../../../components/form-field/formfield";
 type Role = {
   id: string;
   name: string;
@@ -131,10 +132,7 @@ const Roles = () => {
     });
   };
 
-  if (loading)
-    return (
-     <LoadSpinner/>
-    );
+  if (loading) return <LoadSpinner />;
   return (
     <>
       <ToastContainer position="top-center" autoClose={3000} />
@@ -154,8 +152,9 @@ const Roles = () => {
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                   <SearchIcon size={18} />
                 </span>
-                <input
+                <FormField
                   type="text"
+                  id=""
                   placeholder="Search Roles"
                   value={searchQuery}
                   onChange={(e) => {

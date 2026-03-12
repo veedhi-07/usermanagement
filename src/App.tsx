@@ -2,12 +2,12 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../src/components/firebase";
+import { auth } from "./services/firebase";
 import { fetchUserProfile } from "./services/userService";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "./components/firebase";
+import { db } from "./services/firebase";
 import { setProfile, clearProfile } from "../src/redux/reducer/profileSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,16 +17,16 @@ import {
 } from "../src/redux/reducer/permissionSlice";
 import React from "react";
 import { Navigate } from "react-router-dom";
-import LoadSpinner from "./components/Spinner";
+import LoadSpinner from "./components/spinner";
 
-const Login = React.lazy(() => import("./pages/public/Login"));
+const Login = React.lazy(() => import("./pages/public/login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
-const Dashboard = React.lazy(() => import("./pages/private/Dashboard"));
-const MyProfile = React.lazy(() => import("./pages/private/MyProfile"));
-const Users = React.lazy(() => import("./pages/private/Users"));
-const Roles = React.lazy(() => import("./pages/private/Roles"));
-const AddRole = React.lazy(() => import("./pages/private/AddRole"));
-const Chat = React.lazy(() => import("./pages/private/Chats/index"));
+const Dashboard = React.lazy(() => import("./pages/private/dashboard"));
+const MyProfile = React.lazy(() => import("./pages/private/myprofile"));
+const Users = React.lazy(() => import("./pages/private/users"));
+const Roles = React.lazy(() => import("./pages/private/roles"));
+const AddRole = React.lazy(() => import("./pages/private/addrole"));
+const Chat = React.lazy(() => import("./pages/private/chats/index"));
 
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);
@@ -78,9 +78,7 @@ const App = () => {
     loadRolePermissions();
   }, [profile?.role, dispatch]);
   if (authLoading) {
-    return (
-        <LoadSpinner/>
-    );
+    return <LoadSpinner />;
   }
   return (
     <>
