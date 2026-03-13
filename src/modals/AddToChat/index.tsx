@@ -132,7 +132,7 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
             <Users size={18} className="text-white" />
           </span>
           <span>
-            <Button
+            {/* <Button
               type="button"
               className="mt-3 w-full"
               disabled={selectedUsers.length < 2 || !chatName}
@@ -141,15 +141,27 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
               }}
             >
               Create Space
-            </Button>
+            </Button> */}
 
             {/* <Button
               type="button"
               className=" flex bg-transparent! w-full pl-2"
-              onClick={() => setIsCreatingSpace(true)}
+              onClick={() => {
+                setIsCreatingSpace(true);
+                onUserSelect(selectedUsers, chatName);
+              }}
             >
               Create A Space
             </Button> */}
+            <Button
+              type="button"
+              className="flex bg-transparent! w-full pl-2"
+              onClick={() => {
+                setIsCreatingSpace(true);
+              }}
+            >
+              Create A Space
+            </Button>
           </span>
         </div>
 
@@ -223,6 +235,19 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
           </div>
         </div>
 
+        {isCreatingSpace && (
+          <Button
+            type="button"
+            className="mt-3 w-full"
+            disabled={selectedUsers.length < 2 || !chatName}
+            onClick={() => {
+              onUserSelect(selectedUsers, chatName);
+              onClose();
+            }}
+          >
+            Create Space
+          </Button>
+        )}
         {loading && <p className="mt-2 text-sm">Loading...</p>}
       </div>
     </div>

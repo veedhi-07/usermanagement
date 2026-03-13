@@ -5,7 +5,7 @@ import ChatSection from "./chatsection";
 
 const Chat = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  
   return (
     <div className="flex min-h-screen">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />

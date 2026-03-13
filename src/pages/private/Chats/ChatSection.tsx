@@ -17,6 +17,7 @@ import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
 import Button from "../../../components/button";
 import FormField from "../../../components/form-field/formfield";
+
 type Props = {
   sidebarOpen: boolean;
 };
@@ -52,10 +53,13 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [groupChatName, setGroupChatName] = useState<string | null>(null);
+  const [isGroupChat, setIsGroupChat] = useState(false);
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
-  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  // const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
 
+  //  const [activeChat,setActiveChat] = useState();
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
@@ -68,7 +72,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         participants: [currentUser.uid, userId],
         lastMessage: messageInput,
         createdAt: Timestamp.now(),
-        createdBy: userId,
+        createdBy: currentUser.uid,
       });
       return conversationRef.id;
     } catch (error) {
@@ -93,7 +97,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     };
 
     try {
-      const msgRef = await addDoc(
+      await addDoc(
         collection(db, "conversation", conversationId, "messages"),
         newMessage,
       );
@@ -108,9 +112,9 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       console.log("Error Sending Message", error);
     }
   };
+
   // Used when new user is selected to clear the messages
   useEffect(() => {
-    // setMessages([]);
     setConversationId(conversationId);
   }, [selectedUser]);
 
@@ -125,7 +129,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...(doc.data() as Omit<conversation, "id">),
+        ...(doc.data() as Omit<Message, "id">),
       }));
 
       setMessages(msgs);
@@ -167,19 +171,26 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               Spaces
             </div>
           </span>
-          <span>
+          {/* <span>
             <div className="pt-48 ml-34 cursor-pointer text-white">
               <PlusIcon
                 size={24}
                 onClick={() => setShowCreateGroupModal(true)}
               />
             </div>
-          </span>
+          </span> */}
         </div>
       </div>
       <div className="flex flex-1 flex-col bg-blue-950">
         <div className=" p-4 flex items-center">
-          {selectedUser ? (
+          {}
+
+          {isGroupChat && groupChatName ? (
+            <div>
+              <p className="font-bold text-white">{groupChatName}</p>
+              <p className="text-sm text-white">Group Chat</p>
+            </div>
+          ) : selectedUser ? (
             <div>
               <p className="font-bold text-white">
                 {selectedUser.firstName} {selectedUser.lastName}
@@ -210,9 +221,12 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         </div>
         {selectedUser && (
           <div className="flex items-center gap-4 p-4 bg-gray-100 border-t">
-            <input
+            <FormField
               value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
+              onChange={(e: any) => setMessageInput(e.target.value)}
+              onKeyDown={(e: any) => {
+                if (e.key === "Enter") handleSendMessage();
+              }}
               className="flex-1  border-2 rounded-lg p-2"
               placeholder="Type a message"
               type="text"
@@ -230,22 +244,58 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       </div>
 
       {ShowAddToChatModal && (
+        // <AddToChatModal
+        //   onClose={() => setShowAddToChatModal(false)}
+        //   onUserSelect={async (use,chatname) => {
+        //     setSelectedUser(user);
+        //     const convoId = await createConversation(user.id);
+
+        //     if (convoId) {
+        //       setConversationId(convoId);
+        //     }
+        //     setShowAddToChatModal(false);
+        //   }}
+        // />
         <AddToChatModal
           onClose={() => setShowAddToChatModal(false)}
-          onUserSelect={async (user) => {
-            setSelectedUser(user);
-            const convoId = await createConversation(user.id);
+          onUserSelect={async (users, chatName) => {
+            // PRIVATE CHAT
+            if (!Array.isArray(users)) {
+              setIsGroupChat(false);
+              setGroupChatName(null);
+              setSelectedUser(users);
 
-            if (convoId) {
-              setConversationId(convoId);
+              const convoId = await createConversation(users.id);
+              if (convoId) setConversationId(convoId);
             }
+
+            // GROUP CHAT
+            else {
+              setIsGroupChat(true);
+              setGroupChatName(chatName || "Unnamed Space");
+              setSelectedUser(null);
+
+              const conversationRef = await addDoc(
+                collection(db, "conversation"),
+                {
+                  type: "group",
+                  name: chatName,
+                  participants: users.map((u) => u.id),
+                  createdAt: Timestamp.now(),
+                  createdBy: currentUser?.uid,
+                },
+              );
+
+              setConversationId(conversationRef.id);
+            }
+
             setShowAddToChatModal(false);
           }}
         />
       )}
-      {showCreateGroupModal && (
+      {/* {showCreateGroupModal && (
         <CreateGroupModal onClose={() => setShowCreateGroupModal(false)} />
-      )}
+      )} */}
     </div>
   );
 };
