@@ -140,25 +140,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     return () => unsubscribe();
   }, [conversationId]);
 
-  //       const snapshot = onSnapshot((q,snapshot)=> {
-  //             const querySnapshot = getDocs(collection(db, "chat"));
-  //             const messages: conversation[] = querySnapshot.docs.map((doc) => ({
-  //               id: doc.id,
-  //               ...(doc.messages() as any),
-  //             }));
-  //             setMessages(messages);
-  //         })
-  // --------------------------------------------------------------
-  // if (loading)
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <Spinner size="xl" />
-  //     </div>
-  //   );
-  // onchange = (Input) => {
-  //   console.log("Input changed", Input);
-  // };
-
   return (
     <div
       className="flex h-[calc(100vh-64px)] transition-all duration-300 bg-gray-900 rounded-md mt-1"

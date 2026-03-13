@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import { Modal } from "flowbite-react";
 import FormField from "../../components/form-field/formfield";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
