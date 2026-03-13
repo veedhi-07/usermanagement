@@ -4,7 +4,7 @@ import type { FC } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 interface Props {
-  id: string;
+  id?: string;
   name?: string;
   label?: string;
   type?: string;
@@ -40,12 +40,22 @@ const FormField: FC<FormComponentProps> = ({
   className,
   ...rest
 }) => {
+  const baseStyle = `
+        [&>div>input]:bg-white!
+        [&>div>input]:text-black!
+        [&>div>input]:focus:bg-white!
+        ${
+          touched && error
+            ? "[&>div>input]:border-red-500!"
+            : "[&>div>input]:border-gray-300!"
+        }
+      `;
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
 
   if (type === "checkbox") {
     return (
-      <div className="flex items-center gap-2 justify-center items-center">
+      <div className="flex gap-2 justify-center items-center">
         <Checkbox
           id={id}
           checked={checked}
@@ -74,16 +84,7 @@ const FormField: FC<FormComponentProps> = ({
           disabled={disabled}
           onBlur={onBlur}
           {...rest}
-          className={`
-        [&>div>input]:bg-white!
-        [&>div>input]:text-black!
-        [&>div>input]:focus:bg-white!
-        ${
-          touched && error
-            ? "[&>div>input]:border-red-500!"
-            : "[&>div>input]:border-gray-300!"
-        }
-      `}
+          className={`${baseStyle} ${className}`}
         />
 
         {isPassword && (

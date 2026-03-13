@@ -158,12 +158,6 @@ const AddRole = () => {
 
                         {actions.map((action) => (
                           <td key={action} className="border p-3">
-                            {/* <input
-                            type="checkbox"
-                            className="w-6 h-6 accent-blue-600 cursor-pointer"
-                            checked={permissions[module][action]}
-                            onChange={() => handleToggle(module, action)}
-                          /> */}
                             <FormField
                               id={`${module}-${action}`}
                               className="w-5 h-5 accent-blue-600 cursor-pointer bg-white! checked:bg-blue-600!"

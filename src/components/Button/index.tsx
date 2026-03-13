@@ -1,5 +1,5 @@
 import type React from "react";
-import  type {FC } from "react";
+import type { FC } from "react";
 import type { ReactNode } from "react";
 
 interface ButtonProps {
@@ -13,8 +13,10 @@ interface ButtonProps {
 }
 
 //new type for native elements and omit to handle custom
-type NativeButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>,
-keyof ButtonProps>;
+type NativeButtonProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  keyof ButtonProps
+>;
 
 type ButtonComponentProps = ButtonProps & NativeButtonProps;
 
@@ -28,11 +30,12 @@ const Button: FC<ButtonComponentProps> = ({
   children,
   ...rest
 }) => {
+  const baseStyles = "bg-blue-600! hover:bg-gray-600! text-white h-10 w-24";
   return (
     <button
       type={type}
       onClick={onClick}
-      className="bg-blue-600! hover:bg-gray-600! text-white h-10 w-24"
+      className={`${baseStyles} ${className}`}
       disabled={disabled}
       {...rest}
     >

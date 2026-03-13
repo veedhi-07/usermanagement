@@ -17,7 +17,7 @@ import {
   SearchIcon,
   PlusSquare,
 } from "lucide-react";
-import CommonModal from "../../../../src/components/commonmodal";
+import CommonModal from "../../../components/addeditmodal";
 import { getAuth } from "firebase/auth";
 import UserPagination from "../../../components/pagination";
 import DeleteModal from "../../../components/deletemodal";
@@ -102,26 +102,26 @@ const Users = () => {
 
     setSelectedUser(null);
   };
-  //  Add User
-  const handleAddUser = async (values: Omit<User, "id">) => {
-    try {
-      const docRef = await addDoc(collection(db, "users"), {
-        ...values,
-        createdAt: Timestamp.now(),
-      });
+  // //  Add User
+  // const handleAddUser = async (values: Omit<User, "id">) => {
+  //   try {
+  //     const docRef = await addDoc(collection(db, "users"), {
+  //       ...values,
+  //       createdAt: Timestamp.now(),
+  //     });
 
-      const newUser: User = {
-        id: docRef.id,
-        ...values,
-        createdAt: Timestamp.now(),
-      };
+  //     const newUser: User = {
+  //       id: docRef.id,
+  //       ...values,
+  //       createdAt: Timestamp.now(),
+  //     };
 
-      setUsers((prev) => [...prev, newUser]);
-      setShowAddModal(false);
-    } catch (error) {
-      console.error("Add user failed:", error);
-    }
-  };
+  //     setUsers((prev) => [...prev, newUser]);
+  //     setShowAddModal(false);
+  //   } catch (error) {
+  //     console.error("Add user failed:", error);
+  //   }
+  // };
 
   const toggleSort = () => {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -173,8 +173,8 @@ const Users = () => {
 
             <div className="flex justify-between items-center mb-4">
               {/* Search */}
-              <div className="relative w-full max-w-sm">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <div className="relative w-full max-w-sm bg-white rounded-lg">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                   <SearchIcon size={18} />
                 </span>
                 <FormField
@@ -186,7 +186,7 @@ const Users = () => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className=" pl-10 pr-4 py-2 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
                 />
               </div>
 
@@ -279,7 +279,7 @@ const Users = () => {
             />
 
             {/* Add User */}
-            {/* Add User */}
+
             {showAddModal && (
               <CommonModal
                 isOpen={showAddModal}

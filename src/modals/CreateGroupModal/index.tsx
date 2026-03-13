@@ -32,7 +32,7 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [groupChatName, setGroupChatName] = useState();
+  const [groupChatName, setGroupChatName] = useState("");
   const [selectedUser, setSelectedUser] = useState<User[]>([]);
   const [hasMore, setHasMore] = useState(true);
 
@@ -116,20 +116,24 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
         >
           <X size={25} />
         </button>
-        <div className="bg-white relative w-full max-w-sm  mb-1 rounded-3xl h-10">
-          <FormField
-            id=""
-            placeholder="Enter Chat Name"
-            className="pl-5 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
-          />
-        </div>
+        {/* <div className="bg-white relative w-full max-w-sm  mb-1 rounded-3xl h-10 border-4"> */}
+        <FormField
+          id="chatName"
+          type="text"
+          value={groupChatName}
+          onChange={(e) => setGroupChatName(e.target.value)}
+          placeholder="Enter Chat Name"
+          className="pl-2 relative pr-2 w-full  max-w-sm rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {/* </div> */}
         <div className="text-white pt-1">
           <p>Add Members:</p>
         </div>
-        <div className="relative w-full max-w-sm bg-blue-200 mb-1 rounded-3xl">
+        <div className="relative w-full max-w-sm bg-white mb-1 rounded-4xl">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
             <SearchIcon size={18} />
           </span>
+          <span>
           <FormField
             id=""
             type="text"
@@ -138,8 +142,9 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
-            className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-white-500"
+            className="rounded-4xl"
           />
+          </span>
         </div>
         <div
           ref={parentRef}
@@ -176,14 +181,15 @@ const CreateGroupModal = ({ onClose }: CreateGroupModalProps) => {
             })}
           </div>
         </div>
-        <div>
-          <Button>Create Group </Button>
+        <div className="pt-2">
+          <div>
+            <Button className="w-26">Create Group </Button>
+          </div>
         </div>
-        {loading && <p className="mt-2 text-sm">Loading...</p>}
-        {!hasMore && <p className="mt-2 text-sm">No more users</p>}
+        {/* {loading && <p className="mt-2 text-sm">Loading...</p>} */}
+        {/* {!hasMore && <p className="mt-2 text-sm">No more users</p>} */}
       </div>
     </div>
   );
 };
-
 export default CreateGroupModal;

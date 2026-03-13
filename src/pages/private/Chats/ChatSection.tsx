@@ -16,7 +16,7 @@ import CreateGroupModal from "../../../modals/creategroupmodal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
 import Button from "../../../components/button";
-
+import FormField from "../../../components/form-field/formfield";
 type Props = {
   sidebarOpen: boolean;
 };
@@ -103,13 +103,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         lastMessage: messageInput,
         lastMessageAt: Timestamp.now(),
       });
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: msgRef.id,
-          ...newMessage,
-        },
-      ]);
       setMessageInput("");
     } catch (error) {
       console.log("Error Sending Message", error);
@@ -198,7 +191,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 border-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
           {selectedUser && messages.length == 0 && (
             <p className="text-center text-black">No messages yet</p>
           )}
@@ -224,6 +217,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               placeholder="Type a message"
               type="text"
             />
+
             <Button
               className="bg-gray-600 text-white px-6 py-2 rounded-lg"
               type="submit"

@@ -4,7 +4,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
 import { Formik, Form } from "formik";
 import Button from "../../components/button";
-import CommonModal from "../../components/commonmodal";
+import CommonModall from "../../components/commonmodal";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -38,7 +38,7 @@ export default function ForgotPasswordModal({
 
   return (
     <>
-      <CommonModal isOpen={isOpen} onClose={onClose} title="Forgot Password">
+      <CommonModall isOpen={isOpen} onClose={onClose} title="Forgot Password">
         <p>Enter your registered email to receive a password reset link.</p>
         <div>
           <Formik initialValues={{ email: "" }} onSubmit={handleReset}>
@@ -66,7 +66,7 @@ export default function ForgotPasswordModal({
             )}
           </Formik>
         </div>
-      </CommonModal>
+      </CommonModall>
     </>
   );
 }

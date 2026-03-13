@@ -81,15 +81,6 @@ const Signup = () => {
             isSubmitting,
           }) => (
             <Form className="flex flex-col gap-5">
-              {/* <FormField
-                  key={field.id}
-                  {...field}
-                  value={values[field.id as keyof typeof values] ?? ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={errors[field.id as keyof typeof errors]}
-                  touched={touched[field.id as keyof typeof touched]}
-                /> */}
               <div>
                 <div>
                   <FormField

@@ -148,20 +148,21 @@ const Roles = () => {
 
             {/* Search + Add */}
             <div className="flex justify-between items-center mb-4">
-              <div className="relative w-full max-w-sm">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              {/* Search */}
+              <div className="relative w-full max-w-sm bg-white rounded-lg">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                   <SearchIcon size={18} />
                 </span>
                 <FormField
                   type="text"
                   id=""
-                  placeholder="Search Roles"
+                  placeholder="Search by name..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="pl-10 pr-4 py-2 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className=" pl-10 pr-4 py-2 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
                 />
               </div>
 
