@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../components/validation";
-import ForgotPasswordModal from "../../../components/forgotpassword";
+import ForgotPasswordModal from "../../../../src/modals/forgotpassword";
 import {
   signInWithEmailAndPassword,
   getAuth,

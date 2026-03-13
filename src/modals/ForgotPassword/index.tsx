@@ -1,11 +1,11 @@
 import { useState } from "react";
 // import { Modal } from "flowbite-react";
-import FormField from "../form-field/formfield";
+import FormField from "../../components/form-field/formfield";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
 import { Formik, Form } from "formik";
-import Button from "../button";
-import CommonModal from "../commonmodal";
+import Button from "../../components/button";
+import CommonModal from "../../components/commonmodal";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;

@@ -17,7 +17,7 @@ import {
   SearchIcon,
   PlusSquare,
 } from "lucide-react";
-import CommonModal from "../../../modals/commonmodal";
+import CommonModal from "../../../../src/components/commonmodal";
 import { getAuth } from "firebase/auth";
 import UserPagination from "../../../components/pagination";
 import DeleteModal from "../../../components/deletemodal";

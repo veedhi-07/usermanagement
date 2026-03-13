@@ -30,7 +30,7 @@ interface ModalProps {
   footer?: ReactNode;
   onSubmit?: () => void;
   user?: User;
-  mode: "add" | "edit";
+  mode?: "add" | "edit";
   onSave?: (user: User) => void;
 }
 
