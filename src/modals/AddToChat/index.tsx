@@ -106,6 +106,7 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
     }
   }, [rowVirtualizer.getVirtualItems(), users, hasMore, loading]);
 
+  //For multiple users selection for group chat
   const toggleUserSelection = (user: User) => {
     setSelectedUsers((prev) => {
       const exists = prev.find((u) => u.id === user.id);
@@ -132,30 +133,9 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
             <Users size={18} className="text-white" />
           </span>
           <span>
-            {/* <Button
-              type="button"
-              className="mt-3 w-full"
-              disabled={selectedUsers.length < 2 || !chatName}
-              onClick={() => {
-                onUserSelect(selectedUsers, chatName);
-              }}
-            >
-              Create Space
-            </Button> */}
-
-            {/* <Button
-              type="button"
-              className=" flex bg-transparent! w-full pl-2"
-              onClick={() => {
-                setIsCreatingSpace(true);
-                onUserSelect(selectedUsers, chatName);
-              }}
-            >
-              Create A Space
-            </Button> */}
             <Button
               type="button"
-              className="flex bg-transparent! w-full pl-2"
+              className="flex bg-transparent! w-full pl-1"
               onClick={() => {
                 setIsCreatingSpace(true);
               }}
@@ -176,10 +156,6 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
           />
         )}
         <div className="pb-2">
-          {/* <div className="relative w-full max-w-sm bg-white rounded-lg "> */}
-          {/* <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
-              <SearchIcon size={20} />
-            </span> */}
           <FormField
             type="text"
             id=""
@@ -190,7 +166,6 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
             }}
             className=" pr-4 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
           />
-          {/* </div> */}
         </div>
         <div
           ref={parentRef}

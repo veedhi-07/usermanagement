@@ -102,26 +102,6 @@ const Users = () => {
 
     setSelectedUser(null);
   };
-  // //  Add User
-  // const handleAddUser = async (values: Omit<User, "id">) => {
-  //   try {
-  //     const docRef = await addDoc(collection(db, "users"), {
-  //       ...values,
-  //       createdAt: Timestamp.now(),
-  //     });
-
-  //     const newUser: User = {
-  //       id: docRef.id,
-  //       ...values,
-  //       createdAt: Timestamp.now(),
-  //     };
-
-  //     setUsers((prev) => [...prev, newUser]);
-  //     setShowAddModal(false);
-  //   } catch (error) {
-  //     console.error("Add user failed:", error);
-  //   }
-  // };
 
   const toggleSort = () => {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));

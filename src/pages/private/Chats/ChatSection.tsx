@@ -4,15 +4,16 @@ import {
   collection,
   doc,
   query,
+  where,
   addDoc,
   updateDoc,
+  getDocs,
   orderBy,
   onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { PlusIcon, ChevronDown } from "lucide-react";
 import AddToChatModal from "../../../modals/addtochat";
-import CreateGroupModal from "../../../modals/creategroupmodal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
 import Button from "../../../components/button";
@@ -31,14 +32,14 @@ export type User = {
 
 export type conversation = {
   id: string;
-  type: string;
+  type: "private" | "group";
   createdAt: Timestamp;
-  participant: string;
-  lastMessage: string;
+  participants: string[];
+  lastMessage?: string;
   senderId: string;
   receiverId: string;
   text: string;
-  read: boolean;
+  name?: string;
 };
 
 interface Message {
@@ -48,6 +49,7 @@ interface Message {
   receiverId: string;
   type: string;
   createdAt: Timestamp;
+  seenBy: string[];
 }
 const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -56,10 +58,10 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const [groupChatName, setGroupChatName] = useState<string | null>(null);
   const [isGroupChat, setIsGroupChat] = useState(false);
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
-  // const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
-
-  //  const [activeChat,setActiveChat] = useState();
+  const [directChats, setDirectChats] = useState<conversation[]>([]);
+  const [spaces, setSpaces] = useState<conversation[]>([]);
+  const [userMap, setUserMap] = useState<Record<string, User>>({});
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
@@ -79,21 +81,17 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       console.log("Error Creating Conversation", error);
     }
   };
+
   const handleSendMessage = async () => {
-    if (
-      !messageInput.trim() ||
-      !selectedUser ||
-      !currentUser ||
-      !conversationId
-    )
-      return;
+    if (!messageInput.trim() || !currentUser || !conversationId) return;
 
     const newMessage = {
-      receiverId: selectedUser.id,
       senderId: currentUser.uid,
       text: messageInput,
-      type: "private",
+      type: isGroupChat ? "group" : "private",
       createdAt: Timestamp.now(),
+
+      ...(selectedUser && { receiverId: selectedUser.id }),
     };
 
     try {
@@ -114,10 +112,11 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   };
 
   // Used when new user is selected to clear the messages
-  useEffect(() => {
-    setConversationId(conversationId);
-  }, [selectedUser]);
+  // useEffect(() => {
+  //   setConversationId(conversationId);
+  // }, [selectedUser]);
 
+  //To load previous messages
   useEffect(() => {
     if (!conversationId) return;
 
@@ -137,6 +136,84 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     return () => unsubscribe();
   }, [conversationId]);
 
+  // //marks as read
+  useEffect(() => {
+    if (!currentUser || !conversationId) return;
+
+    const markAsRead = async () => {
+      const q = query(
+        collection(db, "conversation", conversationId, "messages"),
+        where("receiverId", "==", currentUser.uid),
+        where("read", "==", false),
+      );
+
+      const snapshot = await getDocs(q);
+
+      for (const docSnap of snapshot.docs) {
+        await updateDoc(docSnap.ref, {
+          read: true,
+        });
+      }
+    };
+    markAsRead();
+  }, [messages, conversationId, currentUser]);
+
+  //For specifying private or groupchat to display
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const q = query(
+      collection(db, "conversation"),
+      where("participants", "array-contains", currentUser.uid),
+    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const chats: conversation[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<conversation, "id">),
+      }));
+
+      const direct = chats.filter((c) => c.type === "private");
+      const groups = chats.filter((c) => c.type === "group");
+
+      setDirectChats(direct);
+      setSpaces(groups);
+    });
+    return () => unsubscribe();
+  }, [currentUser]);
+
+  //display chat under direct section
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const snapshot = await getDocs(collection(db, "users"));
+
+      const map: Record<string, User> = {};
+
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data();
+
+        map[doc.id] = {
+          id: doc.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          role: data.role,
+        };
+      });
+
+      setUserMap(map);
+    };
+
+    fetchUsers();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchGroup = async () => {
+  //     const snapshot = await getDocs(collection(db,"messages","type"));
+  //     const map : Record<string,Message> = {};
+  //     snapshot.docs.forEach((doc)=>{
+  //       const data = doc.data();
+  //     })
+  //   }
+  // })
   return (
     <div
       className="flex h-[calc(100vh-64px)] transition-all duration-300 bg-gray-900 rounded-md mt-1"
@@ -160,6 +237,33 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             </div>
           </span>
         </div>
+        <div className="mt-3">
+          {directChats.map((chat) => {
+            if (!chat.participants) return null;
+
+            const otherUserId = chat.participants.find(
+              (id: string) => id !== currentUser?.uid,
+            );
+
+            const user = otherUserId ? userMap[otherUserId] : null;
+
+            return (
+              <div
+                key={chat.id}
+                className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
+                onClick={() => {
+                  if (!user) return;
+
+                  setConversationId(chat.id);
+                  setSelectedUser(user);
+                  setIsGroupChat(false);
+                }}
+              >
+                {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
+              </div>
+            );
+          })}
+        </div>
         <div className="flex flex-row">
           <span>
             <div className="  pt-49 cursor-pointer text-white">
@@ -171,20 +275,31 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               Spaces
             </div>
           </span>
-          {/* <span>
+          <span>
             <div className="pt-48 ml-34 cursor-pointer text-white">
-              <PlusIcon
-                size={24}
-                onClick={() => setShowCreateGroupModal(true)}
-              />
+              <PlusIcon size={24} onClick={() => setShowAddToChatModal(true)} />
             </div>
-          </span> */}
+          </span>
+        </div>
+
+        <div className="mt-3">
+          {spaces.map((space) => (
+            <div
+              key={space.id}
+              className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
+              onClick={() => {
+                setConversationId(space.id);
+                setIsGroupChat(true);
+                setGroupChatName(space.name || "Group");
+              }}
+            >
+              {space.name}
+            </div>
+          ))}
         </div>
       </div>
       <div className="flex flex-1 flex-col bg-blue-950">
         <div className=" p-4 flex items-center">
-          {}
-
           {isGroupChat && groupChatName ? (
             <div>
               <p className="font-bold text-white">{groupChatName}</p>
@@ -203,7 +318,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-          {selectedUser && messages.length == 0 && (
+          {(selectedUser || isGroupChat) && messages.length == 0 && (
             <p className="text-center text-black">No messages yet</p>
           )}
           {messages.map((msg) => (
@@ -212,22 +327,25 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               className={`max-w-xs p-3 rounded-lg ${
                 msg.senderId === currentUser?.uid
                   ? "bg-blue-500 text-white ml-auto"
-                  : "bg-gray-200 text-black"
+                  : "bg-gray-300 text-black"
               }`}
             >
               {msg.text}
             </div>
           ))}
         </div>
-        {selectedUser && (
-          <div className="flex items-center gap-4 p-4 bg-gray-100 border-t">
-            <FormField
+        {(selectedUser || isGroupChat) && (
+          <div className=" flex items-center gap-4 p-4 bg-gray-100 border-t">
+            <input
               value={messageInput}
-              onChange={(e: any) => setMessageInput(e.target.value)}
-              onKeyDown={(e: any) => {
-                if (e.key === "Enter") handleSendMessage();
+              onChange={(e) => setMessageInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
               }}
-              className="flex-1  border-2 rounded-lg p-2"
+              className="rounded-lg p-2 w-full"
               placeholder="Type a message"
               type="text"
             />
@@ -244,18 +362,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       </div>
 
       {ShowAddToChatModal && (
-        // <AddToChatModal
-        //   onClose={() => setShowAddToChatModal(false)}
-        //   onUserSelect={async (use,chatname) => {
-        //     setSelectedUser(user);
-        //     const convoId = await createConversation(user.id);
-
-        //     if (convoId) {
-        //       setConversationId(convoId);
-        //     }
-        //     setShowAddToChatModal(false);
-        //   }}
-        // />
         <AddToChatModal
           onClose={() => setShowAddToChatModal(false)}
           onUserSelect={async (users, chatName) => {
@@ -272,7 +378,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             // GROUP CHAT
             else {
               setIsGroupChat(true);
-              setGroupChatName(chatName || "Unnamed Space");
+              setGroupChatName(chatName || "Unnamed Group");
               setSelectedUser(null);
 
               const conversationRef = await addDoc(
@@ -285,17 +391,12 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                   createdBy: currentUser?.uid,
                 },
               );
-
               setConversationId(conversationRef.id);
             }
-
             setShowAddToChatModal(false);
           }}
         />
       )}
-      {/* {showCreateGroupModal && (
-        <CreateGroupModal onClose={() => setShowCreateGroupModal(false)} />
-      )} */}
     </div>
   );
 };
