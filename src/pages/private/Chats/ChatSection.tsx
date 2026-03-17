@@ -12,7 +12,14 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { PlusIcon, ChevronDown, X } from "lucide-react";
+import {
+  PlusIcon,
+  ChevronDown,
+  ChevronRight,
+  X,
+  UserRound,
+  Users,
+} from "lucide-react";
 import AddToChatModal from "../../../modals/addtochat";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
@@ -62,7 +69,9 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   );
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
+  const [showDirectChats, setShowDirectChats] = useState(false);
   const [directChats, setDirectChats] = useState<conversation[]>([]);
+  const [showSpaces, setShowSpaces] = useState(false);
   const [spaces, setSpaces] = useState<conversation[]>([]);
   const [userMap, setUserMap] = useState<Record<string, User>>({});
   const auth = getAuth();
@@ -113,11 +122,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       console.log("Error Sending Message", error);
     }
   };
-
-  // Used when new user is selected to clear the messages
-  // useEffect(() => {
-  //   setConversationId(conversationId);
-  // }, [selectedUser]);
 
   //To load previous messages
   useEffect(() => {
@@ -287,8 +291,15 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       <div className="w-64">
         <div className="flex flex-row">
           <span>
-            <div className="pt-4 cursor-pointer text-white">
-              <ChevronDown size={20} />
+            <div
+              onClick={() => setShowDirectChats((prev) => !prev)}
+              className="pt-4 cursor-pointer text-white"
+            >
+              {showDirectChats ? (
+                <ChevronDown size={20} />
+              ) : (
+                <ChevronRight size={20} />
+              )}
             </div>
           </span>
           <span>
@@ -302,83 +313,103 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             </div>
           </span>
         </div>
-        <div className="mt-3">
-          {directChats.map((chat) => {
-            if (!chat.participants) return null;
+        {showDirectChats && (
+          <div className="mt-3">
+            {directChats.map((chat) => {
+              if (!chat.participants) return null;
 
-            const otherUserId = chat.participants.find(
-              (id: string) => id !== currentUser?.uid,
-            );
+              const otherUserId = chat.participants.find(
+                (id: string) => id !== currentUser?.uid,
+              );
 
-            const user = otherUserId ? userMap[otherUserId] : null;
+              const user = otherUserId ? userMap[otherUserId] : null;
 
-            return (
-              <div
-                key={chat.id}
-                className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
-                onClick={() => {
-                  if (!user) return;
+              return (
+                <div
+                  key={chat.id}
+                  className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
+                  onClick={() => {
+                    if (!user) return;
 
-                  setConversationId(chat.id);
-                  setSelectedUser(user);
-                  setIsGroupChat(false);
-                }}
-              >
-                <span className="pr-30">
-                  {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
-                </span>
-                {unreadMsgCount[chat.id] > 0 && (
-                  <span className="bg-red-500 text-xs py-1 px-2 rounded-full">
-                    {unreadMsgCount[chat.id]}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                    setConversationId(chat.id);
+                    setSelectedUser(user);
+                    setIsGroupChat(false);
+                  }}
+                >
+                  <div className="flex flex-row items-center gap-2">
+                    <span>
+                      <UserRound className="w-5 h-5 text-white" />
+                    </span>
+                    <span>
+                      {user
+                        ? `${user.firstName} ${user.lastName}`
+                        : "Loading..."}
+                    </span>
+                    <div className="pl-25">
+                      {unreadMsgCount[chat.id] > 0 && (
+                        <span className="bg-red-500 text-xs py-1 px-2 rounded-full">
+                          {unreadMsgCount[chat.id]}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
         <div className="flex flex-row">
           <span>
-            <div className="  pt-49 cursor-pointer text-white">
-              <ChevronDown size={20} />
+            <div
+              onClick={() => setShowSpaces((prev) => !prev)}
+              className="  pt-31 cursor-pointer text-white"
+            >
+              {showSpaces ? (
+                <ChevronDown size={20} />
+              ) : (
+                <ChevronRight size={20} />
+              )}
             </div>
           </span>
           <span>
-            <div className="  pt-48 text-lg cursor-pointer text-white">
+            <div className="  pt-30 text-lg cursor-pointer text-white">
               Spaces
             </div>
           </span>
           <span>
-            <div className="pt-48 ml-34 cursor-pointer text-white">
+            <div className="pt-30 ml-34 cursor-pointer text-white">
               <PlusIcon size={24} onClick={() => setShowAddToChatModal(true)} />
             </div>
           </span>
         </div>
-
-        <div className="mt-3">
-          {spaces.map((space) => (
-            <div
-              key={space.id}
-              className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
-              onClick={() => {
-                setConversationId(space.id);
-                setIsGroupChat(true);
-                setGroupChatName(space.name || "Group");
-              }}
-            >
-              <span className=" pr-36">{space.name}</span>
-              {unreadMsgCount[space.id] > 0 && (
-                <span className="bg-red-500 text-xs px-2 py-1 rounded-full">
-                  {unreadMsgCount[space.id]}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+        {showSpaces && (
+          <div className="mt-3">
+            {spaces.map((space) => (
+              <div
+                key={space.id}
+                className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
+                onClick={() => {
+                  setConversationId(space.id);
+                  setIsGroupChat(true);
+                  setGroupChatName(space.name || "Group");
+                }}
+              >
+                <span className=" pr-36">{space.name}</span>
+                {unreadMsgCount[space.id] > 0 && (
+                  <span className="bg-red-500 text-xs px-2 py-1 rounded-full">
+                    {unreadMsgCount[space.id]}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
       <div className="flex flex-1 flex-col bg-blue-950">
         <div className=" p-4 flex items-center">
           {isGroupChat && groupChatName ? (
-            <div className="flex flex-row">
+            <div className="flex flex-row w-full justify-between items-center">
               <span>
                 <p className="font-bold text-white">{groupChatName}</p>
               </span>
