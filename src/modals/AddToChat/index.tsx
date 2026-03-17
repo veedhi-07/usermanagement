@@ -198,7 +198,12 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
                       toggleUserSelection(user);
                     }
                   }}
-                  className="flex items-center p-2 border-b cursor-pointer hover:bg-gray-200"
+                  className={`flex items-center p-2 border-b cursor-pointer
+                     ${
+                       isCreatingSpace && selectedUsers
+                         ? "hover:bg-blue-300"
+                         : "hover:bg-gray-200"
+                     }`}
                 >
                   <UserIcon size={18} className="mr-2" />
                   <span className="font-semibold">
