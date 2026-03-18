@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
 import type { FC } from "react";
-import Button from "../button";
 import type { User } from "../../pages/private/users";
 
 interface ModalProps {
@@ -17,12 +16,12 @@ interface ModalProps {
   onSave?: (user: User) => void;
   mode?: "add" | "edit";
 }
-type coomonPropss = Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  keyof ModalProps
->;
+// type coomonPropss = Omit<
+//   React.HTMLAttributes<HTMLButtonElement>,
+//   keyof ModalProps
+// >;
 
-type commonProps = coomonPropss & ModalProps;
+type commonProps = React.HTMLAttributes<HTMLDivElement> & ModalProps;
 
 const CommonModall: FC<commonProps> = ({
   className,
@@ -42,8 +41,12 @@ const CommonModall: FC<commonProps> = ({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div
-        className={`relative bg-white p-6 rounded-lg shadow-lg w-[420px] ${className}`}
-        onClick={(e) => e.stopPropagation()}
+        {...rest}
+        className={`relative bg-gray-100 p-6 rounded-lg shadow-lg w-[420px] ${className}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          rest.onClick?.(e);
+        }}
       >
         <button
           onClick={onClose}
