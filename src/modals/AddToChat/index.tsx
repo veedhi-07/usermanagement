@@ -200,7 +200,7 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
                   }}
                   className={`flex items-center p-2 border-b cursor-pointer
                      ${
-                       isCreatingSpace && selectedUsers
+                       isCreatingSpace && selectedUsers.length > 1
                          ? "hover:bg-blue-300"
                          : "hover:bg-gray-200"
                      }`}
@@ -228,7 +228,7 @@ const AddToChatModal = ({ onClose, onUserSelect }: AddToChatModalProps) => {
             Create Space
           </Button>
         )}
-        {loading && <p className="mt-2 text-sm">Loading...</p>}
+        {/* {loading && <p className="mt-2 text-sm">Loading...</p>} */}
       </div>
     </div>
   );

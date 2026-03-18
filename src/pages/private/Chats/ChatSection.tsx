@@ -8,6 +8,7 @@ import {
   addDoc,
   updateDoc,
   getDocs,
+  arrayUnion,
   orderBy,
   onSnapshot,
 } from "firebase/firestore";
@@ -44,7 +45,6 @@ export type conversation = {
   participants: string[];
   lastMessage?: string;
   senderId: string;
-  receiverId: string;
   text: string;
   name?: string;
 };
@@ -53,7 +53,6 @@ interface Message {
   id: string;
   text: string;
   senderId: string;
-  receiverId: string;
   type: string;
   createdAt: Timestamp;
   seenBy: string[];
@@ -69,9 +68,9 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   );
   const [ShowAddToChatModal, setShowAddToChatModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
-  const [showDirectChats, setShowDirectChats] = useState(false);
+  const [showDirectChats, setShowDirectChats] = useState(true);
   const [directChats, setDirectChats] = useState<conversation[]>([]);
-  const [showSpaces, setShowSpaces] = useState(false);
+  const [showSpaces, setShowSpaces] = useState(true);
   const [spaces, setSpaces] = useState<conversation[]>([]);
   const [userMap, setUserMap] = useState<Record<string, User>>({});
   const auth = getAuth();
@@ -100,10 +99,8 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       senderId: currentUser.uid,
       text: messageInput,
       type: isGroupChat ? "group" : "private",
-      seenBy: [currentUser.uid],
+      seenBy: [],
       createdAt: Timestamp.now(),
-
-      ...(selectedUser && { receiverId: selectedUser.id }),
     };
 
     try {
@@ -165,7 +162,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         ) {
           updates.push(
             updateDoc(docSnap.ref, {
-              seenBy: [currentUser.uid],
+              seenBy: arrayUnion(currentUser.uid),
             }),
           );
         }
@@ -453,23 +450,47 @@ const ChatSection = ({ sidebarOpen }: Props) => {
           )}
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-          {(selectedUser || isGroupChat) && messages.length == 0 && (
-            <p className="text-center text-black">No messages yet</p>
-          )}
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`w-fit p-3 rounded-lg ${
-                msg.senderId === currentUser?.uid
-                  ? "bg-blue-500 text-white ml-auto"
-                  : "bg-gray-300 text-black"
-              }`}
-            >
-              {msg.text}
+        <div
+          className={`flex-1 overflow-y-auto p-6 bg-gray-100 ${
+            !selectedUser && !isGroupChat
+              ? "flex items-center justify-center"
+              : ""
+          }`}
+        >
+          {!selectedUser && !isGroupChat ? (
+            <div className="bg-white shadow-lg rounded-xl p-8 text-center w-87.5">
+              <Users className="mx-auto mb-4 text-blue-500" size={40} />
+
+              <h2 className="text-lg font-semibold mb-2 text-gray-900">
+                No Conversation Selected
+              </h2>
+
+              <p className="text-gray-500 text-sm">
+                Select a user or create a group to start chatting.
+              </p>
             </div>
-          ))}
+          ) : (
+            <div className="w-full space-y-4">
+              {messages.length === 0 && (
+                <p className="text-center text-black">No messages yet</p>
+              )}
+
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`w-fit p-3 rounded-lg ${
+                    msg.senderId === currentUser?.uid
+                      ? "bg-blue-500 text-white ml-auto"
+                      : "bg-gray-300 text-black"
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
         {(selectedUser || isGroupChat) && (
           <div className=" flex items-center gap-4 p-4 bg-gray-100 border-t">
             <input

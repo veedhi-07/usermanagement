@@ -5,7 +5,6 @@ import {
   deleteDoc,
   doc,
   Timestamp,
-  addDoc,
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
 import Sidebar from "../../../components/sidebar";
