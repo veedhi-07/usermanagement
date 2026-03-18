@@ -522,6 +522,8 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         <AddToChatModal
           onClose={() => setShowAddToChatModal(false)}
           onUserSelect={async (users, chatName) => {
+            if (!currentUser) return;
+
             // PRIVATE CHAT
             if (!Array.isArray(users)) {
               setIsGroupChat(false);
@@ -535,21 +537,27 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             // GROUP CHAT
             else {
               setIsGroupChat(true);
-              setGroupChatName(chatName || "Unnamed Group");
+              setGroupChatName(chatName || "Group");
               setSelectedUser(null);
+
+              const participantIds = Array.from(
+                new Set([currentUser.uid, ...users.map((u) => u.id)]),
+              );
 
               const conversationRef = await addDoc(
                 collection(db, "conversation"),
                 {
                   type: "group",
                   name: chatName,
-                  participants: users.map((u) => u.id),
+                  participants: participantIds,
                   createdAt: Timestamp.now(),
-                  createdBy: currentUser?.uid,
+                  createdBy: currentUser.uid,
                 },
               );
+
               setConversationId(conversationRef.id);
             }
+
             setShowAddToChatModal(false);
           }}
         />
