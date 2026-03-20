@@ -8,6 +8,7 @@ import {
   addDoc,
   updateDoc,
   getDocs,
+  getDoc,
   arrayUnion,
   orderBy,
   onSnapshot,
@@ -20,6 +21,7 @@ import {
   X,
   UserRound,
   Users,
+  UserPlus,
 } from "lucide-react";
 // import AddToChatModal from "../../../modals/addtochat";
 import DirectChatModal from "../../../modals/directchatmodal";
@@ -29,16 +31,10 @@ import "react-simple-keyboard/build/css/index.css";
 import Button from "../../../components/button";
 import LoadSpinner from "../../../components/spinner";
 import FormField from "../../../components/form-field/formfield";
-
+import type { User, Role, ProfileData } from "../../../../src/types/index";
+import { toast } from "react-toastify";
 type Props = {
   sidebarOpen: boolean;
-};
-
-export type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  role: string;
 };
 
 export type conversation = {
@@ -296,6 +292,8 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     };
     fetchUsers();
   }, []);
+  const currentUserData = currentUser ? userMap[currentUser.uid] : null;
+  const isAdmin = currentUserData?.role === "Admin";
   if (loadingChats || loadingUsers) {
     return (
       <div className="h-screen flex items-center justify-center bg-white">
@@ -436,19 +434,33 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               <span>
                 <p className="font-bold text-white">{spaceName}</p>
               </span>
-              <span>
-                <X
-                  className="text-white cursor-pointer"
-                  onClick={() => {
-                    setConversationId(null);
-                    setIsGroupChat(false);
-                    setSpaceName(null);
-                    setSelectedUser(null);
-                    setMessages([]);
-                  }}
-                  size={26}
-                />
-              </span>
+
+              <div className="flex flex-row">
+                <span className=" pr-4">
+                  {isAdmin && (
+                    <UserPlus
+                      className="text-white cursor-pointer"
+                      size={26}
+                      onClick={() => {
+                        setShowDirectChatModal(true);
+                      }}
+                    />
+                  )}
+                </span>
+                <span>
+                  <X
+                    className="text-white cursor-pointer"
+                    onClick={() => {
+                      setConversationId(null);
+                      setIsGroupChat(false);
+                      setSpaceName(null);
+                      setSelectedUser(null);
+                      setMessages([]);
+                    }}
+                    size={26}
+                  />
+                </span>
+              </div>
             </div>
           ) : selectedUser ? (
             <div className="flex justify-between items-center w-full">
@@ -554,10 +566,41 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         <DirectChatModal
           isOpen={ShowDirectChatModal}
           onClose={() => setShowDirectChatModal(false)}
-          onUserSelect={async (users) => {
+          isGroup={isGroupChat}
+          onUserSelect={async (user) => {
             if (!currentUser) return;
-            setSelectedUser(users);
 
+            if (isGroupChat && conversationId) {
+              try {
+                const convoRef = doc(db, "conversation", conversationId);
+
+                const snapshot = await getDoc(convoRef);
+
+                if (!snapshot.exists()) return;
+
+                const data = snapshot.data();
+                const participants: string[] = data.participants || [];
+
+                if (participants.includes(user.id)) {
+                  toast.error("User already exists in the group");
+                  return;
+                }
+
+                await updateDoc(convoRef, {
+                  participants: arrayUnion(user.id),
+                });
+
+                toast.success("User added to group");
+              } catch (err) {
+                console.log("Error adding user", err);
+                toast.error("Something went wrong");
+              }
+
+              setShowDirectChatModal(false);
+              return;
+            }
+
+            setSelectedUser(user);
             const q = query(
               collection(db, "conversation"),
               where("type", "==", "private"),
@@ -569,14 +612,14 @@ const ChatSection = ({ sidebarOpen }: Props) => {
 
             snapshot.forEach((doc) => {
               const data = doc.data();
-              if (data.participants.includes(users.id)) {
+              if (data.participants.includes(user.id)) {
                 existingConversation = doc.id;
               }
             });
             if (existingConversation) {
               setConversationId(existingConversation);
             } else {
-              const convoId = await createConversation(users.id);
+              const convoId = await createConversation(user.id);
               if (convoId) setConversationId(convoId);
             }
 
@@ -588,14 +631,14 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         <SpaceModal
           isOpen={ShowSpaceModal}
           onClose={() => setShowSpaceModal(false)}
-          onUserSelect={async (users, spaceName) => {
+          onUserSelect={async (user, spaceName) => {
             if (!currentUser) return;
             setIsGroupChat(true);
             setSpaceName(spaceName || "Group");
             setSelectedUser(null);
 
             const participantIds = Array.from(
-              new Set([currentUser.uid, ...users.map((u) => u.id)]),
+              new Set([currentUser.uid, ...user.map((u) => u.id)]),
             );
 
             const conversationRef = await addDoc(

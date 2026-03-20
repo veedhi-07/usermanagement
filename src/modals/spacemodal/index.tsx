@@ -16,17 +16,11 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/form-field/formfield";
 import Button from "../../components/button";
-
+import type { User, Role, ProfileData } from "../../types/index";
 type SpaceModalProps = {
   onClose: () => void;
   isOpen: boolean;
   onUserSelect: (users: User[], spaceName: string) => void;
-};
-export type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  role: string;
 };
 
 const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
@@ -120,71 +114,74 @@ const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
       <FormField
         id="chatname"
         type="text"
+        label="Space Name:"
         placeholder="Enter Space Name"
         value={spaceName}
         onChange={(e) => setSpaceName(e.target.value)}
-        className="pr-4 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
+        className="pr-4 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
       />
 
-      <div className="pb-2">
-        <FormField
-          type="text"
-          id=""
-          placeholder="Search Users"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          className=" pr-4 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
-        />
-      </div>
-      <div
-        ref={parentRef}
-        className="h-75 overflow-auto border rounded bg-white hide-scrollbar"
-      >
+      <div className="mt-2">
         <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            position: "relative",
-          }}
+          ref={parentRef}
+          className="h-75 overflow-auto p-2 bg-gray-200 shadow-md border border-gray-200 hide-scrollbar rounded-2xl"
         >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-            const user = filteredUsers[virtualRow.index];
+          <div className="p-3 border-b border-black sticky top-0 bg-gray-200 z-10">
+            <FormField
+              type="text"
+              placeholder="Search Users"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-2 py-1 text-sm 
+           bg-gray-200 border border-gray-300
+           focus:ring-1 focus:ring-blue-400 outline-none rounded-2xl"
+            />
+          </div>
 
-            return (
-              <div
-                key={virtualRow.key}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-                onClick={() => {
-                  toggleUserSelection(user);
-                }}
-                className={`flex items-center p-2 border-b cursor-pointer
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              position: "relative",
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const user = filteredUsers[virtualRow.index];
+
+              return (
+                <div
+                  key={virtualRow.key}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  onClick={() => {
+                    toggleUserSelection(user);
+                  }}
+                  className={`flex items-center p-2 border-b cursor-pointer
                        ${
                          selectedUsers.some((u) => u.id === user.id)
-                           ? "bg-blue-200 text-black"
-                           : "hover:bg-gray-200"
+                           ? "bg-blue-200"
+                           : ""
                        }`}
-              >
-                <UserIcon size={18} className="mr-2" />
-                <span className="font-semibold">
-                  {user?.firstName} {user?.lastName}
-                </span>
-              </div>
-            );
-          })}
+                >
+                  <UserIcon size={18} className="mr-3 text-gray-500" />
+                  <span className="font-medium">
+                    {user?.firstName} {user?.lastName}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
       {selectedUsers.length > 0 && (
         <div className="mt-4 flex justify-end">
           <Button
-          className="w-26"
+            className="w-26 p-1"
             onClick={() => {
               if (selectedUsers.length === 0) return;
               onUserSelect(selectedUsers, spaceName);

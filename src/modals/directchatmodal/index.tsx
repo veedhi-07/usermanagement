@@ -16,24 +16,19 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/form-field/formfield";
 import Button from "../../components/button";
-
+import type { User, Role, ProfileData } from "../../../src/types/index";
 type DirectChatModalProps = {
   onClose: () => void;
   onUserSelect: (users: User) => void;
   isOpen: boolean;
-};
-
-export type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  role: string;
+  isGroup?: boolean;
 };
 
 const DirectChatModal = ({
   onClose,
   onUserSelect,
   isOpen,
+  isGroup,
 }: DirectChatModalProps) => {
   const [users, setUsers] = useState<User[]>([]);
   const [lastDoc, setLastDoc] =
@@ -173,7 +168,7 @@ const DirectChatModal = ({
               onClose();
             }}
           >
-            Start Chat
+            {isGroup ? "Add Uer" : "Start Chat"}
           </Button>
         </div>
       )}

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { usePermission } from "../../src/hooks/usePermission";
+import { usePermission } from "../hooks/use-permission/usePermission";
 import type { ModuleKey, ActionKey } from "../../src/redux/reducer/permissionSlice";
 
 interface CanProps {

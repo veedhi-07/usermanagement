@@ -8,7 +8,8 @@ import FormField from "../../../components/form-field/formfield";
 import Button from "../../../components/button";
 import Sidebar from "../../../components/sidebar";
 import Navbar from "../../../components/navbar";
-
+import { useaddedituser } from "../../../hooks/use-addedituser/useaddedituser";
+import type { User, Role, ProfileData } from "../../../../src/types/index";
 type Module = "user" | "chat" | "role" | "campaign";
 type Action = "view" | "add" | "edit" | "delete";
 
@@ -32,23 +33,25 @@ const AddRole = () => {
     campaign: { view: false, add: false, edit: false, delete: false },
   });
 
-  // Fetch role if edit mode
-  useEffect(() => {
-    if (!isEditMode) return;
+  // // Fetch role if edit mode
+  // useEffect(() => {
+  //   if (!isEditMode) return;
 
-    const fetchRole = async () => {
-      const docRef = doc(db, "roles", id!);
-      const snapshot = await getDoc(docRef);
+  //   const fetchRole = async () => {
+  //     const docRef = doc(db, "roles", id!);
+  //     const snapshot = await getDoc(docRef);
 
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setRoleName(data.name);
-        setPermissions(data.permissions);
-      }
-    };
+  //     if (snapshot.exists()) {
+  //       const data = snapshot.data();
+  //       setRoleName(data.name);
+  //       setPermissions(data.permissions);
+  //     }
+  //   };
 
-    fetchRole();
-  }, [id]);
+  //   fetchRole();
+  // }, [id]);
+
+  const { data: roles } = useaddedituser<Role>("roles");
 
   const handleToggle = (module: Module, action: Action) => {
     setPermissions((prev) => {

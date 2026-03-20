@@ -9,7 +9,7 @@ import { signupSchema } from "../../../components/validation";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../services/firebase";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, Timestamp } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Button from "../../../components/button";
@@ -42,7 +42,7 @@ const Signup = () => {
         firstName: values.firstname,
         lastName: values.lastname,
         role: "user",
-        createdAt: serverTimestamp(),
+        createdAt: Timestamp,
       });
 
       toast.success("User Registered Successfully!", {

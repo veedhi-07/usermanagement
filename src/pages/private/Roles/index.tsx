@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  collection,
-  getDocs,
+  // collection,
+  // getDocs,
   deleteDoc,
   doc,
   Timestamp,
@@ -13,25 +13,21 @@ import UserPagination from "../../../components/pagination";
 import { SearchIcon, Trash, PlusSquare, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Can from "../../../components/Can";
-import { usePermission } from "../../../hooks/usePermission";
+import { usePermission } from "../../../hooks/use-permission/usePermission";
 import DeleteModal from "../../../components/deletemodal";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadSpinner from "../../../components/spinner";
+import { useaddedituser } from "../../../hooks/use-addedituser/useaddedituser";
 import FormField from "../../../components/form-field/formfield";
-type Role = {
-  id: string;
-  name: string;
-  permissions: Permissions;
-  createdAt?: Timestamp;
-};
+import type { User, Role, ProfileData } from "../../../../src/types/index";
 
 const Roles = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const [roles, setRoles] = useState<Role[]>([]);
+  // const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -66,34 +62,34 @@ const Roles = () => {
     return count;
   };
 
-  // Fetch Roles
-  useEffect(() => {
-    fetchRoles();
-  }, []);
+  // // Fetch Roles
+  // useEffect(() => {
+  //   fetchRoles();
+  // }, []);
 
-  const fetchRoles = async () => {
-    try {
-      const snapshot = await getDocs(collection(db, "roles"));
-      const data: Role[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Role, "id">),
-      }));
+  // const fetchRoles = async () => {
+  //   try {
+  //     const snapshot = await getDocs(collection(db, "roles"));
+  //     const data: Role[] = snapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...(doc.data() as Omit<Role, "id">),
+  //     }));
 
-      setRoles(data);
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  //     setRoles(data);
+  //   } catch (error) {
+  //     console.error("Error fetching roles:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const { data: roles, loading } = useaddedituser<Role>("roles");
   // DeleteRole
   const handleDelete = async () => {
     if (!selectedUserId) return;
 
     try {
       await deleteDoc(doc(db, "roles", selectedUserId));
-      setRoles((prev) => prev.filter((r) => r.id !== selectedUserId));
+      toast.success("Role Deleted");
       setShowDeleteModal(false);
       setSelectedUserId(null);
     } catch (error) {

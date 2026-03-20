@@ -5,10 +5,12 @@ import FormField from "../form-field/formfield";
 import Button from "../button";
 import { signupSchema } from "../validation";
 import { db, secondaryAuth } from "../../services/firebase";
-import type { User } from "../../pages/private/users";
+import type { User, ProfileData } from "../../../src/types/index";
+import userService from "../../services/userService";
 import {
   setDoc,
   doc,
+  Timestamp,
   serverTimestamp,
   updateDoc,
   getDocs,
@@ -18,7 +20,8 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
 import CommonModall from "../commonmodal";
-
+import { useaddedituser } from "../../hooks/use-addedituser/useaddedituser";
+import type { Role } from "../../types/index";
 interface ModalProps {
   className?: string;
   disabled?: boolean;
@@ -37,22 +40,9 @@ const UserModal: FC<ModalProps> = ({
   mode = "add",
   onSave,
 }) => {
-  const [roles, setRoles] = useState<string[]>([]);
+  const { data: roles } = useaddedituser<Role>("roles");
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "roles"));
-        const roleList = snapshot.docs.map((doc) => doc.data().name);
-        setRoles(roleList);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchRoles();
-  }, []);
-
+  console.log("ROLES:", roles);
   const initialValues = {
     firstname: user?.firstName || "",
     lastname: user?.lastName || "",
@@ -81,7 +71,7 @@ const UserModal: FC<ModalProps> = ({
           firstName: values.firstname,
           lastName: values.lastname,
           role: values.role,
-          createdAt: serverTimestamp(),
+          createdAt: Timestamp.now(),
         });
 
         toast.success("User Created");
@@ -105,7 +95,12 @@ const UserModal: FC<ModalProps> = ({
           createdAt: user.createdAt,
         };
 
-        await updateDoc(doc(db, "users", user.id), updatedUser);
+        await updateDoc(doc(db, "users", user.id), {
+          email: values.email,
+          firstName: values.firstname,
+          lastName: values.lastname,
+          role: values.role,
+        });
 
         toast.success("User Updated");
 
@@ -215,10 +210,10 @@ const UserModal: FC<ModalProps> = ({
                 <option value="">Select Role</option>
 
                 {roles
-                  .filter((role) => role.toLowerCase() !== "admin")
+                  .filter((role) => role.name.toLowerCase() !== "admin")
                   .map((role) => (
-                    <option key={role} value={role}>
-                      {role}
+                    <option key={role.id} value={role.id}>
+                      {role.name}
                     </option>
                   ))}
               </select>

@@ -17,6 +17,7 @@ import {
 } from "../src/redux/reducer/permissionSlice";
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { Suspense } from "react";
 import LoadSpinner from "./components/spinner";
 
 const Login = React.lazy(() => import("./pages/public/login"));
@@ -83,28 +84,30 @@ const App = () => {
   return (
     <>
       <ToastContainer position="top-center" autoClose={2000} />
-      <Routes>
-        {!profile?.uid ? (
-          <>
-            <Route path="/" element={<Login />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/myprofile" element={<MyProfile />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/roles" element={<Roles />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/add-role" element={<AddRole />} />
-            <Route path="/edit-role/:id" element={<AddRole />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </>
-        )}
-      </Routes>
+      <Suspense fallback={<LoadSpinner />}>
+        <Routes>
+          {!profile?.uid ? (
+            <>
+              <Route path="/" element={<Login />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/myprofile" element={<MyProfile />} />
+              <Route path="/users" element={<Users />} />
+              <Route path="/roles" element={<Roles />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/add-role" element={<AddRole />} />
+              <Route path="/edit-role/:id" element={<AddRole />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </>
+          )}
+        </Routes>
+      </Suspense>
     </>
   );
 };

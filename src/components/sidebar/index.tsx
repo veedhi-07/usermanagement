@@ -7,7 +7,7 @@ import {
   Megaphone,
   LayoutDashboard,
 } from "lucide-react";
-import { usePermission } from "../../hooks/usePermission";
+import { usePermission } from "../../hooks/use-permission/usePermission";
 
 interface SidebarProps {
   open: boolean;

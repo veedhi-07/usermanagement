@@ -7,20 +7,18 @@ import { Card, Avatar } from "flowbite-react";
 import type { ProfileData } from "../../../services/userService";
 import Sidebar from "../../../components/sidebar/index";
 import Navbar from "../../../components/navbar/index";
-import FormField from "../../../components/form-field/formfield"
+import FormField from "../../../components/form-field/formfield";
 import LoadSpinner from "../../../components/spinner";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { db } from "../../../services/firebase";
-import { getDocs, collection } from "firebase/firestore";
+
 import Button from "../../../components/button";
 
 const MyProfile = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile);
-  const [roles, setRoles] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editable, setEditable] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -33,18 +31,6 @@ const MyProfile = () => {
     role: "",
   });
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "roles"));
-        const roleList = snapshot.docs.map((doc) => doc.data().name);
-        setRoles(roleList);
-      } catch (error) {
-        console.log("Error", error);
-      }
-    };
-    fetchRoles();
-  }, []);
 
   //  Validation Schema
   const validationSchema = Yup.object({

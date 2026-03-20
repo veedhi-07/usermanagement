@@ -22,19 +22,11 @@ import UserPagination from "../../../components/pagination";
 import DeleteModal from "../../../components/deletemodal";
 import LoadSpinner from "../../../components/spinner";
 import Can from "../../../components/Can";
-import { usePermission } from "../../../hooks/usePermission";
+import { usePermission } from "../../../hooks/use-permission/usePermission";
 import { ToastContainer } from "react-toastify";
 import FormField from "../../../components/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
-
-export type User = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  createdAt?: Timestamp;
-};
+import type { User, Role, ProfileData } from "../../../../src/types/index";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);

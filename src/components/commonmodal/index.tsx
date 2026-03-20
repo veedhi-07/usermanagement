@@ -42,7 +42,7 @@ const CommonModall: FC<commonProps> = ({
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div
         {...rest}
-        className={`relative bg-gray-100 p-6 rounded-lg shadow-lg w-[420px] ${className}`}
+        className={`relative bg-white p-6 rounded-lg shadow-lg w-[420px] ${className}`}
         onClick={(e) => {
           e.stopPropagation();
           rest.onClick?.(e);
