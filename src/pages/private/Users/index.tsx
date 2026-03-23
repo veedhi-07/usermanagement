@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
-  collection,
-  getDocs,
-  deleteDoc,
-  doc,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../../../services/firebase";
@@ -19,6 +15,7 @@ import {
 import CommonModal from "../../../components/addeditmodal";
 import { getAuth } from "firebase/auth";
 import UserPagination from "../../../components/pagination";
+import usePagination from "../../../hooks/use-pagination/usepagination";
 import DeleteModal from "../../../components/deletemodal";
 import LoadSpinner from "../../../components/spinner";
 import Can from "../../../components/Can";
@@ -26,45 +23,55 @@ import { usePermission } from "../../../hooks/use-permission/usePermission";
 import { ToastContainer } from "react-toastify";
 import FormField from "../../../components/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
-import type { User, Role, ProfileData } from "../../../../src/types/index";
+import type { User } from "../../../../src/types/index";
+import { usersService } from "../../../services/firebase/usersService";
+import {
+  setUserSearch,
+  setLoading,
+  setUserSort,
+  setSelectedUser,
+  setShowModals,
+  setSidebarOpen,
+} from "../../../redux/reducer/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { can } = usePermission();
   const canDelete = can("user", "delete");
   const canEdit = can("user", "edit");
-
+  const sortOrder = useAppSelector((state) => state.ui.users.sortOrder);
+  const searchQuery = useAppSelector((state) => state.ui.users.searchQuery);
+  const selectedUser = useAppSelector((state) => state.ui.users.selectedUser);
+  const showModals = useAppSelector((state) => state.ui.users.showModals);
+  const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
+  const loading = useAppSelector((state) => state.ui.loading);
+  const dispatch = useAppDispatch();
   const itemsPerPage = 7;
 
   useEffect(() => {
+    dispatch(setLoading(true));
+
     const auth = getAuth();
 
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          const querySnapshot = await getDocs(collection(db, "users"));
+          // const querySnapshot = await getDocs(collection(db, "users"));
 
-          const data: User[] = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...(doc.data() as Omit<User, "id">),
-          }));
-
+          // const data: User[] = querySnapshot.docs.map((doc) => ({
+          //   id: doc.id,
+          //   ...(doc.data() as Omit<User, "id">),
+          // }));
+          const data = await usersService.getAll();
           const filteredUsers = data.filter((u) => u.id !== user.uid);
 
           setUsers(filteredUsers);
         } catch (error) {
           console.error("Error fetching users:", error);
         } finally {
-          setLoading(false);
+          dispatch(setLoading(false));
         }
       }
     });
@@ -77,9 +84,10 @@ const Users = () => {
     if (!selectedUserId) return;
 
     try {
-      await deleteDoc(doc(db, "users", selectedUserId));
+      // await deleteDoc(doc(db, "users", selectedUserId));
+      await usersService.delete(selectedUserId);
       setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
-      setShowDeleteModal(false);
+      dispatch(setShowModals({ add: false, delete: false }));
       setSelectedUserId(null);
     } catch (error) {
       console.error("Delete failed:", error);
@@ -91,31 +99,33 @@ const Users = () => {
       prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
     );
 
-    setSelectedUser(null);
+    dispatch(setSelectedUser(null));
   };
 
-  const toggleSort = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  };
+  // const  sortOrder  = () => {
+  //   setUserSort((prev) => (prev === "asc" ? "desc" : "asc"));
+  // };
 
-  const filteredAndSortedUsers = users
-    .filter((user) => {
-      const fullName =
-        `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase();
-      return fullName.includes(searchQuery.toLowerCase());
-    })
-    .sort((a, b) => {
-      const nameA = (a.firstName || "").toLowerCase();
-      const nameB = (b.firstName || "").toLowerCase();
+  const filteredAndSortedUsers = useMemo(() => {
+    return [...users]
 
-      return sortOrder === "asc"
-        ? nameA.localeCompare(nameB)
-        : nameB.localeCompare(nameA);
-    });
+      .filter((user) => {
+        const fullName =
+          `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase();
+        return fullName.includes(searchQuery.toLowerCase());
+      })
+      .sort((a, b) => {
+        const nameA = (a.firstName || "").toLowerCase();
+        const nameB = (b.firstName || "").toLowerCase();
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedUsers = filteredAndSortedUsers.slice(startIndex, endIndex);
+        return sortOrder === "asc"
+          ? nameA.localeCompare(nameB)
+          : nameB.localeCompare(nameA);
+      });
+  }, [users, searchQuery, sortOrder]);
+  // const startIndex = (currentPage - 1) * itemsPerPage;
+  // const endIndex = startIndex + itemsPerPage;
+  // const paginatedUsers = filteredAndSortedUsers.slice(startIndex, endIndex);
 
   const formatDate = (timestamp?: Timestamp) => {
     if (!timestamp) return "-";
@@ -127,17 +137,26 @@ const Users = () => {
       day: "numeric",
     });
   };
-
+  const {
+    paginatedData: paginatedUsers,
+    totalPages,
+    currentPage,
+    goToPage,
+    nextPage,
+    prevPage,
+  } = usePagination(filteredAndSortedUsers, itemsPerPage);
   if (loading) return <LoadSpinner />;
-
   return (
     <>
       <ToastContainer position="top-center" autoClose={2000} />
       <div className="flex min-h-screen">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar
+          open={sidebarOpen}
+          onClose={() => dispatch(setSidebarOpen(false))}
+        />
 
         <div className="flex-1 flex flex-col">
-          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+          <Navbar onMenuClick={() => dispatch(setSidebarOpen(!sidebarOpen))} />
 
           <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200">
             <h1 className="text-2xl font-bold mb-6">Users List</h1>
@@ -154,8 +173,7 @@ const Users = () => {
                   placeholder="Search by name..."
                   value={searchQuery}
                   onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setCurrentPage(1);
+                    dispatch(setUserSearch(e.target.value));
                   }}
                   className=" pl-10 pr-4 py-2 w-full rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border-none outline-none"
                 />
@@ -169,7 +187,7 @@ const Users = () => {
                     size={28}
                     className="cursor-pointer"
                     onClick={() => {
-                      setShowAddModal(true);
+                      dispatch(setShowModals({ add: true, delete: false }));
                     }}
                   />
                 </div>
@@ -185,7 +203,11 @@ const Users = () => {
                       <div className="flex items-center gap-2">
                         <ArrowUpDown
                           size={18}
-                          onClick={toggleSort}
+                          onClick={() => {
+                            dispatch(
+                              setUserSort(sortOrder === "asc" ? "desc" : "asc"),
+                            );
+                          }}
                           className="cursor-pointer hover:text-blue-600"
                         />
                         <span>First Name</span>
@@ -225,15 +247,20 @@ const Users = () => {
                           size={18}
                           className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
                           onClick={
-                            canEdit ? () => setSelectedUser(user) : undefined
+                            canEdit
+                              ? () => dispatch(setSelectedUser(user))
+                              : undefined
                           }
                         />
+
                         <Trash
                           size={18}
                           className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
                           onClick={() => {
                             setSelectedUserId(user.id);
-                            setShowDeleteModal(true);
+                            dispatch(
+                              setShowModals({ add: false, delete: true }),
+                            );
                           }}
                         />
                       </td>
@@ -244,17 +271,21 @@ const Users = () => {
             </div>
 
             <UserPagination
-              data={filteredAndSortedUsers}
-              itemsPerPage={itemsPerPage}
-              onPageChange={setCurrentPage}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              goToPage={goToPage}
+              nextPage={nextPage}
+              prevPage={prevPage}
             />
 
             {/* Add User */}
 
-            {showAddModal && (
+            {showModals.add && (
               <CommonModal
-                isOpen={showAddModal}
-                onClose={() => setShowAddModal(false)}
+                isOpen={true}
+                onClose={() =>
+                  dispatch(setShowModals({ add: false, delete: false }))
+                }
                 mode="add"
                 onSave={(newUser) => setUsers((prev) => [...prev, newUser])}
               />
@@ -264,16 +295,18 @@ const Users = () => {
             {selectedUser && (
               <CommonModal
                 isOpen={selectedUser !== null}
-                onClose={() => setSelectedUser(null)}
+                onClose={() => dispatch(setSelectedUser(null))}
                 mode="edit"
                 user={selectedUser}
                 onSave={handleSave}
               />
             )}
-            {showDeleteModal && (
+            {showModals.delete && (
               <DeleteModal
-                show={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
+                show={true}
+                onClose={() =>
+                  dispatch(setShowModals({ add: false, delete: false }))
+                }
                 onConfirm={handleDelete}
               />
             )}

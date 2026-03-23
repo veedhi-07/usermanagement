@@ -13,11 +13,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "../../services/firebase/index";
 import { useNavigate } from "react-router-dom";
-
-interface NavProps {
-  onMenuClick: () => void;
-}
-
+import type { NavProps } from "../../types";
 const Nav = ({ onMenuClick }: NavProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 

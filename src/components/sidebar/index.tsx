@@ -8,11 +8,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { usePermission } from "../../hooks/use-permission/usePermission";
-
-interface SidebarProps {
-  open: boolean;
-  onClose: () => void;
-}
+import type {SidebarProps} from "../../types"
 
 const Sidebar = ({ open, onClose }: SidebarProps) => {
   const { can } = usePermission();

@@ -6,32 +6,22 @@ import Button from "../button";
 import { signupSchema } from "../validation";
 import { db, secondaryAuth } from "../../services/firebase";
 import type { User, ProfileData } from "../../../src/types/index";
-import userService from "../../services/userService";
+// import userService from "../../services/userService";
 import {
   setDoc,
   doc,
   Timestamp,
-  serverTimestamp,
+  // serverTimestamp,
   updateDoc,
-  getDocs,
-  collection,
+  // getDocs,
+  // collection,
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
 import CommonModall from "../commonmodal";
-import { useaddedituser } from "../../hooks/use-addedituser/useaddedituser";
-import type { Role } from "../../types/index";
-interface ModalProps {
-  className?: string;
-  disabled?: boolean;
-  isOpen?: boolean;
-  onClose: () => void;
-  title?: string;
-  user?: User;
-  mode?: "add" | "edit";
-  onSave?: (user: User) => void;
-}
+import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
+import type { Role, ModalProps } from "../../types/index";
 
 const UserModal: FC<ModalProps> = ({
   isOpen,
@@ -40,9 +30,8 @@ const UserModal: FC<ModalProps> = ({
   mode = "add",
   onSave,
 }) => {
-  const { data: roles } = useaddedituser<Role>("roles");
+  const { data: roles } = usefirebasecollection<Role>("roles");
 
-  console.log("ROLES:", roles);
   const initialValues = {
     firstname: user?.firstName || "",
     lastname: user?.lastName || "",

@@ -1,4 +1,4 @@
-import CommonModall from "../../components/commonmodal";
+import CommonModall from "../../components/common/commonmodal";
 import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {
@@ -14,9 +14,9 @@ import type { DocumentData } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { User as UserIcon } from "lucide-react";
-import FormField from "../../components/form-field/formfield";
-import Button from "../../components/button";
-import type { User, Role, ProfileData } from "../../types/index";
+import FormField from "../../components/common/form-field/formfield";
+import Button from "../../components/common/button";
+import type { User } from "../../types/index";
 type SpaceModalProps = {
   onClose: () => void;
   isOpen: boolean;

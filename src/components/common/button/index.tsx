@@ -1,16 +1,6 @@
 import type React from "react";
 import type { FC } from "react";
-import type { ReactNode } from "react";
-
-interface ButtonProps {
-  type?: "submit" | "reset" | "button";
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  className?: string;
-  error?: boolean;
-  disabled?: boolean;
-  success?: boolean;
-  children: ReactNode;
-}
+import type { ButtonProps } from "../../types";
 
 //new type for native elements and omit to handle custom
 type NativeButtonProps = Omit<

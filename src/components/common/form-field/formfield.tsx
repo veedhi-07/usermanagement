@@ -2,28 +2,14 @@ import { Checkbox, Label, TextInput } from "flowbite-react";
 import { useState } from "react";
 import type { FC } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import type { FormProps } from "../../types";
 
-interface Props {
-  id?: string;
-  name?: string;
-  label?: string;
-  type?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  error?: string;
-  touched?: boolean;
-  disabled?: boolean;
-  checked?: boolean;
-  className?: string;
-}
 type NativeInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
-  keyof Props
+  keyof FormProps
 >;
 
-type FormComponentProps = Props & NativeInputProps;
+type FormComponentProps = FormProps & NativeInputProps;
 const FormField: FC<FormComponentProps> = ({
   id,
   label,

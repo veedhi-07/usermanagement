@@ -5,11 +5,7 @@ import { toast } from "react-toastify";
 import { Formik, Form } from "formik";
 import Button from "../../components/button";
 import CommonModall from "../../components/commonmodal";
-
-interface ForgotPasswordModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import type { ForgotPasswordModalProps } from "../../types/index";
 
 export default function ForgotPasswordModal({
   isOpen,

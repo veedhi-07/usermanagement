@@ -1,4 +1,4 @@
-import CommonModall from "../../components/commonmodal";
+import CommonModall from "../../components/common/commonmodal";
 import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {
@@ -14,9 +14,9 @@ import type { DocumentData } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { User as UserIcon } from "lucide-react";
-import FormField from "../../components/form-field/formfield";
-import Button from "../../components/button";
-import type { User, Role, ProfileData } from "../../../src/types/index";
+import FormField from "../../components/common/form-field/formfield";
+import Button from "../../components/common/button";
+import type { User } from "../../../src/types/index";
 type DirectChatModalProps = {
   onClose: () => void;
   onUserSelect: (users: User) => void;
@@ -36,7 +36,6 @@ const DirectChatModal = ({
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hasMore, setHasMore] = useState(true);
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const parentRef = useRef<HTMLDivElement>(null);
 

@@ -1,5 +1,6 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import permissionReducer from "./reducer/permissionSlice";
+import uiReducer from "./reducer/uiSlice";
 import profileReducer from "./reducer/profileSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -7,12 +8,13 @@ import storage from "redux-persist/lib/storage";
 const rootReducer = combineReducers({
   profile: profileReducer,
   permission: permissionReducer,
+  ui: uiReducer,
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["profile"], // only persist profile
+  // whitelist: ["profile"], // only persist profile
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

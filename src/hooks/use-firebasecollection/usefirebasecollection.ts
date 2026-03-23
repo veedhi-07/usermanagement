@@ -3,14 +3,14 @@ import { db } from "../../services/firebase/index";
 import { collection, getDocs } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 
-export const useaddedituser = <T>(
+export const usefirebasecollection = <T>(
   collectionName: string,
   dependencies: any[] = [],
 ) => {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   useEffect(() => {
+    setLoading(true);
     const unsubscribe = onSnapshot(
       collection(db, collectionName),
       (snapshot) => {
@@ -21,12 +21,14 @@ export const useaddedituser = <T>(
         })) as T[];
 
         setData(result);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
       },
     );
 
     return () => unsubscribe();
-  }, [collectionName]);
+  }, [collectionName, ...dependencies]);
 
-  return { data, loading, error };
+  return { data, loading };
 };

@@ -4,25 +4,19 @@ import { setProfile } from "../../../redux/reducer/profileSlice";
 import userService from "../../../services/userService";
 import { getAuth } from "firebase/auth";
 import { Card, Avatar } from "flowbite-react";
-import type { ProfileData } from "../../../services/userService";
+import type { ProfileData } from "../../../types";
 import Sidebar from "../../../components/sidebar/index";
 import Navbar from "../../../components/navbar/index";
-import FormField from "../../../components/form-field/formfield";
-import LoadSpinner from "../../../components/spinner";
+import FormField from "../../../components/common/form-field/formfield";
+import LoadSpinner from "../../../components/common/spinner";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-import Button from "../../../components/button";
+import { setSidebarOpen, setLoading } from "../../../redux/reducer/uiSlice";
+import Button from "../../../components/common/button";
 
 const MyProfile = () => {
-  const dispatch = useAppDispatch();
-  const profile = useAppSelector((state) => state.profile);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [editable, setEditable] = useState(false);
-  const [loading, setLoading] = useState(true);
-
   const [initialValues, setInitialValues] = useState<ProfileData>({
     firstName: "",
     lastName: "",
@@ -30,7 +24,11 @@ const MyProfile = () => {
     phone: "",
     role: "",
   });
-
+  const [editable, setEditable] = useState(false);
+  const dispatch = useAppDispatch();
+  const profile = useAppSelector((state) => state.profile);
+  const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
+  const loading = useAppSelector((state) => state.ui.loading);
 
   //  Validation Schema
   const validationSchema = Yup.object({
@@ -45,6 +43,7 @@ const MyProfile = () => {
   });
 
   useEffect(() => {
+    dispatch(setLoading(true));
     const loadProfile = async () => {
       const auth = getAuth();
       const user = auth.currentUser;
@@ -65,7 +64,7 @@ const MyProfile = () => {
         phone: data.phone || "",
       });
 
-      setLoading(false);
+      dispatch(setLoading(false));
     };
 
     loadProfile();
@@ -76,10 +75,13 @@ const MyProfile = () => {
   return (
     <>
       <div className="flex min-h-screen bg-gray-100">
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar
+          open={sidebarOpen}
+          onClose={() => dispatch(setSidebarOpen(false))}
+        />
 
         <div className="flex-1 flex flex-col">
-          <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+          <Navbar onMenuClick={() => dispatch(setSidebarOpen(!sidebarOpen))} />
 
           <main className="p-8 bg-linear-to-br from-blue-100 to-blue-200 flex-1">
             {/* PROFILE HEADER */}

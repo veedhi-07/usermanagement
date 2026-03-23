@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
 import { usePermission } from "../hooks/use-permission/usePermission";
-import type { ModuleKey, ActionKey } from "../../src/redux/reducer/permissionSlice";
-
-interface CanProps {
-  module: ModuleKey;
-  action: ActionKey;
-  children: ReactNode;
-}
+import type { CanProps } from "../types";
 
 const Can = ({ module, action, children }: CanProps) => {
   const { can } = usePermission();

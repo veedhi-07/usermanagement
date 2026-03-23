@@ -18,7 +18,7 @@ import {
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { Suspense } from "react";
-import LoadSpinner from "./components/spinner";
+import LoadSpinner from "./components/common/spinner";
 
 const Login = React.lazy(() => import("./pages/public/login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
@@ -26,7 +26,7 @@ const Dashboard = React.lazy(() => import("./pages/private/dashboard"));
 const MyProfile = React.lazy(() => import("./pages/private/myprofile"));
 const Users = React.lazy(() => import("./pages/private/users"));
 const Roles = React.lazy(() => import("./pages/private/roles"));
-const AddRole = React.lazy(() => import("./pages/private/addrole"));
+const AddRole = React.lazy(() => import("./pages/private/addeditrole"));
 const Chat = React.lazy(() => import("./pages/private/chats/index"));
 
 const App = () => {

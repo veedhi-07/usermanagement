@@ -28,53 +28,62 @@ import DirectChatModal from "../../../modals/directchatmodal";
 import SpaceModal from "../../../modals/spacemodal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
-import Button from "../../../components/button";
-import LoadSpinner from "../../../components/spinner";
-import FormField from "../../../components/form-field/formfield";
-import type { User, Role, ProfileData } from "../../../../src/types/index";
+import Button from "../../../components/common/button";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import LoadSpinner from "../../../components/common/spinner";
+import { usersService } from "../../../services/firebase/usersService";
+import FormField from "../../../components/common/form-field/formfield";
+import type { User, conversation, Message } from "../../../../src/types/index";
 import { toast } from "react-toastify";
+import {
+  setSpaceName,
+  setIsGroupChat,
+  setShowDirectChatModal,
+  setLoadingChats,
+  setLoadingUsers,
+  setShowSpaceModal,
+} from "../../../redux/reducer/uiSlice";
 type Props = {
   sidebarOpen: boolean;
 };
 
-export type conversation = {
-  id: string;
-  type: "private" | "group";
-  createdAt: Timestamp;
-  participants: string[];
-  lastMessage?: string;
-  senderId: string;
-  text: string;
-  name?: string;
-};
-
-interface Message {
-  id: string;
-  text: string;
-  senderId: string;
-  type: string;
-  createdAt: Timestamp;
-  seenBy: string[];
-}
 const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [spaceName, setSpaceName] = useState<string | null>(null);
-  const [isGroupChat, setIsGroupChat] = useState(false);
+  // const [spaceName, setSpaceName] = useState<string | null>(null);
+  // const [isGroupChat, setIsGroupChat] = useState(false);
   const [unreadMsgCount, setUnreadMsgCount] = useState<Record<string, number>>(
     {},
   );
-  const [ShowSpaceModal, setShowSpaceModal] = useState(false);
-  const [ShowDirectChatModal, setShowDirectChatModal] = useState(false);
+  // const [ShowSpaceModal, setShowSpaceModal] = useState(false);
+  // const [ShowDirectChatModal, setShowDirectChatModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
   const [showDirectChats, setShowDirectChats] = useState(true);
   const [directChats, setDirectChats] = useState<conversation[]>([]);
-  const [loadingChats, setLoadingChats] = useState(true);
-  const [loadingUsers, setLoadingUsers] = useState(true);
+  // const [loadingChats, setLoadingChats] = useState(true);
+  // const [loadingUsers, setLoadingUsers] = useState(true);
   const [showSpaces, setShowSpaces] = useState(true);
   const [spaces, setSpaces] = useState<conversation[]>([]);
   const [userMap, setUserMap] = useState<Record<string, User>>({});
+  const spaceName = useAppSelector(
+    (state) => state.ui.chats?.spaceName ?? null,
+  );
+  const isGroupChat = useAppSelector(
+    (state) => state.ui.chats?.isGroupChat ?? null,
+  );
+  // const showSpaces = useAppSelector((state) => state.ui.chats.showSpaces);
+  const ShowSpaceModal = useAppSelector(
+    (state) => state.ui.chats?.showSpaceModal ?? null,
+  );
+  const ShowDirectChatModal = useAppSelector(
+    (state) => state.ui.chats?.ShowDirectChatModal ?? null,
+  );
+  const loadingChats = useAppSelector((state) => state.ui.chats.loadingChats);
+  const loadingUsers = useAppSelector(
+    (state) => state.ui.chats?.loadingUsers ?? null,
+  );
+  const dispatch = useAppDispatch();
   const auth = getAuth();
   const currentUser = auth.currentUser;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -247,7 +256,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   useEffect(() => {
     if (!currentUser) return;
 
-    setLoadingChats(true);
+    dispatch(setLoadingChats(true));
     const q = query(
       collection(db, "conversation"),
       where("participants", "array-contains", currentUser.uid),
@@ -263,7 +272,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
 
       setDirectChats(direct);
       setSpaces(groups);
-      setLoadingChats(false);
+      dispatch(setLoadingChats(false));
     });
     return () => unsubscribe();
   }, [currentUser]);
@@ -271,25 +280,24 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   // display chat under direct section
   useEffect(() => {
     const fetchUsers = async () => {
-      setLoadingUsers(true);
-      const snapshot = await getDocs(collection(db, "users"));
+      dispatch(setLoadingUsers(true));
+      // const snapshot = await getDocs(collection(db, "users"));
+      try {
+        const users = await usersService.getAll();
 
-      const map: Record<string, User> = {};
+        const map: Record<string, User> = {};
 
-      snapshot.docs.forEach((doc) => {
-        const data = doc.data();
-
-        map[doc.id] = {
-          id: doc.id,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          role: data.role,
-        };
-      });
-
-      setUserMap(map);
-      setLoadingUsers(false);
+        users.forEach((user) => {
+          map[user.id] = user;
+        });
+        setUserMap(map);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        dispatch(setLoadingUsers(false));
+      }
     };
+
     fetchUsers();
   }, []);
   const currentUserData = currentUser ? userMap[currentUser.uid] : null;
@@ -329,7 +337,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             <div className="pt-3 ml-16 cursor-pointer text-white">
               <PlusIcon
                 size={24}
-                onClick={() => setShowDirectChatModal(true)}
+                onClick={() => dispatch(setShowDirectChatModal(true))}
               />
             </div>
           </span>
@@ -354,7 +362,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
 
                     setConversationId(chat.id);
                     setSelectedUser(user);
-                    setIsGroupChat(false);
+                    dispatch(setIsGroupChat(false));
                   }}
                 >
                   <div className="flex flex-row items-center gap-2">
@@ -399,7 +407,10 @@ const ChatSection = ({ sidebarOpen }: Props) => {
           </span>
           <span>
             <div className="pt-30 ml-34 cursor-pointer text-white">
-              <PlusIcon size={24} onClick={() => setShowSpaceModal(true)} />
+              <PlusIcon
+                size={24}
+                onClick={() => dispatch(setShowSpaceModal(true))}
+              />
             </div>
           </span>
         </div>
@@ -411,8 +422,8 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                 className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
                 onClick={() => {
                   setConversationId(space.id);
-                  setIsGroupChat(true);
-                  setSpaceName(space.name || "Group");
+                  dispatch(setIsGroupChat(true));
+                  dispatch(setSpaceName(space.name || "Group"));
                 }}
               >
                 <span className=" pr-36">{space.name}</span>
@@ -442,7 +453,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                       className="text-white cursor-pointer"
                       size={26}
                       onClick={() => {
-                        setShowDirectChatModal(true);
+                        dispatch(setShowDirectChatModal(true));
                       }}
                     />
                   )}
@@ -452,8 +463,8 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                     className="text-white cursor-pointer"
                     onClick={() => {
                       setConversationId(null);
-                      setIsGroupChat(false);
-                      setSpaceName(null);
+                      dispatch(setIsGroupChat(false));
+                      dispatch(setSpaceName(null));
                       setSelectedUser(null);
                       setMessages([]);
                     }}
@@ -476,7 +487,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                   onClick={() => {
                     setConversationId(null);
                     setSelectedUser(null);
-                    setIsGroupChat(false);
+                    dispatch(setIsGroupChat(false));
                     setMessages([]);
                   }}
                   size={26}
@@ -565,7 +576,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       {ShowDirectChatModal && (
         <DirectChatModal
           isOpen={ShowDirectChatModal}
-          onClose={() => setShowDirectChatModal(false)}
+          onClose={() => dispatch(setShowDirectChatModal(false))}
           isGroup={isGroupChat}
           onUserSelect={async (user) => {
             if (!currentUser) return;
@@ -596,7 +607,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                 toast.error("Something went wrong");
               }
 
-              setShowDirectChatModal(false);
+              dispatch(setShowDirectChatModal(false));
               return;
             }
 
@@ -623,18 +634,18 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               if (convoId) setConversationId(convoId);
             }
 
-            setShowDirectChatModal(false);
+            dispatch(setShowDirectChatModal(false));
           }}
         />
       )}
       {ShowSpaceModal && (
         <SpaceModal
           isOpen={ShowSpaceModal}
-          onClose={() => setShowSpaceModal(false)}
+          onClose={() => dispatch(setShowSpaceModal(false))}
           onUserSelect={async (user, spaceName) => {
             if (!currentUser) return;
-            setIsGroupChat(true);
-            setSpaceName(spaceName || "Group");
+            dispatch(setIsGroupChat(true));
+            dispatch(setSpaceName(spaceName || "Group"));
             setSelectedUser(null);
 
             const participantIds = Array.from(
@@ -653,7 +664,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             );
 
             setConversationId(conversationRef.id);
-            setShowSpaceModal(false);
+            dispatch(setShowSpaceModal(false));
           }}
         />
       )}

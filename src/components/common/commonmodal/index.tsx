@@ -1,25 +1,6 @@
-import type { ReactNode } from "react";
 import { X } from "lucide-react";
 import type { FC } from "react";
-import type { User } from "../../pages/private/users";
-
-interface ModalProps {
-  className?: string;
-  disabled?: boolean;
-  isOpen?: boolean;
-  onClose: () => void;
-  title?: string;
-  children?: ReactNode;
-  footer?: ReactNode;
-  onSubmit?: () => void;
-  user?: User;
-  onSave?: (user: User) => void;
-  mode?: "add" | "edit";
-}
-// type coomonPropss = Omit<
-//   React.HTMLAttributes<HTMLButtonElement>,
-//   keyof ModalProps
-// >;
+import type { ModalProps } from "../../../types/index";
 
 type commonProps = React.HTMLAttributes<HTMLDivElement> & ModalProps;
 
