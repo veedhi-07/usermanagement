@@ -1,6 +1,6 @@
 import { Card } from "flowbite-react";
-import Sidebar from "../../../components/sidebar";
-import Navbar from "../../../components/navbar";
+import Sidebar from "../../../components/layout/sidebar";
+import Navbar from "../../../components/layout/navbar";
 import { useState } from "react";
 import { useAppSelector } from "../../../redux/hooks";
 

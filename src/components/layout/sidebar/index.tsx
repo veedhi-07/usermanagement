@@ -7,8 +7,8 @@ import {
   Megaphone,
   LayoutDashboard,
 } from "lucide-react";
-import { usePermission } from "../../hooks/use-permission/usePermission";
-import type {SidebarProps} from "../../types"
+import { usePermission } from "../../../hooks/use-permission/usePermission";
+import type {SidebarProps} from "../../../types"
 
 const Sidebar = ({ open, onClose }: SidebarProps) => {
   const { can } = usePermission();

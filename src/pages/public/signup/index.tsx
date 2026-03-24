@@ -1,18 +1,18 @@
-import AuthLayout from "../../../components/auth-layout";
-import FormField from "../../../components/form-field/formfield";
-import signupImage from "../../../assets/signup.png";
+import AuthLayout from "../../../components/layout/auth-layout";
+import FormField from "../../../components/common/form-field/formfield";
+import signupImage from "../../../../assets/signup.png";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
-import { signupSchema } from "../../../components/validation";
+import { signupSchema } from "../../../utils/validation";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../services/firebase";
 import { setDoc, doc, Timestamp } from "firebase/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
-import Button from "../../../components/button";
+import Button from "../../../components/common/button";
 
 const Signup = () => {
   const navigate = useNavigate();

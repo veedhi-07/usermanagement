@@ -1,5 +1,5 @@
-import Navbar from "../../../components/navbar";
-import Sidebar from "../../../components/sidebar";
+import Navbar from "../../../components/layout/navbar";
+import Sidebar from "../../../components/layout/sidebar";
 import { useState } from "react";
 import ChatSection from "./chatsection";
 

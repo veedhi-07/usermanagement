@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { deleteDoc, doc, Timestamp } from "firebase/firestore";
 import { db } from "../../../services/firebase";
-import Sidebar from "../../../components/sidebar";
-import Navbar from "../../../components/navbar";
+import Sidebar from "../../../components/layout/sidebar";
+import Navbar from "../../../components/layout/navbar";
 import UserPagination from "../../../components/pagination";
 import usePagination from "../../../hooks/use-pagination/usepagination";
 import {

@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import type { FC } from "react";
 import { Formik, Form } from "formik";
-import FormField from "../form-field/formfield";
-import Button from "../button";
-import { signupSchema } from "../validation";
+import FormField from "../../components/common/form-field/formfield";
+import Button from "../common/button";
+import { signupSchema } from "../../utils/validation";
 import { db, secondaryAuth } from "../../services/firebase";
-import type { User, ProfileData } from "../../../src/types/index";
+import type { User} from "../../../src/types/index";
 // import userService from "../../services/userService";
 import {
   setDoc,
@@ -19,7 +19,7 @@ import {
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
-import CommonModall from "../commonmodal";
+import CommonModall from "../common/common-modal";
 import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
 import type { Role, ModalProps } from "../../types/index";
 

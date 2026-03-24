@@ -2,7 +2,7 @@ import { Checkbox, Label, TextInput } from "flowbite-react";
 import { useState } from "react";
 import type { FC } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import type { FormProps } from "../../types";
+import type { FormProps } from "../../../types/index";
 
 type NativeInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,

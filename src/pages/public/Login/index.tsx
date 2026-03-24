@@ -1,5 +1,5 @@
-import AuthLayout from "../../../components/auth-layout";
-import FormField from "../../../components/form-field/formfield";
+import AuthLayout from "../../../components/layout/auth-layout";
+import FormField from "../../../components/common/form-field/formfield";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
 import { doc, getDoc } from "firebase/firestore";
@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
-import { loginSchema } from "../../../components/validation";
+import { loginSchema } from "../../../utils/validation";
 import ForgotPasswordModal from "../../../../src/modals/forgotpassword";
 import {
   signInWithEmailAndPassword,
@@ -18,7 +18,7 @@ import { auth } from "../../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import Button from "../../../components/button";
+import Button from "../../../components/common/button";
 
 const Login = () => {
   const initialValues = { email: "", password: "" };

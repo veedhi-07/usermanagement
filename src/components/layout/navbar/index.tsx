@@ -11,9 +11,9 @@ import {
 } from "flowbite-react";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
-import { auth } from "../../services/firebase/index";
+import { auth } from "../../../services/firebase";
 import { useNavigate } from "react-router-dom";
-import type { NavProps } from "../../types";
+import type { NavProps } from "../../../types";
 const Nav = ({ onMenuClick }: NavProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
