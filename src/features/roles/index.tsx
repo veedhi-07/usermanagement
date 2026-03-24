@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { deleteDoc, doc, Timestamp } from "firebase/firestore";
-import { db } from "../../../services/firebase";
-import Sidebar from "../../../components/layout/sidebar";
-import Navbar from "../../../components/layout/navbar";
-import UserPagination from "../../../components/pagination";
-import usePagination from "../../../hooks/use-pagination/usepagination";
+import { db } from "../../services/firebase";
+import Sidebar from "../../components/layout/sidebar";
+import Navbar from "../../components/layout/navbar";
+import UserPagination from "../../components/pagination";
+import usePagination from "../../hooks/use-pagination/usepagination";
 import {
   SearchIcon,
   Trash,
@@ -13,24 +13,24 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Can from "../../../components/Can";
-import { usePermission } from "../../../hooks/use-permission/usePermission";
-import DeleteModal from "../../../components/deletemodal";
+import Can from "../../components/Can";
+import { usePermission } from "../../hooks/use-permission/usePermission";
+import DeleteModal from "../../components/deletemodal";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoadSpinner from "../../../components/common/spinner";
-import { usefirebasecollection } from "../../../hooks/use-firebasecollection/usefirebasecollection";
-import FormField from "../../../components/common/form-field/formfield";
-import type { Role } from "../../../../src/types/index";
+import LoadSpinner from "../../components/common/spinner";
+import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
+import FormField from "../../components/common/form-field/formfield";
+import type { Role } from "../../../src/types/index";
 import { useMemo } from "react";
 import {
   setRoleSearch,
   setRoleSort,
   setShowDeleteModal,
   setSidebarOpen,
-} from "../../../redux/reducer/uiSlice";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+} from "../../redux/reducer/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Roles = () => {
   const navigate = useNavigate();

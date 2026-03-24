@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
-import { db } from "../../../services/firebase";
+import { db } from "../../services/firebase";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import FormField from "../../../components/common/form-field/formfield";
-import Button from "../../../components/common/button";
-import Sidebar from "../../../components/layout/sidebar";
-import Navbar from "../../../components/layout/navbar";
+import FormField from "../../components/common/form-field/formfield";
+import Button from "../../components/common/button";
+import Sidebar from "../../components/layout/sidebar";
+import Navbar from "../../components/layout/navbar";
 type Module = "user" | "chat" | "role" | "campaign";
 type Action = "view" | "add" | "edit" | "delete";
 

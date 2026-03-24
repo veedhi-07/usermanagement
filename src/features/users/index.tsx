@@ -1,8 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Timestamp } from "firebase/firestore";
-import { db } from "../../../services/firebase";
-import Sidebar from "../../../components/layout/sidebar";
-import Navbar from "../../../components/layout/navbar";
+import Sidebar from "../../components/layout/sidebar";
+import Navbar from "../../components/layout/navbar";
 import {
   Pencil,
   Trash,
@@ -10,19 +9,19 @@ import {
   SearchIcon,
   PlusSquare,
 } from "lucide-react";
-import CommonModal from "../../../components/addeditmodal";
+import CommonModal from "../../components/addeditmodal";
 import { getAuth } from "firebase/auth";
-import UserPagination from "../../../components/pagination";
-import usePagination from "../../../hooks/use-pagination/usepagination";
-import DeleteModal from "../../../components/deletemodal";
-import LoadSpinner from "../../../components/common/spinner";
-import Can from "../../../components/Can";
-import { usePermission } from "../../../hooks/use-permission/usePermission";
+import UserPagination from "../../components/pagination";
+import usePagination from "../../hooks/use-pagination/usepagination";
+import DeleteModal from "../../components/deletemodal";
+import LoadSpinner from "../../components/common/spinner";
+import Can from "../../components/Can";
+import { usePermission } from "../../hooks/use-permission/usePermission";
 import { ToastContainer } from "react-toastify";
-import FormField from "../../../components/common/form-field/formfield";
+import FormField from "../../components/common/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
-import type { User } from "../../../../src/types/index";
-import { usersService } from "../../../services/firebase/usersService";
+import type { User } from "../../../src/types/index";
+import { usersService } from "../../services/firebase/usersService";
 import {
   setUserSearch,
   setLoading,
@@ -30,8 +29,8 @@ import {
   setSelectedUser,
   setShowModals,
   setSidebarOpen,
-} from "../../../redux/reducer/uiSlice";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+} from "../../redux/reducer/uiSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);

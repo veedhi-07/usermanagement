@@ -1,8 +1,8 @@
 import { Card } from "flowbite-react";
-import Sidebar from "../../../components/layout/sidebar";
-import Navbar from "../../../components/layout/navbar";
+import Sidebar from "../../components/layout/sidebar";
+import Navbar from "../../components/layout/navbar";
 import { useState } from "react";
-import { useAppSelector } from "../../../redux/hooks";
+import { useAppSelector } from "../../redux/hooks";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);

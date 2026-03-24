@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { setProfile } from "../../../redux/reducer/profileSlice";
-import userService from "../../../services/userService";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setProfile } from "../../redux/reducer/profileSlice";
+import userService from "../../services/userService";
 import { getAuth } from "firebase/auth";
 import { Card, Avatar } from "flowbite-react";
-import type { ProfileData } from "../../../types";
-import Sidebar from "../../../components/layout/sidebar";
-import Navbar from "../../../components/layout/navbar";
-import FormField from "../../../components/common/form-field/formfield";
-import LoadSpinner from "../../../components/common/spinner";
+import type { ProfileData } from "../../types";
+import Sidebar from "../../components/layout/sidebar";
+import Navbar from "../../components/layout/navbar";
+import FormField from "../../components/common/form-field/formfield";
+import LoadSpinner from "../../components/common/spinner";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { setSidebarOpen, setLoading } from "../../../redux/reducer/uiSlice";
-import Button from "../../../components/common/button";
+import { setSidebarOpen, setLoading } from "../../redux/reducer/uiSlice";
+import Button from "../../components/common/button";
 
 const MyProfile = () => {
   const [initialValues, setInitialValues] = useState<ProfileData>({
