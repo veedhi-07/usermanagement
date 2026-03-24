@@ -1,25 +1,19 @@
-
 import type { FC } from "react";
 import { Formik, Form } from "formik";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../common/button";
 import { signupSchema } from "../../utils/validation";
-import { db, secondaryAuth } from "../../services/firebase";
-import type { User} from "../../../src/types/index";
-import {
-  setDoc,
-  doc,
-  Timestamp,
-  updateDoc,
-
-} from "firebase/firestore";
+import { secondaryAuth } from "../../services/firebase";
+import type { User } from "../../../src/types/index";
+import { Timestamp } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
 import CommonModall from "../common/common-modal";
 import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
 import type { Role, ModalProps } from "../../types/index";
-
+import { usersService } from "../../services/firebase/usersService";
+import { useParams } from "react-router-dom";
 const UserModal: FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -28,7 +22,7 @@ const UserModal: FC<ModalProps> = ({
   onSave,
 }) => {
   const { data: roles } = usefirebasecollection<Role>("roles");
-
+  const { id } = useParams();
   const initialValues = {
     firstname: user?.firstName || "",
     lastname: user?.lastName || "",
@@ -52,7 +46,7 @@ const UserModal: FC<ModalProps> = ({
 
         const newUser = userCredential.user;
 
-        await setDoc(doc(db, "users", newUser.uid), {
+        await usersService.create({
           email: values.email,
           firstName: values.firstname,
           lastName: values.lastname,
@@ -81,7 +75,7 @@ const UserModal: FC<ModalProps> = ({
           createdAt: user.createdAt,
         };
 
-        await updateDoc(doc(db, "users", user.id), {
+        await usersService.update(user.id, {
           email: values.email,
           firstName: values.firstname,
           lastName: values.lastname,

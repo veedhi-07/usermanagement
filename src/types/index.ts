@@ -18,6 +18,7 @@ export interface Role {
   name: string;
   permissions: Permissions;
   createdAt?: Timestamp;
+  updatedAt?: Timestamp;
 }
 export interface ProfileData {
   firstName: string;
@@ -39,10 +40,12 @@ export interface conversation {
   id: string;
   type: "private" | "group";
   createdAt: Timestamp;
-  participants: string[];
+  participants?: string[];
   lastMessage?: string;
-  senderId: string;
-  text: string;
+  lastMessageAt?: Timestamp;
+  senderId?: string;
+  createdBy?: string;
+  text?: string;
   name?: string;
 }
 export interface PaginationProps<T> {
@@ -114,13 +117,16 @@ export interface ModulePermission {
   view: boolean;
 }
 //permissionslice
-export interface PermissionsState {
-  campaign?: ModulePermission;
-  chat?: ModulePermission;
-  user?: ModulePermission;
-  role?: ModulePermission;
-}
+// export interface PermissionsState {
+//   campaign?: ModulePermission;
+//   chat?: ModulePermission;
+//   user?: ModulePermission;
+//   role?: ModulePermission;
+// }
+export type Module = "user" | "chat" | "role" | "campaign";
+export type Action = "view" | "add" | "edit" | "delete";
 
+export type Permissions = Record<Module, Record<Action, boolean>>;
 //formfield
 export interface FormProps {
   id?: string;

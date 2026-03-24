@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { doc, getDoc, setDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
+import { rolesService } from "../../services/firebase/rolesService";
 import { db } from "../../services/firebase";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -8,9 +9,7 @@ import FormField from "../../components/common/form-field/formfield";
 import Button from "../../components/common/button";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
-type Module = "user" | "chat" | "role" | "campaign";
-type Action = "view" | "add" | "edit" | "delete";
-
+import type { Permissions, Module, Action } from "../../types";
 const modules: Module[] = ["user", "chat", "role", "campaign"];
 const actions: Action[] = ["view", "add", "edit", "delete"];
 
@@ -21,7 +20,6 @@ const AddRole = () => {
   const isEditMode = Boolean(id);
 
   type ModulePermissions = Record<Action, boolean>;
-  type Permissions = Record<Module, ModulePermissions>;
 
   const [roleName, setRoleName] = useState("");
   const [permissions, setPermissions] = useState<Permissions>({
@@ -31,25 +29,24 @@ const AddRole = () => {
     campaign: { view: false, add: false, edit: false, delete: false },
   });
 
-  // // Fetch role if edit mode
   useEffect(() => {
-    if (!isEditMode) return;
+    if (!isEditMode || !id) return;
 
     const fetchRole = async () => {
-      const docRef = doc(db, "roles", id!);
-      const snapshot = await getDoc(docRef);
+      try {
+        const role = await rolesService.getById(id);
 
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setRoleName(data.name);
-        setPermissions(data.permissions);
+        if (!role) return;
+
+        setRoleName(role.name);
+        setPermissions(role.permissions as Permissions);
+      } catch (error) {
+        console.error("Error fetching role:", error);
       }
     };
 
     fetchRole();
-  }, [id]);
-
-  // const { data: roles } = usefirebasecollection<Role>("roles");
+  }, [id, isEditMode]);
 
   const handleToggle = (module: Module, action: Action) => {
     setPermissions((prev) => {
@@ -83,14 +80,14 @@ const AddRole = () => {
     if (!roleName.trim()) return;
 
     try {
-      if (isEditMode) {
-        await updateDoc(doc(db, "roles", id!), {
+      if (isEditMode && id) {
+        await rolesService.update(id,{
           name: roleName,
           permissions,
           updatedAt: Timestamp.now(),
         });
       } else {
-        await setDoc(doc(db, "roles", roleName), {
+        await rolesService.create({
           name: roleName,
           permissions,
           createdAt: Timestamp.now(),

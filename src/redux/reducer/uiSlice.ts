@@ -26,9 +26,12 @@ interface ChatsUIState {
   spaceName: string | null;
   isGroupChat: boolean;
   showSpaceModal: boolean;
-  ShowDirectChatModal: boolean;
-  loadingChats: boolean;
+  ShowDirectChatModal: boolean | any;
+  loadingChats: boolean | null;
   loadingUsers: boolean;
+  conversationId: string | null;
+  showDirectChats: boolean;
+  showspaces: boolean;
 }
 interface UIState {
   users: UsersUIState;
@@ -60,6 +63,9 @@ const initialState: UIState = {
     ShowDirectChatModal: false,
     loadingChats: true,
     loadingUsers: true,
+    conversationId: null,
+    showDirectChats: true,
+    showspaces:true,
   },
 };
 
@@ -122,6 +128,15 @@ const uiSlice = createSlice({
     setLoadingUsers: (state, action: PayloadAction<boolean>) => {
       state.chats.loadingUsers = action.payload;
     },
+    setConversationId: (state, action: PayloadAction<string | null>) => {
+      state.chats.conversationId = action.payload;
+    },
+    setShowDirectChats: (state, action: PayloadAction<boolean>) => {
+      state.chats.showDirectChats = action.payload;
+    },
+    setShowSpaces:(state,action: PayloadAction<boolean>) => {
+      state.chats.showspaces = action.payload;
+    }
   },
 });
 
@@ -141,6 +156,9 @@ export const {
   setShowDirectChatModal,
   setLoadingChats,
   setLoadingUsers,
+  setConversationId,
+  setShowDirectChats,
+  setShowSpaces,
 } = uiSlice.actions;
 export default uiSlice.reducer;
 export const useAppDispatch = () => useDispatch<AppDispatch>();

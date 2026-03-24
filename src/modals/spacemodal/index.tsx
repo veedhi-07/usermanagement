@@ -3,7 +3,6 @@ import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {
   collection,
-  getDocs,
   query,
   orderBy,
   limit,
@@ -17,6 +16,8 @@ import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../../components/common/button";
 import type { User } from "../../types/index";
+import { usersService } from "../../services/firebase/usersService";
+import { memo } from "react";
 type SpaceModalProps = {
   onClose: () => void;
   isOpen: boolean;
@@ -60,18 +61,15 @@ const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
         limit(itemsPerPage),
       );
     }
-    const snapshot = await getDocs(q);
 
-    const newUsers: User[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<User, "id">),
-    }));
+    const { users: newUsers, lastDoc: newLastDoc } =
+      await usersService.getAll(q);
 
     const filtered = newUsers.filter((u) => u.id !== currentUser?.uid);
 
     setUsers((prev) => [...prev, ...filtered]);
-    setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-    setHasMore(snapshot.docs.length === itemsPerPage);
+    setLastDoc(newLastDoc);
+    setHasMore(newUsers.length === itemsPerPage);
 
     setLoading(false);
   };
@@ -195,4 +193,4 @@ const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
     </CommonModall>
   );
 };
-export default SpaceModal;
+export default memo(SpaceModal);

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Timestamp } from "firebase/firestore";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
@@ -55,8 +55,9 @@ const Users = () => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          const data = await usersService.getAll();
-          const filteredUsers = data.filter((u) => u.id !== user.uid);
+          const { users } = await usersService.getAll();
+
+          const filteredUsers = users.filter((u: User) => u.id !== user.uid);
 
           setUsers(filteredUsers);
         } catch (error) {
@@ -71,11 +72,10 @@ const Users = () => {
   }, []);
 
   //DeleteUser
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!selectedUserId) return;
 
     try {
-      // await deleteDoc(doc(db, "users", selectedUserId));
       await usersService.delete(selectedUserId);
       setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
       dispatch(setShowModals({ add: false, delete: false }));
@@ -83,7 +83,7 @@ const Users = () => {
     } catch (error) {
       console.error("Delete failed:", error);
     }
-  };
+  }, [selectedUserId]);
   //Save
   const handleSave = (updatedUser: User) => {
     setUsers((prev) =>

@@ -29,16 +29,13 @@ export const rolesService = {
       ...(snapshot.data() as Omit<Role, "id">),
     };
   },
-
+  delete: async (id: string) => {
+    return deleteDoc(doc(db, "roles", id));
+  },
   create: async (data: Omit<Role, "id">) => {
     return addDoc(collection(db, "roles"), data);
   },
-
   update: async (id: string, data: Partial<Role>) => {
     return updateDoc(doc(db, "roles", id), data);
-  },
-
-  delete: async (id: string) => {
-    return deleteDoc(doc(db, "roles", id));
   },
 };

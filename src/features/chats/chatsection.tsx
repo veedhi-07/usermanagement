@@ -2,14 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { db } from "../../services/firebase";
 import {
   collection,
-  doc,
   query,
   where,
-  addDoc,
-  updateDoc,
   getDocs,
-  getDoc,
-  arrayUnion,
   orderBy,
   onSnapshot,
 } from "firebase/firestore";
@@ -31,6 +26,7 @@ import Button from "../../components/common/button";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import LoadSpinner from "../../components/common/spinner";
 import { usersService } from "../../services/firebase/usersService";
+import { chatsService } from "../../services/firebase/chatService";
 import type { User, conversation, Message } from "../../../src/types/index";
 import { toast } from "react-toastify";
 import {
@@ -40,6 +36,9 @@ import {
   setLoadingChats,
   setLoadingUsers,
   setShowSpaceModal,
+  setConversationId,
+  setShowDirectChats,
+  setShowSpaces,
 } from "../../redux/reducer/uiSlice";
 type Props = {
   sidebarOpen: boolean;
@@ -47,19 +46,19 @@ type Props = {
 
 const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [unreadMsgCount, setUnreadMsgCount] = useState<Record<string, number>>(
     {},
   );
   const [messageInput, setMessageInput] = useState("");
-  const [showDirectChats, setShowDirectChats] = useState(true);
   const [directChats, setDirectChats] = useState<conversation[]>([]);
-  const [showSpaces, setShowSpaces] = useState(true);
   const [spaces, setSpaces] = useState<conversation[]>([]);
   const [userMap, setUserMap] = useState<Record<string, User>>({});
   const spaceName = useAppSelector(
     (state) => state.ui.chats?.spaceName ?? null,
+  );
+  const conversationId = useAppSelector(
+    (state) => state.ui.chats.conversationId,
   );
   const isGroupChat = useAppSelector(
     (state) => state.ui.chats?.isGroupChat ?? null,
@@ -74,6 +73,10 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const loadingUsers = useAppSelector(
     (state) => state.ui.chats?.loadingUsers ?? null,
   );
+  const showDirectChats = useAppSelector(
+    (state) => state.ui.chats.showDirectChats,
+  );
+  const showSpaces = useAppSelector((state) => state.ui.chats.showspaces);
   const dispatch = useAppDispatch();
   const auth = getAuth();
   const currentUser = auth.currentUser;
@@ -82,14 +85,16 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     if (!currentUser) return;
 
     try {
-      const conversationRef = await addDoc(collection(db, "conversation"), {
+      const conversationRef = await chatsService.create({
         type: "private",
         participants: [currentUser.uid, userId],
         lastMessage: messageInput,
         createdAt: Timestamp.now(),
         createdBy: currentUser.uid,
       });
-      return conversationRef.id;
+      const conversationId = conversationRef.id;
+
+      return conversationId;
     } catch (error) {
       console.log("Error Creating Conversation", error);
     }
@@ -106,13 +111,14 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     };
 
     try {
-      await addDoc(
-        collection(db, "conversation", conversationId, "messages"),
-        newMessage,
-      );
+      await chatsService.create({
+        type: "private",
+        participants: [],
+        createdAt: Timestamp.now(),
+      });
 
-      const docRef = doc(db, "conversation", conversationId);
-      await updateDoc(docRef, {
+      // const docRef = doc(db, "conversation", conversationId);
+      await chatsService.update(conversationId, {
         lastMessage: messageInput,
         lastMessageAt: Timestamp.now(),
       });
@@ -147,32 +153,14 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     if (!currentUser || !conversationId) return;
 
     const markAsRead = async () => {
-      const q = query(
-        collection(db, "conversation", conversationId, "messages"),
-      );
-
-      const snapshot = await getDocs(q);
-
-      const updates: Promise<void>[] = [];
-
-      snapshot.docs.forEach((docSnap) => {
-        const data = docSnap.data();
-
-        if (
-          data.senderId !== currentUser.uid &&
-          !data.seenBy?.includes(currentUser.uid)
-        ) {
-          updates.push(
-            updateDoc(docSnap.ref, {
-              seenBy: arrayUnion(currentUser.uid),
-            }),
-          );
-        }
-      });
-      await Promise.all(updates);
+      try {
+        await chatsService.markAsRead(conversationId, currentUser.uid);
+      } catch (error) {
+        console.log("Error", error);
+      }
     };
     markAsRead();
-  }, [conversationId, currentUser]);
+  }, [currentUser, conversationId]);
 
   //unread msg countt
   useEffect(() => {
@@ -272,9 +260,8 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   useEffect(() => {
     const fetchUsers = async () => {
       dispatch(setLoadingUsers(true));
-      // const snapshot = await getDocs(collection(db, "users"));
       try {
-        const users = await usersService.getAll();
+        const { users } = await usersService.getAll();
 
         const map: Record<string, User> = {};
 
@@ -309,7 +296,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         <div className="flex flex-row">
           <span>
             <div
-              onClick={() => setShowDirectChats((prev) => !prev)}
+              onClick={() => dispatch(setShowDirectChats(!showDirectChats))}
               className="pt-4 cursor-pointer text-white"
             >
               {showDirectChats ? (
@@ -351,7 +338,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                   onClick={() => {
                     if (!user) return;
 
-                    setConversationId(chat.id);
+                    dispatch(setConversationId(chat.id));
                     setSelectedUser(user);
                     dispatch(setIsGroupChat(false));
                   }}
@@ -381,7 +368,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
         <div className="flex flex-row">
           <span>
             <div
-              onClick={() => setShowSpaces((prev) => !prev)}
+              onClick={() => dispatch(setShowSpaces(!showSpaces))}
               className="  pt-31 cursor-pointer text-white"
             >
               {showSpaces ? (
@@ -412,7 +399,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                 key={space.id}
                 className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
                 onClick={() => {
-                  setConversationId(space.id);
+                  dispatch(setConversationId(space.id));
                   dispatch(setIsGroupChat(true));
                   dispatch(setSpaceName(space.name || "Group"));
                 }}
@@ -453,7 +440,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                   <X
                     className="text-white cursor-pointer"
                     onClick={() => {
-                      setConversationId(null);
+                      dispatch(setConversationId(null));
                       dispatch(setIsGroupChat(false));
                       dispatch(setSpaceName(null));
                       setSelectedUser(null);
@@ -476,7 +463,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
                 <X
                   className="text-white cursor-pointer"
                   onClick={() => {
-                    setConversationId(null);
+                    dispatch(setConversationId(null));
                     setSelectedUser(null);
                     dispatch(setIsGroupChat(false));
                     setMessages([]);
@@ -574,34 +561,25 @@ const ChatSection = ({ sidebarOpen }: Props) => {
 
             if (isGroupChat && conversationId) {
               try {
-                const convoRef = doc(db, "conversation", conversationId);
+                const result = await chatsService.addUserToGroup(
+                  conversationId,
+                  user.id,
+                );
 
-                const snapshot = await getDoc(convoRef);
-
-                if (!snapshot.exists()) return;
-
-                const data = snapshot.data();
-                const participants: string[] = data.participants || [];
-
-                if (participants.includes(user.id)) {
+                if (result?.error === "A") {
                   toast.error("User already exists in the group");
                   return;
                 }
-
-                await updateDoc(convoRef, {
-                  participants: arrayUnion(user.id),
-                });
-
+                if (result?.error === "B") {
+                  toast.error("Conversation not found");
+                  return;
+                }
                 toast.success("User added to group");
-              } catch (err) {
-                console.log("Error adding user", err);
+                dispatch(setShowDirectChatModal(false));
+              } catch (error) {
                 toast.error("Something went wrong");
               }
-
-              dispatch(setShowDirectChatModal(false));
-              return;
             }
-
             setSelectedUser(user);
             const q = query(
               collection(db, "conversation"),
@@ -619,10 +597,10 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               }
             });
             if (existingConversation) {
-              setConversationId(existingConversation);
+              dispatch(setConversationId(existingConversation));
             } else {
               const convoId = await createConversation(user.id);
-              if (convoId) setConversationId(convoId);
+              if (convoId) dispatch(setConversationId(convoId));
             }
 
             dispatch(setShowDirectChatModal(false));
@@ -643,18 +621,15 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               new Set([currentUser.uid, ...user.map((u) => u.id)]),
             );
 
-            const conversationRef = await addDoc(
-              collection(db, "conversation"),
-              {
-                type: "group",
-                name: spaceName,
-                participants: participantIds,
-                createdAt: Timestamp.now(),
-                createdBy: currentUser.uid,
-              },
-            );
+            const conversationRef = await chatsService.create({
+              type: "group",
+              name: spaceName,
+              participants: participantIds,
+              createdAt: Timestamp.now(),
+              createdBy: currentUser.uid,
+            });
 
-            setConversationId(conversationRef.id);
+            dispatch(setConversationId(conversationRef.id));
             dispatch(setShowSpaceModal(false));
           }}
         />

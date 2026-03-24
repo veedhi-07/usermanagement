@@ -2,8 +2,6 @@ import AuthLayout from "../../../components/layout/auth-layout";
 import FormField from "../../../components/common/form-field/formfield";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../../services/firebase";
 import { setPermissions } from "../../../redux/reducer/permissionSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,15 +9,14 @@ import { Formik, Form } from "formik";
 import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../utils/validation";
 import ForgotPasswordModal from "../../../../src/modals/forgotpassword";
-import {
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import Button from "../../../components/common/button";
-
+import { usersService } from "../../../services/firebase/usersService";
+import { rolesService } from "../../../services/firebase/rolesService";
 const Login = () => {
   const initialValues = { email: "", password: "" };
   const navigate = useNavigate();
@@ -42,29 +39,26 @@ const Login = () => {
 
       const uid = userCredential.user.uid;
 
-      // Fetch user profile from Firestore
-      const userDoc = await getDoc(doc(db, "users", uid));
-
-      if (!userDoc.exists()) {
+      const userDoc = await usersService.getById(uid);
+      if (!userDoc) {
         throw new Error("User profile not found");
       }
+      const userRole = userDoc.role;
 
-      const userData = userDoc.data();
-      const userRole = userData.role;
 
-      // Fetch role permissions directly by document ID
-      const roleDocRef = doc(db, "roles", userRole);
-      const roleDocSnap = await getDoc(roleDocRef);
+      const roles = await rolesService.getAll();
+      const role = roles.find((r) => r.id === userRole);
 
-      if (roleDocSnap.exists()) {
-        dispatch(setPermissions(roleDocSnap.data().permissions));
-        toast.success("Login successful!");
-        setTimeout(() => {
-          navigate("/dashboard", { replace: true });
-        }, 500);
-      } else {
-        console.log("Role not found in Firestore");
+      if (!role) {
+        console.log("Role not found");
+        return;
       }
+
+      dispatch(setPermissions(role.permissions));
+      toast.success("Login successful!");
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 500);
     } catch (error) {
       if (error instanceof Error) {
         toast.error("Invalid Login Credentials", { position: "top-center" });
@@ -91,7 +85,6 @@ const Login = () => {
             isSubmitting,
           }) => (
             <Form className="flex flex-col gap-5">
-              
               <div>
                 <div>
                   <FormField
@@ -146,7 +139,6 @@ const Login = () => {
         </Formik>
       </AuthLayout>
 
-     
       <ForgotPasswordModal
         isOpen={showForgotModal}
         onClose={() => setShowForgotModal(false)}

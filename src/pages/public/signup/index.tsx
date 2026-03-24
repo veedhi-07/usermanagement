@@ -9,10 +9,10 @@ import { signupSchema } from "../../../utils/validation";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../services/firebase";
-import { setDoc, doc, Timestamp } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Button from "../../../components/common/button";
-
+import { usersService } from "../../../services/firebase/usersService";
 const Signup = () => {
   const navigate = useNavigate();
   const initialValues = {
@@ -36,12 +36,12 @@ const Signup = () => {
 
       const user = userCredential.user;
 
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
+      await usersService.create({
+        email: user.email || undefined,
         firstName: values.firstname,
         lastName: values.lastname,
         role: "user",
-        createdAt: Timestamp,
+        createdAt: Timestamp.now(),
       });
 
       toast.success("User Registered Successfully!", {

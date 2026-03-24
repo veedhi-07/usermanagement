@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { deleteDoc, doc, Timestamp } from "firebase/firestore";
-import { db } from "../../services/firebase";
+import { useEffect, useState, useCallback } from "react";
+import { Timestamp } from "firebase/firestore";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import UserPagination from "../../components/pagination";
@@ -22,7 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 import LoadSpinner from "../../components/common/spinner";
 import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
 import FormField from "../../components/common/form-field/formfield";
-import type { Role } from "../../../src/types/index";
+import type { Permissions, Role } from "../../../src/types/index";
 import { useMemo } from "react";
 import {
   setRoleSearch,
@@ -31,7 +30,7 @@ import {
   setSidebarOpen,
 } from "../../redux/reducer/uiSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-
+import { rolesService } from "../../services/firebase/rolesService";
 const Roles = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,40 +69,20 @@ const Roles = () => {
     return count;
   };
 
-  // Fetch Roles
-  // useEffect(() => {
-  //   fetchRoles();
-  // }, []);
-
-  // const fetchRoles = async () => {
-  //   try {
-  //     const snapshot = await getDocs(collection(db, "roles"));
-  //     const data: Role[] = snapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...(doc.data() as Omit<Role, "id">),
-  //     }));
-
-  //     setRoles(data);
-  //   } catch (error) {
-  //     console.error("Error fetching roles:", error);
-  //   } finally {
-  //     dispatch(setLoading(false));
-  //   }
-  // };
   const { data: roles, loading } = usefirebasecollection<Role>("roles");
   // DeleteRole
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     if (!selectedUserId) return;
 
     try {
-      await deleteDoc(doc(db, "roles", selectedUserId));
+      await rolesService.delete(selectedUserId);
       toast.success("Role Deleted");
       dispatch(setShowDeleteModal(false));
       setSelectedUserId(null);
     } catch (error) {
       console.error("Delete failed:", error);
     }
-  };
+  }, [selectedUserId]);
 
   // search + sort
   const filteredAndSortedRoles = useMemo(() => {
@@ -243,7 +222,9 @@ const Roles = () => {
                           </td>
                           <td className="p-3">
                             {role.permissions
-                              ? countPermissions(role.permissions)
+                              ? countPermissions(
+                                  role.permissions as Permissions,
+                                )
                               : 0}
                           </td>
                           <td className="p-3 flex gap-3">

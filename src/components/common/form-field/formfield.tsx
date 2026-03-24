@@ -1,11 +1,12 @@
 import { Checkbox, Label, TextInput } from "flowbite-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import type { FC } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import type { FormProps } from "../../../types/index";
+import type { InputHTMLAttributes } from "react";
 
 type NativeInputProps = Omit<
-  React.InputHTMLAttributes<HTMLInputElement>,
+  InputHTMLAttributes<HTMLInputElement>,
   keyof FormProps
 >;
 
@@ -89,4 +90,4 @@ const FormField: FC<FormComponentProps> = ({
   );
 };
 
-export default FormField;
+export default memo(FormField);

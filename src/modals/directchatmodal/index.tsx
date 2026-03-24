@@ -3,13 +3,13 @@ import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {
   collection,
-  getDocs,
   query,
   orderBy,
   limit,
   startAfter,
   QueryDocumentSnapshot,
 } from "firebase/firestore";
+import { memo } from "react";
 import type { DocumentData } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -17,6 +17,7 @@ import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../../components/common/button";
 import type { User } from "../../../src/types/index";
+import { usersService } from "../../services/firebase/usersService";
 type DirectChatModalProps = {
   onClose: () => void;
   onUserSelect: (users: User) => void;
@@ -40,7 +41,6 @@ const DirectChatModal = ({
   const parentRef = useRef<HTMLDivElement>(null);
 
   const itemsPerPage = 5;
-
   const fetchUsers = async () => {
     if (loading || !hasMore) return;
 
@@ -65,21 +65,19 @@ const DirectChatModal = ({
         limit(itemsPerPage),
       );
     }
-    const snapshot = await getDocs(q);
 
-    const newUsers: User[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<User, "id">),
-    }));
+    const { users: newUsers, lastDoc: newLastDoc } =
+      await usersService.getAll(q);
 
     const filtered = newUsers.filter((u) => u.id !== currentUser?.uid);
 
     setUsers((prev) => [...prev, ...filtered]);
-    setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-    setHasMore(snapshot.docs.length === itemsPerPage);
+    setLastDoc(newLastDoc);
+    setHasMore(newUsers.length === itemsPerPage);
 
     setLoading(false);
   };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -174,4 +172,4 @@ const DirectChatModal = ({
     </CommonModall>
   );
 };
-export default DirectChatModal;
+export default memo(DirectChatModal);

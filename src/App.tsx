@@ -6,8 +6,6 @@ import { auth } from "./services/firebase";
 import { fetchUserProfile } from "./services/userService";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "./services/firebase";
 import { setProfile, clearProfile } from "../src/redux/reducer/profileSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,7 +16,9 @@ import {
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { Suspense } from "react";
+import { rolesService } from "./services/firebase/rolesService";
 import LoadSpinner from "./components/common/spinner";
+import type { Permissions } from "./types";
 
 const Login = React.lazy(() => import("./pages/public/login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
@@ -59,17 +59,13 @@ const App = () => {
           dispatch(clearPermissions());
           return;
         }
-        const roleRef = doc(db, "roles", profile.role);
-        const roleSnap = await getDoc(roleRef);
-
-        if (!roleSnap.exists()) {
+        const roles = await rolesService.getAll();
+        const role = roles.find((r) => r.id === profile.role);
+        if (!role) {
           dispatch(clearPermissions());
           return;
         }
-
-        const roleData = roleSnap.data();
-
-        dispatch(setPermissions(roleData.permissions));
+        dispatch(setPermissions(role.permissions as Permissions));
       } catch (error) {
         console.error("Failed to load role permissions:", error);
         dispatch(clearPermissions());
