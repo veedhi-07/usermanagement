@@ -22,12 +22,12 @@ import LoadSpinner from "./components/common/spinner";
 
 const Login = React.lazy(() => import("./pages/public/login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
-const Dashboard = React.lazy(() => import("./pages/private/dashboard"));
-const MyProfile = React.lazy(() => import("./pages/private/myprofile"));
-const Users = React.lazy(() => import("./pages/private/users"));
-const Roles = React.lazy(() => import("./pages/private/roles"));
-const AddRole = React.lazy(() => import("./pages/private/addeditrole"));
-const Chat = React.lazy(() => import("./pages/private/chats/index"));
+const Dashboard = React.lazy(() => import("./features/dashboard"));
+const MyProfile = React.lazy(() => import("./features/myprofile"));
+const Users = React.lazy(() => import("./features/users"));
+const Roles = React.lazy(() => import("./features/roles"));
+const AddRole = React.lazy(() => import("./features/addeditrole"));
+const Chat = React.lazy(() => import("./features/chats"));
 
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);

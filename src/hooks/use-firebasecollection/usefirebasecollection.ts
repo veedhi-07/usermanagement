@@ -9,6 +9,7 @@ export const usefirebasecollection = <T>(
 ) => {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+  
   useEffect(() => {
     setLoading(true);
     const unsubscribe = onSnapshot(
