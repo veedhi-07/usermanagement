@@ -1,4 +1,4 @@
-import CommonModall from "../../components/common/commonmodal";
+import CommonModall from "../../components/common/common-modal";
 import { db } from "../../services/firebase";
 import { getAuth } from "firebase/auth";
 import {

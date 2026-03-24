@@ -55,12 +55,6 @@ const Users = () => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          // const querySnapshot = await getDocs(collection(db, "users"));
-
-          // const data: User[] = querySnapshot.docs.map((doc) => ({
-          //   id: doc.id,
-          //   ...(doc.data() as Omit<User, "id">),
-          // }));
           const data = await usersService.getAll();
           const filteredUsers = data.filter((u) => u.id !== user.uid);
 
@@ -99,10 +93,6 @@ const Users = () => {
     dispatch(setSelectedUser(null));
   };
 
-  // const  sortOrder  = () => {
-  //   setUserSort((prev) => (prev === "asc" ? "desc" : "asc"));
-  // };
-
   const filteredAndSortedUsers = useMemo(() => {
     return [...users]
 
@@ -120,10 +110,6 @@ const Users = () => {
           : nameB.localeCompare(nameA);
       });
   }, [users, searchQuery, sortOrder]);
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-  // const endIndex = startIndex + itemsPerPage;
-  // const paginatedUsers = filteredAndSortedUsers.slice(startIndex, endIndex);
-
   const formatDate = (timestamp?: Timestamp) => {
     if (!timestamp) return "-";
 

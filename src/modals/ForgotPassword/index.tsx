@@ -1,10 +1,10 @@
 import { useState } from "react";
-import FormField from "../../components/form-field/formfield";
+import FormField from "../../components/common/form-field/formfield";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
 import { Formik, Form } from "formik";
-import Button from "../../components/button";
-import CommonModall from "../../components/commonmodal";
+import Button from "../../components/common/button";
+import CommonModall from "../../components/common/common-modal";
 import type { ForgotPasswordModalProps } from "../../types/index";
 
 export default function ForgotPasswordModal({

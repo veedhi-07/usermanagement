@@ -1,4 +1,4 @@
-// import { useEffect, useState } from "react";
+
 import type { FC } from "react";
 import { Formik, Form } from "formik";
 import FormField from "../../components/common/form-field/formfield";
@@ -6,15 +6,12 @@ import Button from "../common/button";
 import { signupSchema } from "../../utils/validation";
 import { db, secondaryAuth } from "../../services/firebase";
 import type { User} from "../../../src/types/index";
-// import userService from "../../services/userService";
 import {
   setDoc,
   doc,
   Timestamp,
-  // serverTimestamp,
   updateDoc,
-  // getDocs,
-  // collection,
+
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";

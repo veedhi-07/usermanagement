@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { db } from "../../../services/firebase";
+import { db } from "../../services/firebase";
 import {
   collection,
   doc,
@@ -23,17 +23,15 @@ import {
   Users,
   UserPlus,
 } from "lucide-react";
-// import AddToChatModal from "../../../modals/addtochat";
-import DirectChatModal from "../../../modals/directchatmodal";
-import SpaceModal from "../../../modals/spacemodal";
+import DirectChatModal from "../../modals/directchatmodal";
+import SpaceModal from "../../modals/spacemodal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
-import Button from "../../../components/common/button";
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import LoadSpinner from "../../../components/common/spinner";
-import { usersService } from "../../../services/firebase/usersService";
-import FormField from "../../../components/common/form-field/formfield";
-import type { User, conversation, Message } from "../../../../src/types/index";
+import Button from "../../components/common/button";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import LoadSpinner from "../../components/common/spinner";
+import { usersService } from "../../services/firebase/usersService";
+import type { User, conversation, Message } from "../../../src/types/index";
 import { toast } from "react-toastify";
 import {
   setSpaceName,
@@ -42,7 +40,7 @@ import {
   setLoadingChats,
   setLoadingUsers,
   setShowSpaceModal,
-} from "../../../redux/reducer/uiSlice";
+} from "../../redux/reducer/uiSlice";
 type Props = {
   sidebarOpen: boolean;
 };
@@ -51,18 +49,12 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  // const [spaceName, setSpaceName] = useState<string | null>(null);
-  // const [isGroupChat, setIsGroupChat] = useState(false);
   const [unreadMsgCount, setUnreadMsgCount] = useState<Record<string, number>>(
     {},
   );
-  // const [ShowSpaceModal, setShowSpaceModal] = useState(false);
-  // const [ShowDirectChatModal, setShowDirectChatModal] = useState(false);
   const [messageInput, setMessageInput] = useState("");
   const [showDirectChats, setShowDirectChats] = useState(true);
   const [directChats, setDirectChats] = useState<conversation[]>([]);
-  // const [loadingChats, setLoadingChats] = useState(true);
-  // const [loadingUsers, setLoadingUsers] = useState(true);
   const [showSpaces, setShowSpaces] = useState(true);
   const [spaces, setSpaces] = useState<conversation[]>([]);
   const [userMap, setUserMap] = useState<Record<string, User>>({});
@@ -72,7 +64,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const isGroupChat = useAppSelector(
     (state) => state.ui.chats?.isGroupChat ?? null,
   );
-  // const showSpaces = useAppSelector((state) => state.ui.chats.showSpaces);
   const ShowSpaceModal = useAppSelector(
     (state) => state.ui.chats?.showSpaceModal ?? null,
   );

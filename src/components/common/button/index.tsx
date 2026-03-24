@@ -1,6 +1,6 @@
 import type React from "react";
 import type { FC } from "react";
-import type { ButtonProps } from "../../types";
+import type { ButtonProps } from "../../../types";
 
 //new type for native elements and omit to handle custom
 type NativeButtonProps = Omit<

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import type { TypedUseSelectorHook } from "react-redux";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { conversation, Message, User } from "../../types";
+import type { User } from "../../types";
 import type { RootState, AppDispatch } from "./../store";
 type SortOrder = "asc" | "desc";
 
@@ -104,9 +104,6 @@ const uiSlice = createSlice({
       state.roles.showDeleteModal = action.payload;
     },
     // Chats
-    // setSelectedUserC: (state, action: PayloadAction<User | null>) => {
-    //   state.users.selectedUserC = action.payload;
-    // },
     setSpaceName: (state, action: PayloadAction<string | null>) => {
       state.chats.spaceName = action.payload;
     },

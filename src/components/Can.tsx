@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { usePermission } from "../hooks/use-permission/usePermission";
 import type { CanProps } from "../types";
 
