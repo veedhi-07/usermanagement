@@ -114,19 +114,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   useEffect(() => {
     if (!conversationId) return;
 
-    const q = query(
-      collection(db, "conversation", conversationId, "messages"),
-      orderBy("createdAt", "asc"),
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Message, "id">),
-      }));
-
-      setMessages(msgs);
-    });
+    const unsubscribe = chatsService.PrevMessages(conversationId, setMessages);
     return () => unsubscribe();
   }, [conversationId]);
 

@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { PlusIcon, ChevronDown, ChevronRight, UserRound } from "lucide-react";
-import type { User, conversation } from "../../../types/index";
 import { useAppDispatch } from "../../../redux/hooks";
+import type { ChatSidebarProps } from "../../../types/index";
 import {
   setSpaceName,
   setIsGroupChat,
@@ -11,18 +11,7 @@ import {
   setShowDirectChats,
   setShowSpaces,
 } from "../../../redux/reducer/ui-slice/index";
-type Props = {
-  directChats: conversation[];
-  spaces: conversation[];
-  unreadMsgCount: Record<string, number>;
-  userMap: Record<string, User>;
-  currentUserId: string;
-  showDirectChats: boolean;
-  showSpaces: boolean;
-  setSelectedUser: (user: User | null) => void;
-};
-
-const ChatSidebar: FC<Props> = ({
+const ChatSidebar: FC<ChatSidebarProps> = ({
   directChats,
   spaces,
   unreadMsgCount,

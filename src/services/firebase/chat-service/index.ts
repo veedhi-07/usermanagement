@@ -6,6 +6,8 @@ import {
   doc,
   addDoc,
   getDoc,
+  orderBy,
+  onSnapshot,
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "../index";
@@ -62,6 +64,26 @@ export const chatsService = {
       }
     });
     await Promise.all(updates);
+  },
+  PrevMessages: (
+    conversationId: string,
+    callback: (messages: Message[]) => void,
+  ) => {
+    const q = query(
+      collection(db, "conversation", conversationId, "messages"),
+      orderBy("createdAt", "asc"),
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Message, "id">),
+      }));
+
+      callback(msgs);
+    });
+
+    return unsubscribe;
   },
   addUserToGroup: async (conversationId: string, userId: string) => {
     const convoRef = doc(db, "conversation", conversationId);

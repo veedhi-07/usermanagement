@@ -1,6 +1,9 @@
 import { Timestamp } from "firebase/firestore";
 import type { ReactNode } from "react";
-import type { ModuleKey, ActionKey } from "../redux/reducer/permission-slice";
+import type {
+  ModuleKey,
+  ActionKey,
+} from "../redux/reducer/permission-slice/index";
 
 export interface User {
   id: string;
@@ -68,7 +71,16 @@ export interface Message {
   createdAt: Timestamp;
   seenBy: string[];
 }
-
+export interface ChatSidebarProps {
+  directChats: conversation[];
+  spaces: conversation[];
+  unreadMsgCount: Record<string, number>;
+  userMap: Record<string, User>;
+  currentUserId: string;
+  showDirectChats: boolean;
+  showSpaces: boolean;
+  setSelectedUser: (user: User | null) => void;
+}
 export interface ModalProps {
   className?: string;
   disabled?: boolean;
@@ -124,6 +136,7 @@ export type Module = "user" | "chat" | "role" | "campaign";
 export type Action = "view" | "add" | "edit" | "delete";
 
 export type Permissions = Record<Module, Record<Action, boolean>>;
+
 //formfield
 export interface FormProps {
   id?: string;
