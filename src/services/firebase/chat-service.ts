@@ -9,8 +9,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { db } from "./index";
-import type { conversation } from "../../types";
-import { toast } from "react-toastify";
+import type { conversation, Message } from "../../types";
 
 export const chatsService = {
   getAll: async (q?: any) => {
@@ -83,5 +82,15 @@ export const chatsService = {
       participants: arrayUnion(userId),
     });
     return { success: true };
+  },
+  addMessage: async (conversationId: string, message: Message) => {
+    const messagesRef = collection(
+      db,
+      "conversation",
+      conversationId,
+      "messages",
+    );
+    const docRef = await addDoc(messagesRef, message);
+    return docRef;
   },
 };

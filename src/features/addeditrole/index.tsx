@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
-import { rolesService } from "../../services/firebase/rolesService";
-import { db } from "../../services/firebase";
+import { rolesService } from "../../services/firebase/roles-service";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormField from "../../components/common/form-field/formfield";
@@ -76,12 +75,12 @@ const AddRole = () => {
       };
     });
   };
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!roleName.trim()) return;
 
     try {
       if (isEditMode && id) {
-        await rolesService.update(id,{
+        await rolesService.update(id, {
           name: roleName,
           permissions,
           updatedAt: Timestamp.now(),
@@ -103,7 +102,7 @@ const AddRole = () => {
     } catch (error) {
       console.error("Error saving role:", error);
     }
-  };
+  }, [roleName, isEditMode, id, permissions, navigate]);
 
   return (
     <>

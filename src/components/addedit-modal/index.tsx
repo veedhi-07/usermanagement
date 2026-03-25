@@ -2,7 +2,8 @@ import type { FC } from "react";
 import { Formik, Form } from "formik";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../common/button";
-import { signupSchema } from "../../utils/validation";
+import { useCallback } from "react";
+import { signupSchema, editUserSchema } from "../../utils/validation";
 import { secondaryAuth } from "../../services/firebase";
 import type { User } from "../../../src/types/index";
 import { Timestamp } from "firebase/firestore";
@@ -12,8 +13,7 @@ import type { FormikHelpers } from "formik";
 import CommonModall from "../common/common-modal";
 import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
 import type { Role, ModalProps } from "../../types/index";
-import { usersService } from "../../services/firebase/usersService";
-import { useParams } from "react-router-dom";
+import { usersService } from "../../services/firebase/users-service";
 const UserModal: FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -22,7 +22,6 @@ const UserModal: FC<ModalProps> = ({
   onSave,
 }) => {
   const { data: roles } = usefirebasecollection<Role>("roles");
-  const { id } = useParams();
   const initialValues = {
     firstname: user?.firstName || "",
     lastname: user?.lastName || "",
@@ -32,69 +31,72 @@ const UserModal: FC<ModalProps> = ({
     role: user?.role || "",
   };
 
-  const handleSubmit = async (
-    values: typeof initialValues,
-    { setSubmitting }: FormikHelpers<typeof initialValues>,
-  ) => {
-    try {
-      if (mode === "add") {
-        const userCredential = await createUserWithEmailAndPassword(
-          secondaryAuth,
-          values.email,
-          values.password,
-        );
+  const handleSubmit = useCallback(
+    async (
+      values: typeof initialValues,
+      { setSubmitting }: FormikHelpers<typeof initialValues>,
+    ) => {
+      try {
+        if (mode === "add") {
+          const userCredential = await createUserWithEmailAndPassword(
+            secondaryAuth,
+            values.email,
+            values.password,
+          );
 
-        const newUser = userCredential.user;
+          const newUser = userCredential.user;
 
-        await usersService.create({
-          email: values.email,
-          firstName: values.firstname,
-          lastName: values.lastname,
-          role: values.role,
-          createdAt: Timestamp.now(),
-        });
+          await usersService.create({
+            email: values.email,
+            firstName: values.firstname,
+            lastName: values.lastname,
+            role: values.role,
+            createdAt: Timestamp.now(),
+          });
 
-        toast.success("User Created");
+          toast.success("User Created");
 
-        onSave?.({
-          id: newUser.uid,
-          email: values.email,
-          firstName: values.firstname,
-          lastName: values.lastname,
-          role: values.role,
-        });
+          onSave?.({
+            id: newUser.uid,
+            email: values.email,
+            firstName: values.firstname,
+            lastName: values.lastname,
+            role: values.role,
+          });
+        }
+
+        if (mode === "edit" && user?.id) {
+          const updatedUser: User = {
+            id: user.id,
+            email: values.email,
+            firstName: values.firstname,
+            lastName: values.lastname,
+            role: values.role,
+            createdAt: user.createdAt,
+          };
+
+          await usersService.update(user.id, {
+            email: values.email,
+            firstName: values.firstname,
+            lastName: values.lastname,
+            role: values.role,
+          });
+
+          toast.success("User Updated");
+
+          onSave?.(updatedUser);
+        }
+
+        onClose();
+      } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong");
+      } finally {
+        setSubmitting(false);
       }
-
-      if (mode === "edit" && user?.id) {
-        const updatedUser: User = {
-          id: user.id,
-          email: values.email,
-          firstName: values.firstname,
-          lastName: values.lastname,
-          role: values.role,
-          createdAt: user.createdAt,
-        };
-
-        await usersService.update(user.id, {
-          email: values.email,
-          firstName: values.firstname,
-          lastName: values.lastname,
-          role: values.role,
-        });
-
-        toast.success("User Updated");
-
-        onSave?.(updatedUser);
-      }
-
-      onClose();
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    },
+    [mode, user, onSave, onClose],
+  );
 
   return (
     <CommonModall
@@ -104,7 +106,7 @@ const UserModal: FC<ModalProps> = ({
     >
       <Formik
         initialValues={initialValues}
-        validationSchema={mode === "add" ? signupSchema : undefined}
+        validationSchema={mode === "add" ? signupSchema : editUserSchema}
         enableReinitialize
         onSubmit={handleSubmit}
       >

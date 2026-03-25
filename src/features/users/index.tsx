@@ -9,19 +9,19 @@ import {
   SearchIcon,
   PlusSquare,
 } from "lucide-react";
-import CommonModal from "../../components/addeditmodal";
-import { getAuth } from "firebase/auth";
+import CommonModal from "../../components/addedit-modal";
+import { getAuth, updateCurrentUser } from "firebase/auth";
 import UserPagination from "../../components/pagination";
 import usePagination from "../../hooks/use-pagination/usepagination";
-import DeleteModal from "../../components/deletemodal";
+import DeleteModal from "../../components/delete-modal";
 import LoadSpinner from "../../components/common/spinner";
-import Can from "../../components/Can";
+import Can from "../../services/helper/can";
 import { usePermission } from "../../hooks/use-permission/usePermission";
 import { ToastContainer } from "react-toastify";
 import FormField from "../../components/common/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
 import type { User } from "../../../src/types/index";
-import { usersService } from "../../services/firebase/usersService";
+import { usersService } from "../../services/firebase/users-service";
 import {
   setUserSearch,
   setLoading,
@@ -29,7 +29,7 @@ import {
   setSelectedUser,
   setShowModals,
   setSidebarOpen,
-} from "../../redux/reducer/uiSlice";
+} from "../../redux/reducer/ui-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Users = () => {
@@ -85,13 +85,16 @@ const Users = () => {
     }
   }, [selectedUserId]);
   //Save
-  const handleSave = (updatedUser: User) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
-    );
+  const handleSave = useCallback(
+    (updatedUser: User) => {
+      setUsers((prev) =>
+        prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+      );
 
-    dispatch(setSelectedUser(null));
-  };
+      dispatch(setSelectedUser(null));
+    },
+    [setUsers],
+  );
 
   const filteredAndSortedUsers = useMemo(() => {
     return [...users]
@@ -110,6 +113,7 @@ const Users = () => {
           : nameB.localeCompare(nameA);
       });
   }, [users, searchQuery, sortOrder]);
+
   const formatDate = (timestamp?: Timestamp) => {
     if (!timestamp) return "-";
 

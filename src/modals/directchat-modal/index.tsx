@@ -17,7 +17,7 @@ import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../../components/common/button";
 import type { User } from "../../../src/types/index";
-import { usersService } from "../../services/firebase/usersService";
+import { usersService } from "../../services/firebase/users-service";
 type DirectChatModalProps = {
   onClose: () => void;
   onUserSelect: (users: User) => void;

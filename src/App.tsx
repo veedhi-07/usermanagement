@@ -3,31 +3,32 @@ import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./services/firebase";
-import { fetchUserProfile } from "./services/userService";
+import { fetchUserProfile } from "./services/firebase/profile-service";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
-import { setProfile, clearProfile } from "../src/redux/reducer/profileSlice";
+import { setProfile, clearProfile } from "../src/redux/reducer/profile-slice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   setPermissions,
   clearPermissions,
-} from "../src/redux/reducer/permissionSlice";
+} from "../src/redux/reducer/permission-slice";
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { Suspense } from "react";
-import { rolesService } from "./services/firebase/rolesService";
+import { rolesService } from "./services/firebase/roles-service";
 import LoadSpinner from "./components/common/spinner";
 import type { Permissions } from "./types";
 
 const Login = React.lazy(() => import("./pages/public/login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
 const Dashboard = React.lazy(() => import("./features/dashboard"));
-const MyProfile = React.lazy(() => import("./features/myprofile"));
+const MyProfile = React.lazy(() => import("./pages/private/myprofile"));
 const Users = React.lazy(() => import("./features/users"));
 const Roles = React.lazy(() => import("./features/roles"));
 const AddRole = React.lazy(() => import("./features/addeditrole"));
-const Chat = React.lazy(() => import("./features/chats"));
+const Chat = React.lazy(() => import("./features/chat"));
+const ErrorBoundry = React.lazy(() => import("./pages/public/errorboundry"));
 
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);
@@ -99,7 +100,11 @@ const App = () => {
               <Route path="/chat" element={<Chat />} />
               <Route path="/add-role" element={<AddRole />} />
               <Route path="/edit-role/:id" element={<AddRole />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/errorboundry" element={<ErrorBoundry />} />
+              <Route
+                path="*"
+                element={<Navigate to="/errorboundry" replace />}
+              />
             </>
           )}
         </Routes>

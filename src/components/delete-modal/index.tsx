@@ -1,3 +1,4 @@
+import React from "react";
 import { Button, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import type { DeleteModalProps } from "../../types/index";
@@ -27,4 +28,4 @@ const DeleteModal = ({ show, onClose, onConfirm }: DeleteModalProps) => {
     </Modal>
   );
 };
-export default DeleteModal;
+export default React.memo(DeleteModal);

@@ -1,5 +1,6 @@
 import { Checkbox, Label, TextInput } from "flowbite-react";
-import { useState, memo } from "react";
+import { useState } from "react";
+import React from "react";
 import type { FC } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import type { FormProps } from "../../../types/index";
@@ -90,4 +91,4 @@ const FormField: FC<FormComponentProps> = ({
   );
 };
 
-export default memo(FormField);
+export default React.memo(FormField);

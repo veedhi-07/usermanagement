@@ -8,11 +8,11 @@ import type { FormikHelpers } from "formik";
 import { signupSchema } from "../../../utils/validation";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../../services/firebase";
+import { auth } from "../../../services/firebase";
 import { Timestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Button from "../../../components/common/button";
-import { usersService } from "../../../services/firebase/usersService";
+import { usersService } from "../../../services/firebase/users-service";
 const Signup = () => {
   const navigate = useNavigate();
   const initialValues = {

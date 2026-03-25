@@ -1,5 +1,5 @@
-import { usePermission } from "../hooks/use-permission/usePermission";
-import type { CanProps } from "../types";
+import { usePermission } from "../../hooks/use-permission/usePermission";
+import type { CanProps } from "../../types";
 
 const Can = ({ module, action, children }: CanProps) => {
   const { can } = usePermission();

@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import React from "react";
 import type { FC } from "react";
 import type { ModalProps } from "../../../types/index";
 
@@ -45,4 +46,4 @@ const CommonModall: FC<commonProps> = ({
     </div>
   );
 };
-export default CommonModall;
+export default React.memo(CommonModall);

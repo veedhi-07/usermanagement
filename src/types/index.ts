@@ -1,9 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import type { ReactNode } from "react";
-import type {
-  ModuleKey,
-  ActionKey,
-} from "../../src/redux/reducer/permissionSlice";
+import type { ModuleKey, ActionKey } from "../redux/reducer/permission-slice";
 
 export interface User {
   id: string;
@@ -64,7 +61,7 @@ export interface NavProps {
 }
 
 export interface Message {
-  id: string;
+  id?: string;
   text: string;
   senderId: string;
   type: string;
@@ -116,13 +113,13 @@ export interface ModulePermission {
   delete: boolean;
   view: boolean;
 }
-//permissionslice
-// export interface PermissionsState {
-//   campaign?: ModulePermission;
-//   chat?: ModulePermission;
-//   user?: ModulePermission;
-//   role?: ModulePermission;
-// }
+// permissionslice
+export interface PermissionsState {
+  campaign?: ModulePermission;
+  chat?: ModulePermission;
+  user?: ModulePermission;
+  role?: ModulePermission;
+}
 export type Module = "user" | "chat" | "role" | "campaign";
 export type Action = "view" | "add" | "edit" | "delete";
 

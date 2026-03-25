@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { db } from "../../services/firebase";
 import {
   collection,
@@ -9,26 +9,20 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import {
-  PlusIcon,
-  ChevronDown,
-  ChevronRight,
-  X,
-  UserRound,
-  Users,
-  UserPlus,
-} from "lucide-react";
-import DirectChatModal from "../../modals/directchatmodal";
-import SpaceModal from "../../modals/spacemodal";
+import { X, UserPlus } from "lucide-react";
+import ChatSidebar from "./chatsidebar";
+import DirectChatModal from "../../modals/directchat-modal";
+import SpaceModal from "../../modals/space-modal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
 import Button from "../../components/common/button";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import LoadSpinner from "../../components/common/spinner";
-import { usersService } from "../../services/firebase/usersService";
-import { chatsService } from "../../services/firebase/chatService";
+import { usersService } from "../../services/firebase/users-service";
+import { chatsService } from "../../services/firebase/chat-service";
 import type { User, conversation, Message } from "../../../src/types/index";
 import { toast } from "react-toastify";
+import NoConversation from "./noconversation";
 import {
   setSpaceName,
   setIsGroupChat,
@@ -37,13 +31,10 @@ import {
   setLoadingUsers,
   setShowSpaceModal,
   setConversationId,
-  setShowDirectChats,
-  setShowSpaces,
-} from "../../redux/reducer/uiSlice";
+} from "../../redux/reducer/ui-slice";
 type Props = {
   sidebarOpen: boolean;
 };
-
 const ChatSection = ({ sidebarOpen }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -83,7 +74,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const createConversation = async (userId: string) => {
     if (!currentUser) return;
-
     try {
       const conversationRef = await chatsService.create({
         type: "private",
@@ -99,25 +89,17 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       console.log("Error Creating Conversation", error);
     }
   };
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!messageInput.trim() || !currentUser || !conversationId) return;
-
-    const newMessage = {
+    const newMessage: Message = {
       senderId: currentUser.uid,
       text: messageInput,
       type: isGroupChat ? "group" : "private",
       seenBy: [],
       createdAt: Timestamp.now(),
     };
-
     try {
-      await chatsService.create({
-        type: "private",
-        participants: [],
-        createdAt: Timestamp.now(),
-      });
-
-      // const docRef = doc(db, "conversation", conversationId);
+      await chatsService.addMessage(conversationId, newMessage);
       await chatsService.update(conversationId, {
         lastMessage: messageInput,
         lastMessageAt: Timestamp.now(),
@@ -126,7 +108,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
     } catch (error) {
       console.log("Error Sending Message", error);
     }
-  };
+  }, [conversationId, messageInput, currentUser, isGroupChat]);
 
   //To load previous messages
   useEffect(() => {
@@ -170,7 +152,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
 
     directChats.forEach((chat) => {
       const q = query(collection(db, "conversation", chat.id, "messages"));
-
       const unsub = onSnapshot(q, (snapshot) => {
         let count = 0;
         snapshot.docs.forEach((doc) => {
@@ -202,18 +183,13 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   //for group
   useEffect(() => {
     if (!currentUser) return;
-
     const unsubscribes: (() => void)[] = [];
-
     spaces.forEach((chat) => {
       const q = query(collection(db, "conversation", chat.id, "messages"));
-
       const unsub = onSnapshot(q, (snapshot) => {
         let count = 0;
-
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
-
           if (
             data.senderId !== currentUser.uid &&
             !data.seenBy?.includes(currentUser.uid)
@@ -262,9 +238,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       dispatch(setLoadingUsers(true));
       try {
         const { users } = await usersService.getAll();
-
         const map: Record<string, User> = {};
-
         users.forEach((user) => {
           map[user.id] = user;
         });
@@ -292,130 +266,18 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       className="flex h-[calc(100vh-60px)] transition-all duration-300 bg-gray-900"
       style={{ marginLeft: sidebarOpen ? "16rem" : "0" }}
     >
-      <div className="w-64">
-        <div className="flex flex-row">
-          <span>
-            <div
-              onClick={() => dispatch(setShowDirectChats(!showDirectChats))}
-              className="pt-4 cursor-pointer text-white"
-            >
-              {showDirectChats ? (
-                <ChevronDown size={20} />
-              ) : (
-                <ChevronRight size={20} />
-              )}
-            </div>
-          </span>
-          <span>
-            <div className="pt-3 text-lg cursor-pointer text-white">
-              Direct Messages
-            </div>
-          </span>
-          <span>
-            <div className="pt-3 ml-16 cursor-pointer text-white">
-              <PlusIcon
-                size={24}
-                onClick={() => dispatch(setShowDirectChatModal(true))}
-              />
-            </div>
-          </span>
-        </div>
-        {showDirectChats && (
-          <div className="mt-3">
-            {directChats.map((chat) => {
-              if (!chat.participants) return null;
-
-              const otherUserId = chat.participants.find(
-                (id: string) => id !== currentUser?.uid,
-              );
-
-              const user = otherUserId ? userMap[otherUserId] : null;
-
-              return (
-                <div
-                  key={chat.id}
-                  className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
-                  onClick={() => {
-                    if (!user) return;
-
-                    dispatch(setConversationId(chat.id));
-                    setSelectedUser(user);
-                    dispatch(setIsGroupChat(false));
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-2">
-                    <span>
-                      <UserRound className="w-5 h-5 text-white" />
-                    </span>
-                    <span>
-                      {user
-                        ? `${user.firstName} ${user.lastName}`
-                        : "Loading..."}
-                    </span>
-                    <div className="pl-25">
-                      {unreadMsgCount[chat.id] > 0 && (
-                        <span className="bg-red-500 text-xs py-1 px-2 rounded-full">
-                          {unreadMsgCount[chat.id]}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        <div className="flex flex-row">
-          <span>
-            <div
-              onClick={() => dispatch(setShowSpaces(!showSpaces))}
-              className="  pt-31 cursor-pointer text-white"
-            >
-              {showSpaces ? (
-                <ChevronDown size={20} />
-              ) : (
-                <ChevronRight size={20} />
-              )}
-            </div>
-          </span>
-          <span>
-            <div className="  pt-30 text-lg cursor-pointer text-white">
-              Spaces
-            </div>
-          </span>
-          <span>
-            <div className="pt-30 ml-34 cursor-pointer text-white">
-              <PlusIcon
-                size={24}
-                onClick={() => dispatch(setShowSpaceModal(true))}
-              />
-            </div>
-          </span>
-        </div>
-        {showSpaces && (
-          <div className="mt-3">
-            {spaces.map((space) => (
-              <div
-                key={space.id}
-                className="p-2 text-white cursor-pointer hover:bg-gray-700 rounded"
-                onClick={() => {
-                  dispatch(setConversationId(space.id));
-                  dispatch(setIsGroupChat(true));
-                  dispatch(setSpaceName(space.name || "Group"));
-                }}
-              >
-                <span className=" pr-36">{space.name}</span>
-                {unreadMsgCount[space.id] > 0 && (
-                  <span className="bg-red-500 text-xs px-2 py-1 rounded-full">
-                    {unreadMsgCount[space.id]}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+      <div>
+        <ChatSidebar
+          directChats={directChats}
+          spaces={spaces}
+          unreadMsgCount={unreadMsgCount}
+          userMap={userMap}
+          currentUserId={currentUser?.uid || ""}
+          showDirectChats={showDirectChats}
+          showSpaces={showSpaces}
+          setSelectedUser={setSelectedUser}
+        />
       </div>
-
       <div className="flex flex-1 flex-col bg-blue-950">
         <div className=" p-4 flex items-center">
           {isGroupChat && spaceName ? (
@@ -485,17 +347,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
           }`}
         >
           {!selectedUser && !isGroupChat ? (
-            <div className="bg-white shadow-lg rounded-xl p-8 text-center w-87.5">
-              <Users className="mx-auto mb-4 text-blue-500" size={40} />
-
-              <h2 className="text-lg font-semibold mb-2 text-gray-900">
-                No Conversation Selected
-              </h2>
-
-              <p className="text-gray-500 text-sm">
-                Select a user or create a group to start chatting.
-              </p>
-            </div>
+            <NoConversation />
           ) : (
             <div className="w-full space-y-4">
               {messages.length === 0 && (
@@ -587,9 +439,7 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               where("participants", "array-contains", currentUser.uid),
             );
             const snapshot = await getDocs(q);
-
             let existingConversation = null;
-
             snapshot.forEach((doc) => {
               const data = doc.data();
               if (data.participants.includes(user.id)) {
@@ -602,7 +452,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               const convoId = await createConversation(user.id);
               if (convoId) dispatch(setConversationId(convoId));
             }
-
             dispatch(setShowDirectChatModal(false));
           }}
         />
@@ -616,11 +465,9 @@ const ChatSection = ({ sidebarOpen }: Props) => {
             dispatch(setIsGroupChat(true));
             dispatch(setSpaceName(spaceName || "Group"));
             setSelectedUser(null);
-
             const participantIds = Array.from(
               new Set([currentUser.uid, ...user.map((u) => u.id)]),
             );
-
             const conversationRef = await chatsService.create({
               type: "group",
               name: spaceName,
@@ -628,7 +475,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
               createdAt: Timestamp.now(),
               createdBy: currentUser.uid,
             });
-
             dispatch(setConversationId(conversationRef.id));
             dispatch(setShowSpaceModal(false));
           }}

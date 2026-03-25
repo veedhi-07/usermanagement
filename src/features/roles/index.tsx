@@ -12,9 +12,9 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Can from "../../components/Can";
+import Can from "../../services/helper/can";
 import { usePermission } from "../../hooks/use-permission/usePermission";
-import DeleteModal from "../../components/deletemodal";
+import DeleteModal from "../../components/delete-modal";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,9 +28,9 @@ import {
   setRoleSort,
   setShowDeleteModal,
   setSidebarOpen,
-} from "../../redux/reducer/uiSlice";
+} from "../../redux/reducer/ui-slice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { rolesService } from "../../services/firebase/rolesService";
+import { rolesService } from "../../services/firebase/roles-service";
 const Roles = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,10 +98,7 @@ const Roles = () => {
           : nameB.localeCompare(nameA);
       });
   }, [roles, searchQuery, sortOrder]);
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-  // const endIndex = startIndex + itemsPerPage;
-  // const paginatedRoles = filteredAndSortedRoles.slice(startIndex, endIndex);
-
+  
   const formatDate = (timestamp?: Timestamp) => {
     if (!timestamp) return "-";
     return timestamp.toDate().toLocaleDateString("en-IN", {

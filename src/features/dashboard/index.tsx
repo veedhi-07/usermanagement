@@ -27,7 +27,7 @@ const Dashboard = () => {
             </h5>
 
             <p className="font-normal text-black">
-              Welocme To User Management System Dashboard!!
+              Welcome To User Management System Dashboard!!
             </p>
           </Card>
         </main>
