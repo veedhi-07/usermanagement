@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { db } from "../../services/firebase";
+import { db } from "../../../services/firebase";
 import {
   collection,
   query,
@@ -10,19 +10,19 @@ import {
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { X, UserPlus } from "lucide-react";
-import ChatSidebar from "./chatsidebar";
-import DirectChatModal from "../../modals/directchat-modal";
-import SpaceModal from "../../modals/space-modal";
+import ChatSidebar from "../chatsidebar";
+import DirectChatModal from "../../../modals/directchat-modal";
+import SpaceModal from "../../../modals/space-modal";
 import { Timestamp } from "firebase/firestore";
 import "react-simple-keyboard/build/css/index.css";
-import Button from "../../components/common/button";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import LoadSpinner from "../../components/common/spinner";
-import { usersService } from "../../services/firebase/users-service";
-import { chatsService } from "../../services/firebase/chat-service";
-import type { User, conversation, Message } from "../../../src/types/index";
+import Button from "../../../components/common/button";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import LoadSpinner from "../../../components/common/spinner";
+import { usersService } from "../../../services/firebase/users-service";
+import { chatsService } from "../../../services/firebase/chat-service";
+import type { User, conversation, Message } from "../../../types/index";
 import { toast } from "react-toastify";
-import NoConversation from "./noconversation";
+import NoConversation from "../noconversation";
 import {
   setSpaceName,
   setIsGroupChat,
@@ -31,7 +31,7 @@ import {
   setLoadingUsers,
   setShowSpaceModal,
   setConversationId,
-} from "../../redux/reducer/ui-slice";
+} from "../../../redux/reducer/ui-slice";
 type Props = {
   sidebarOpen: boolean;
 };

@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { PlusIcon, ChevronDown, ChevronRight, UserRound } from "lucide-react";
-import type { User, conversation } from "../../../src/types/index";
-import { useAppDispatch } from "../../redux/hooks";
+import type { User, conversation } from "../../../types/index";
+import { useAppDispatch } from "../../../redux/hooks";
 import {
   setSpaceName,
   setIsGroupChat,
@@ -10,7 +10,7 @@ import {
   setConversationId,
   setShowDirectChats,
   setShowSpaces,
-} from "../../redux/reducer/ui-slice";
+} from "../../../redux/reducer/ui-slice";
 type Props = {
   directChats: conversation[];
   spaces: conversation[];
