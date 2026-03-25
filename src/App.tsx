@@ -3,20 +3,20 @@ import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./services/firebase";
-import { fetchUserProfile } from "./services/firebase/profile-service";
+import { fetchUserProfile } from "./services/firebase/profile-service/index";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
-import { setProfile, clearProfile } from "../src/redux/reducer/profile-slice";
+import { setProfile, clearProfile } from "../src/redux/reducer/profile-slice/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   setPermissions,
   clearPermissions,
-} from "../src/redux/reducer/permission-slice";
+} from "../src/redux/reducer/permission-slice/index";
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { Suspense } from "react";
-import { rolesService } from "./services/firebase/roles-service";
+import { rolesService } from "./services/firebase/roles-service/index";
 import LoadSpinner from "./components/common/spinner";
 import type { Permissions } from "./types";
 
@@ -26,7 +26,7 @@ const Dashboard = React.lazy(() => import("./features/dashboard"));
 const MyProfile = React.lazy(() => import("./pages/private/myprofile"));
 const Users = React.lazy(() => import("./features/users"));
 const Roles = React.lazy(() => import("./features/roles"));
-const AddRole = React.lazy(() => import("./features/addeditrole"));
+const AddRole = React.lazy(() => import("./features/roles/addeditrole"));
 const Chat = React.lazy(() => import("./features/chat"));
 const ErrorBoundry = React.lazy(() => import("./pages/public/errorboundry"));
 

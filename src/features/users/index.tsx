@@ -12,16 +12,16 @@ import {
 import CommonModal from "../../components/addedit-modal";
 import { getAuth, updateCurrentUser } from "firebase/auth";
 import UserPagination from "../../components/pagination";
-import usePagination from "../../hooks/use-pagination/usepagination";
+import usePagination from "../../hooks/use-pagination";
 import DeleteModal from "../../components/delete-modal";
 import LoadSpinner from "../../components/common/spinner";
 import Can from "../../services/helper/can";
-import { usePermission } from "../../hooks/use-permission/usePermission";
+import { usePermission } from "../../hooks/use-permission";
 import { ToastContainer } from "react-toastify";
 import FormField from "../../components/common/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
 import type { User } from "../../../src/types/index";
-import { usersService } from "../../services/firebase/users-service";
+import { usersService } from "../../services/firebase/users-service/index";
 import {
   setUserSearch,
   setLoading,
@@ -29,7 +29,7 @@ import {
   setSelectedUser,
   setShowModals,
   setSidebarOpen,
-} from "../../redux/reducer/ui-slice";
+} from "../../redux/reducer/ui-slice/index";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Users = () => {

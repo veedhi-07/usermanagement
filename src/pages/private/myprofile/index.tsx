@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { setProfile } from "../../../redux/reducer/profile-slice";
-import profileService from "../../../services/firebase/profile-service";
+import { setProfile } from "../../../redux/reducer/profile-slice/index";
+import profileService from "../../../services/firebase/profile-service/";
 import { getAuth } from "firebase/auth";
 import { Card, Avatar } from "flowbite-react";
 import type { ProfileData } from "../../../types";
@@ -10,11 +10,11 @@ import Navbar from "../../../components/layout/navbar";
 import FormField from "../../../components/common/form-field/formfield";
 import LoadSpinner from "../../../components/common/spinner";
 import { Formik, Form } from "formik";
-import * as Yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { setSidebarOpen, setLoading } from "../../../redux/reducer/ui-slice";
+import { setSidebarOpen, setLoading } from "../../../redux/reducer/ui-slice/index";
 import Button from "../../../components/common/button";
+import { profileSchema } from "../../../utils/validation";
 
 const MyProfile = () => {
   const [initialValues, setInitialValues] = useState<ProfileData>({
@@ -30,17 +30,7 @@ const MyProfile = () => {
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
   const loading = useAppSelector((state) => state.ui.loading);
 
-  //  Validation Schema
-  const validationSchema = Yup.object({
-    firstName: Yup.string().required("First name is required"),
-    lastName: Yup.string().required("Last name is required"),
-    email: Yup.string().email("Invalid email").required("Email is required"),
-    phone: Yup.string().matches(
-      /^\d{10}$/,
-      "Phone number must be exactly 10 digits",
-    ),
-    role: Yup.string().required("Role is required"),
-  });
+  const validationSchema = profileSchema;
 
   useEffect(() => {
     dispatch(setLoading(true));
@@ -84,7 +74,6 @@ const MyProfile = () => {
           <Navbar onMenuClick={() => dispatch(setSidebarOpen(!sidebarOpen))} />
 
           <main className="p-8 bg-linear-to-br from-blue-100 to-blue-200 flex-1">
-            {/* PROFILE HEADER */}
             <Card className="mb-6 bg-white! shadow-lg rounded-xl border-none">
               <div className="flex items-center gap-5">
                 <Avatar img="" alt="Avatar" rounded size="lg" />
@@ -97,7 +86,6 @@ const MyProfile = () => {
               </div>
             </Card>
 
-            {/* PERSONAL INFO */}
             <Card className="shadow-lg bg-white! rounded-xl border-none">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-800 pb-2 font-serif">
@@ -138,7 +126,6 @@ const MyProfile = () => {
                 {({ values, handleChange, handleBlur, errors, touched }) => (
                   <Form>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* First Name */}
                       <div>
                         {editable ? (
                           <FormField
@@ -159,7 +146,6 @@ const MyProfile = () => {
                         )}
                       </div>
 
-                      {/* Last Name */}
                       <div>
                         {editable ? (
                           <FormField
@@ -180,7 +166,6 @@ const MyProfile = () => {
                         )}
                       </div>
 
-                      {/* Email */}
                       <div>
                         {editable ? (
                           <FormField
@@ -202,7 +187,6 @@ const MyProfile = () => {
                         )}
                       </div>
 
-                      {/* Phone */}
                       <div>
                         {editable ? (
                           <FormField

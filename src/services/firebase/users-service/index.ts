@@ -9,8 +9,8 @@ import {
   Query,
 } from "firebase/firestore";
 import type { DocumentData } from "firebase/firestore";
-import { db } from "./index";
-import type { User } from "../../types";
+import { db } from "../index";
+import type { User } from "../../../types";
 
 export const usersService = {
   getAll: async (q?: Query<DocumentData>) => {

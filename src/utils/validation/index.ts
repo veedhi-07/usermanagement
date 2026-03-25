@@ -51,3 +51,13 @@ export const loginSchema = Yup.object({
     .matches(/\d/, "Password must contain a number")
     .matches(/[@$!%*#?&]/, "Password must contain a special character"),
 });
+
+export const profileSchema = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string()
+    .matches(/^\d{10}$/, "Phone number must be exactly 10 digits")
+    .nullable()
+    .notRequired(),
+});

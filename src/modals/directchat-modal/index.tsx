@@ -17,7 +17,9 @@ import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../../components/common/button";
 import type { User } from "../../../src/types/index";
-import { usersService } from "../../services/firebase/users-service";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { setLoading } from "../../redux/reducer/ui-slice/index";
+import { usersService } from "../../services/firebase/users-service/index";
 type DirectChatModalProps = {
   onClose: () => void;
   onUserSelect: (users: User) => void;
@@ -34,17 +36,18 @@ const DirectChatModal = ({
   const [users, setUsers] = useState<User[]>([]);
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hasMore, setHasMore] = useState(true);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const parentRef = useRef<HTMLDivElement>(null);
+  const loading = useAppSelector((state) => state.ui.loading);
+  const dispatch = useAppDispatch();
 
   const itemsPerPage = 5;
   const fetchUsers = async () => {
     if (loading || !hasMore) return;
 
-    setLoading(true);
+    dispatch(setLoading(true));
 
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -75,7 +78,7 @@ const DirectChatModal = ({
     setLastDoc(newLastDoc);
     setHasMore(newUsers.length === itemsPerPage);
 
-    setLoading(false);
+    dispatch(setLoading(false));
   };
 
   useEffect(() => {
@@ -165,7 +168,7 @@ const DirectChatModal = ({
               onClose();
             }}
           >
-            {isGroup ? "Add Uer" : "Start Chat"}
+            {isGroup ? "Add User" : "Start Chat"}
           </Button>
         </div>
       )}

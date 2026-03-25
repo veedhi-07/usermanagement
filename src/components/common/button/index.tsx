@@ -1,7 +1,8 @@
 import React from "react";
 import type { FC } from "react";
 import type { ButtonProps } from "../../../types";
-//new type for native elements and omit to handle custom
+
+//take all buttons props and remove the defined
 type NativeButtonProps = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   keyof ButtonProps

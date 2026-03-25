@@ -8,8 +8,8 @@ import {
   getDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { db } from "./index";
-import type { conversation, Message } from "../../types";
+import { db } from "../index";
+import type { conversation, Message } from "../../../types";
 
 export const chatsService = {
   getAll: async (q?: any) => {

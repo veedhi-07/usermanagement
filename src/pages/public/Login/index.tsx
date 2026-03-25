@@ -2,7 +2,7 @@ import AuthLayout from "../../../components/layout/auth-layout";
 import FormField from "../../../components/common/form-field/formfield";
 import { Link } from "react-router-dom";
 import loginImage from "../../../assets/login.png";
-import { setPermissions } from "../../../redux/reducer/permission-slice";
+import { setPermissions } from "../../../redux/reducer/permission-slice/index";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";
@@ -15,8 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import Button from "../../../components/common/button";
-import { usersService } from "../../../services/firebase/users-service";
-import { rolesService } from "../../../services/firebase/roles-service";
+import { usersService } from "../../../services/firebase/users-service/index";
+import { rolesService } from "../../../services/firebase/roles-service/index";
 const Login = () => {
   const initialValues = { email: "", password: "" };
   const navigate = useNavigate();
@@ -44,7 +44,6 @@ const Login = () => {
         throw new Error("User profile not found");
       }
       const userRole = userDoc.role;
-
 
       const roles = await rolesService.getAll();
       const role = roles.find((r) => r.id === userRole);

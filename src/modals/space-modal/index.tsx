@@ -16,7 +16,7 @@ import { User as UserIcon } from "lucide-react";
 import FormField from "../../components/common/form-field/formfield";
 import Button from "../../components/common/button";
 import type { User } from "../../types/index";
-import { usersService } from "../../services/firebase/users-service";
+import { usersService } from "../../services/firebase/users-service/index";
 import { memo } from "react";
 type SpaceModalProps = {
   onClose: () => void;

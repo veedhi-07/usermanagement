@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { PermissionsState, ModulePermission } from "../../types/index";
+import type { PermissionsState, ModulePermission } from "../../../types/index";
 
 export type ModuleKey = keyof PermissionsState;
 export type ActionKey = keyof ModulePermission;

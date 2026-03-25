@@ -18,8 +18,8 @@ import "react-simple-keyboard/build/css/index.css";
 import Button from "../../../components/common/button";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import LoadSpinner from "../../../components/common/spinner";
-import { usersService } from "../../../services/firebase/users-service";
-import { chatsService } from "../../../services/firebase/chat-service";
+import { usersService } from "../../../services/firebase/users-service/index";
+import { chatsService } from "../../../services/firebase/chat-service/index";
 import type { User, conversation, Message } from "../../../types/index";
 import { toast } from "react-toastify";
 import NoConversation from "../noconversation";
@@ -31,7 +31,7 @@ import {
   setLoadingUsers,
   setShowSpaceModal,
   setConversationId,
-} from "../../../redux/reducer/ui-slice";
+} from "../../../redux/reducer/ui-slice/index";
 type Props = {
   sidebarOpen: boolean;
 };

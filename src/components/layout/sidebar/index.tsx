@@ -7,7 +7,7 @@ import {
   Megaphone,
   LayoutDashboard,
 } from "lucide-react";
-import { usePermission } from "../../../hooks/use-permission/usePermission";
+import { usePermission } from "../../../hooks/use-permission/index";
 import type {SidebarProps} from "../../../types"
 
 const Sidebar = ({ open, onClose }: SidebarProps) => {
@@ -39,13 +39,12 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
         </div>
 
         <nav className="flex flex-col gap-4 p-6 text-black dark:text-black">
-          {/* Dashboard Always Visible */}
+
           <Link to="/dashboard" className="flex items-center gap-4">
             <LayoutDashboard size={18} className="cursor-pointer text-black" />
             <span>Dashboard</span>
           </Link>
 
-          {/* Users */}
           {canViewUsers && (
             <Link to="/users" className="flex items-center gap-4">
               <UsersRound size={18} className="cursor-pointer text-black" />
@@ -53,7 +52,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
             </Link>
           )}
 
-          {/* Chat */}
           {canViewChat && (
             <Link to="/chat" className="flex items-center gap-4">
               <MessageCircle size={18} className="cursor-pointer text-black" />
@@ -61,7 +59,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
             </Link>
           )}
 
-          {/* Roles */}
           {canViewRoles && (
             <Link to="/roles" className="flex items-center gap-4">
               <UserKey size={18} className="cursor-pointer text-black" />
@@ -69,7 +66,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
             </Link>
           )}
 
-          {/* Campaign */}
           {canViewCampaign && (
             <Link to="/campaign" className="flex items-center gap-4">
               <Megaphone size={18} className="cursor-pointer text-black" />
@@ -77,7 +73,6 @@ const Sidebar = ({ open, onClose }: SidebarProps) => {
             </Link>
           )}
 
-          {/* Edit Profile Always Visible*/}
           <Link to="/myprofile" className="flex items-center gap-4">
             <UserPen size={18} className="cursor-pointer text-black" />
             <span>Edit Profile</span>

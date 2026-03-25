@@ -3,7 +3,7 @@ import { Timestamp } from "firebase/firestore";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import UserPagination from "../../components/pagination";
-import usePagination from "../../hooks/use-pagination/usepagination";
+import usePagination from "../../hooks/use-pagination/index";
 import {
   SearchIcon,
   Trash,
@@ -13,13 +13,13 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Can from "../../services/helper/can";
-import { usePermission } from "../../hooks/use-permission/usePermission";
+import { usePermission } from "../../hooks/use-permission/index";
 import DeleteModal from "../../components/delete-modal";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadSpinner from "../../components/common/spinner";
-import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
+import { usefirebasecollection } from "../../hooks/use-firebasecollection/index";
 import FormField from "../../components/common/form-field/formfield";
 import type { Permissions, Role } from "../../../src/types/index";
 import { useMemo } from "react";
@@ -28,9 +28,9 @@ import {
   setRoleSort,
   setShowDeleteModal,
   setSidebarOpen,
-} from "../../redux/reducer/ui-slice";
+} from "../../redux/reducer/ui-slice/index";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { rolesService } from "../../services/firebase/roles-service";
+import { rolesService } from "../../services/firebase/roles-service/index";
 const Roles = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,7 +98,7 @@ const Roles = () => {
           : nameB.localeCompare(nameA);
       });
   }, [roles, searchQuery, sortOrder]);
-  
+
   const formatDate = (timestamp?: Timestamp) => {
     if (!timestamp) return "-";
     return timestamp.toDate().toLocaleDateString("en-IN", {
@@ -171,12 +171,6 @@ const Roles = () => {
                   <table className="w-full border-collapse">
                     <thead className="bg-gray-300">
                       <tr>
-                        {/* <th
-                      className="p-3 text-left cursor-pointer"
-                      onClick={toggleSort}
-                    >
-                      Role Name
-                    </th> */}
                         <th className="p-3 text-left">
                           <div className="flex items-center gap-2">
                             <ArrowUpDown

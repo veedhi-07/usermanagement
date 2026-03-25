@@ -12,7 +12,7 @@ import { auth } from "../../../services/firebase";
 import { Timestamp } from "firebase/firestore";
 import { Link } from "react-router-dom";
 import Button from "../../../components/common/button";
-import { usersService } from "../../../services/firebase/users-service";
+import { usersService } from "../../../services/firebase/users-service/index";
 const Signup = () => {
   const navigate = useNavigate();
   const initialValues = {

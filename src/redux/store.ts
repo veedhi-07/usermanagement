@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import permissionReducer from "./reducer/permission-slice";
-import uiReducer from "./reducer/ui-slice";
-import profileReducer from "./reducer/profile-slice";
+import permissionReducer from "./reducer/permission-slice/index";
+import uiReducer from "./reducer/ui-slice/index";
+import profileReducer from "./reducer/profile-slice/index";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 

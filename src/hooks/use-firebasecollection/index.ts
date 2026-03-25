@@ -5,11 +5,11 @@ import { onSnapshot } from "firebase/firestore";
 
 export const usefirebasecollection = <T>(
   collectionName: string,
-  dependencies: any[] = [],
+  dependencies: React.DependencyList = [],
 ) => {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     setLoading(true);
     const unsubscribe = onSnapshot(

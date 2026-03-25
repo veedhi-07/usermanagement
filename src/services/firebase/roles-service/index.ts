@@ -7,8 +7,8 @@ import {
   addDoc,
   getDoc,
 } from "firebase/firestore";
-import { db } from "./index";
-import type { Role } from "../../types";
+import { db } from "../index";
+import type { Role } from "../../../types";
 
 export const rolesService = {
   getAll: async () => {

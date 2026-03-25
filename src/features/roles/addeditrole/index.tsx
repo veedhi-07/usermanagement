@@ -1,14 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
-import { rolesService } from "../../services/firebase/roles-service";
+import { rolesService } from "../../../services/firebase/roles-service/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import FormField from "../../components/common/form-field/formfield";
-import Button from "../../components/common/button";
-import Sidebar from "../../components/layout/sidebar";
-import Navbar from "../../components/layout/navbar";
-import type { Permissions, Module, Action } from "../../types";
+import FormField from "../../../components/common/form-field/formfield";
+import Button from "../../../components/common/button";
+import Sidebar from "../../../components/layout/sidebar";
+import Navbar from "../../../components/layout/navbar";
+import type { Permissions, Module, Action } from "../../../types";
 const modules: Module[] = ["user", "chat", "role", "campaign"];
 const actions: Action[] = ["view", "add", "edit", "delete"];
 

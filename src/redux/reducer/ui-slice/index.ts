@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import type { TypedUseSelectorHook } from "react-redux";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { User } from "../../types";
-import type { RootState, AppDispatch } from "./../store";
+import type { User } from "../../../types";
+import type { RootState, AppDispatch } from "./../../store";
 type SortOrder = "asc" | "desc";
 
 interface UsersUIState {
@@ -26,7 +26,7 @@ interface ChatsUIState {
   spaceName: string | null;
   isGroupChat: boolean;
   showSpaceModal: boolean;
-  ShowDirectChatModal: boolean | any;
+  ShowDirectChatModal: boolean ;
   loadingChats: boolean | null;
   loadingUsers: boolean;
   conversationId: string | null;

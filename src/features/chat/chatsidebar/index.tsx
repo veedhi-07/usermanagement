@@ -10,7 +10,7 @@ import {
   setConversationId,
   setShowDirectChats,
   setShowSpaces,
-} from "../../../redux/reducer/ui-slice";
+} from "../../../redux/reducer/ui-slice/index";
 type Props = {
   directChats: conversation[];
   spaces: conversation[];

@@ -24,7 +24,6 @@ const Nav = ({ onMenuClick }: NavProps) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -41,7 +40,7 @@ const Nav = ({ onMenuClick }: NavProps) => {
     try {
       navigate("/myprofile");
     } catch (error) {
-      console.error("Can't navigate to MyProfile Page", error);
+      console.error("Can't Navigate", error);
     }
   };
 
@@ -69,12 +68,7 @@ const Nav = ({ onMenuClick }: NavProps) => {
           arrowIcon={false}
           inline
           label={
-            <Avatar
-              alt="User"
-              img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
-              rounded
-              className="cursor-pointer"
-            />
+            <Avatar alt="User" img="" rounded className="cursor-pointer" />
           }
         >
           <DropdownHeader>

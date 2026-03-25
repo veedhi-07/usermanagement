@@ -1,7 +1,7 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import type { DocumentData, UpdateData } from "firebase/firestore";
-import { db } from "../firebase";
-import type { ProfileData } from "../../types";
+import { db } from "../../firebase";
+import type { ProfileData } from "../../../types";
 
 // Fetch user profile from Firestore
 export const fetchUserProfile = async (

@@ -11,9 +11,9 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
 import CommonModall from "../common/common-modal";
-import { usefirebasecollection } from "../../hooks/use-firebasecollection/usefirebasecollection";
+import { usefirebasecollection } from "../../hooks/use-firebasecollection/index";
 import type { Role, ModalProps } from "../../types/index";
-import { usersService } from "../../services/firebase/users-service";
+import { usersService } from "../../services/firebase/users-service/index";
 const UserModal: FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -21,6 +21,7 @@ const UserModal: FC<ModalProps> = ({
   mode = "add",
   onSave,
 }) => {
+  //used firebasecollection to fetch the roles collection
   const { data: roles } = usefirebasecollection<Role>("roles");
   const initialValues = {
     firstname: user?.firstName || "",
