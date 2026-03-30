@@ -71,7 +71,7 @@ const Users = () => {
     return () => unsubscribe();
   }, []);
 
-  //DeleteUser
+
   const handleDelete = useCallback(async () => {
     if (!selectedUserId) return;
 
@@ -84,7 +84,7 @@ const Users = () => {
       console.error("Delete failed:", error);
     }
   }, [selectedUserId]);
-  //Save
+  
   const handleSave = useCallback(
     (updatedUser: User) => {
       setUsers((prev) =>

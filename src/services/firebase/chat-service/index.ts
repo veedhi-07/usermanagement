@@ -31,7 +31,6 @@ export const chatsService = {
     const snapshot = await getDoc(doc(db, "conversation", id));
 
     if (!snapshot.exists()) return null;
-
     return {
       id: snapshot.id,
       ...(snapshot.data() as Omit<conversation, "id">),
