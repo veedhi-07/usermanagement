@@ -4,16 +4,18 @@ import FormField from "../../components/common/form-field/formfield";
 import Button from "../common/button";
 import { useCallback } from "react";
 import { signupSchema, editUserSchema } from "../../utils/validation";
-import { secondaryAuth } from "../../services/firebase";
-import type { User } from "../../../src/types/index";
-import { Timestamp } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
 import CommonModall from "../common/common-modal";
-import { usefirebasecollection } from "../../hooks/use-firebasecollection/index";
-import type { Role, ModalProps } from "../../types/index";
-import { usersService } from "../../services/firebase/users-service/index";
+import type { ModalProps } from "../../types/index";
+import {
+  useRole,
+} from "../../hooks/use-role";
+import {
+  useCreateUser,
+  useUpdateUser,
+
+} from "../../hooks/use-user";
 const UserModal: FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -21,15 +23,16 @@ const UserModal: FC<ModalProps> = ({
   mode = "add",
   onSave,
 }) => {
-  //used firebasecollection to fetch the roles collection
-  const { data: roles } = usefirebasecollection<Role>("roles");
+  const { data: roles = [] } = useRole();
+  const createUser = useCreateUser();
+  const updateUser = useUpdateUser();
   const initialValues = {
     firstname: user?.firstName || "",
     lastname: user?.lastName || "",
     email: user?.email || "",
     password: "",
     cpassword: "",
-    role: user?.role || "",
+    role: roles.find((r) => r.id === user?.role)?.id || "",
   };
 
   const handleSubmit = useCallback(
@@ -39,56 +42,80 @@ const UserModal: FC<ModalProps> = ({
     ) => {
       try {
         if (mode === "add") {
-          const userCredential = await createUserWithEmailAndPassword(
-            secondaryAuth,
-            values.email,
-            values.password,
+          if (createUser.isPending) return;
+          createUser.mutate(
+            {
+              email: values.email,
+              firstName: values.firstname,
+              lastName: values.lastname,
+              role: values.role,
+              createdAt: new Date().toISOString(),
+            },
+            {
+              onSuccess: (newUser) => {
+                toast.success("user created");
+                onSave?.(newUser);
+                onClose();
+              },
+            },
           );
-
-          const newUser = userCredential.user;
-
-          await usersService.create({
-            email: values.email,
-            firstName: values.firstname,
-            lastName: values.lastname,
-            role: values.role,
-            createdAt: Timestamp.now(),
-          });
-
-          toast.success("User Created");
-
-          onSave?.({
-            id: newUser.uid,
-            email: values.email,
-            firstName: values.firstname,
-            lastName: values.lastname,
-            role: values.role,
-          });
         }
+
+        // const userCredential = await createUserWithEmailAndPassword(
+        //   secondaryAuth,
+        //   values.email,
+        //   values.password,
+        // );
+
+        // const newUser = userCredential.user;
+
+        // await usersService.create({
+        //   email: values.email,
+        //   firstName: values.firstname,
+        //   lastName: values.lastname,
+        //   role: values.role,
+        //   createdAt: Timestamp.now(),
+        // });
+
+        // toast.success("User Created");
+
+        //   onSave?.({
+        //     id: newUser.uid,
+        //     email: values.email,
+        //     firstName: values.firstname,
+        //     lastName: values.lastname,
+        //     role: values.role,
+        //   });
+        // }
 
         if (mode === "edit" && user?.id) {
-          const updatedUser: User = {
-            id: user.id,
-            email: values.email,
-            firstName: values.firstname,
-            lastName: values.lastname,
-            role: values.role,
-            createdAt: user.createdAt,
-          };
-
-          await usersService.update(user.id, {
-            email: values.email,
-            firstName: values.firstname,
-            lastName: values.lastname,
-            role: values.role,
-          });
-
-          toast.success("User Updated");
-
-          onSave?.(updatedUser);
+          updateUser.mutate(
+            {
+              id: user.id,
+              data: {
+                email: values.email,
+                firstName: values.firstname,
+                lastName: values.lastname,
+                role: values.role,
+                // createdAt: user.createdAt,
+                createdAt:new Date().toISOString(),
+              },
+            },
+            {
+              onSuccess: () => {
+                toast.success("User Updated");
+                onSave?.({
+                  ...user,
+                  email: values.email,
+                  firstName: values.firstname,
+                  lastName: values.lastname,
+                  role: values.role,
+                });
+                onClose();
+              },
+            },
+          );
         }
-
-        onClose();
       } catch (error) {
         console.error(error);
         toast.error("Something went wrong");
@@ -96,9 +123,8 @@ const UserModal: FC<ModalProps> = ({
         setSubmitting(false);
       }
     },
-    [mode, user, onSave, onClose],
+    [mode, user, onSave, onClose, createUser, updateUser],
   );
-
   return (
     <CommonModall
       isOpen={isOpen}
@@ -193,10 +219,10 @@ const UserModal: FC<ModalProps> = ({
                 <option value="">Select Role</option>
 
                 {roles
-                  .filter((role) => role.name.toLowerCase() !== "admin")
+                  .filter((role) => role?.role?.toLowerCase() !== "admin")
                   .map((role) => (
                     <option key={role.id} value={role.id}>
-                      {role.name}
+                      {role.role}
                     </option>
                   ))}
               </select>

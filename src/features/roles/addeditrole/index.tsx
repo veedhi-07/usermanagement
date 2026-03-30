@@ -1,13 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Timestamp } from "firebase/firestore";
-import { rolesService } from "../../../services/firebase/roles-service/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormField from "../../../components/common/form-field/formfield";
 import Button from "../../../components/common/button";
 import Sidebar from "../../../components/layout/sidebar";
 import Navbar from "../../../components/layout/navbar";
+import { useRole, useCreateRole, useUpdateRole } from "../../../hooks/use-role";
+import type { Roles } from "../../../types";
 import type { Permissions, Module, Action } from "../../../types";
 const modules: Module[] = ["user", "chat", "role", "campaign"];
 const actions: Action[] = ["view", "add", "edit", "delete"];
@@ -28,32 +28,58 @@ const AddRole = () => {
     campaign: { view: false, add: false, edit: false, delete: false },
   });
 
+  const { data: roles = [] } = useRole();
+
+  const updateRole = useUpdateRole();
+  const createRole = useCreateRole();
+  const mapPermissions = (
+    apiPermissions?: Roles["permissions"],
+  ): Permissions => {
+    return {
+      user: {
+        view: !!apiPermissions?.users?.view,
+        add: !!apiPermissions?.users?.add,
+        edit: !!apiPermissions?.users?.edit,
+        delete: !!apiPermissions?.users?.delete,
+      },
+      role: {
+        view: !!apiPermissions?.roles?.view,
+        add: !!apiPermissions?.roles?.add,
+        edit: !!apiPermissions?.roles?.edit,
+        delete: !!apiPermissions?.roles?.delete,
+      },
+      chat: {
+        view: !!apiPermissions?.chat?.view,
+        add: !!apiPermissions?.chat?.add,
+        edit: !!apiPermissions?.chat?.edit,
+        delete: !!apiPermissions?.chat?.delete,
+      },
+      campaign: {
+        view: !!apiPermissions?.campaign?.view,
+        add: !!apiPermissions?.campaign?.add,
+        edit: !!apiPermissions?.campaign?.edit,
+        delete: !!apiPermissions?.campaign?.delete,
+      },
+    };
+  };
   useEffect(() => {
     if (!isEditMode || !id) return;
 
-    const fetchRole = async () => {
-      try {
-        const role = await rolesService.getById(id);
+    const role = roles.find((r) => r.id === id) as Roles | undefined;
 
-        if (!role) return;
+    if (!role) return;
 
-        setRoleName(role.name);
-        setPermissions(role.permissions as Permissions);
-      } catch (error) {
-        console.error("Error fetching role:", error);
-      }
-    };
-
-    fetchRole();
-  }, [id, isEditMode]);
+    setRoleName(role.role);
+    setPermissions(mapPermissions(role.permissions));
+  }, [id, isEditMode, roles]);
 
   const handleToggle = (module: Module, action: Action) => {
     setPermissions((prev) => {
       const current = prev[module];
 
       const updated: ModulePermissions = {
-        ...current, //If edit=false
-        [action]: !current[action], //now true than action != currentaction
+        ...current, 
+        [action]: !current[action],
       };
 
       const childActions: Action[] = ["add", "edit", "delete"];
@@ -75,35 +101,39 @@ const AddRole = () => {
       };
     });
   };
-  const handleSave = useCallback(async () => {
+
+  const handleSave = useCallback(() => {
     if (!roleName.trim()) return;
 
-    try {
-      if (isEditMode && id) {
-        await rolesService.update(id, {
-          name: roleName,
-          permissions,
-          updatedAt: Timestamp.now(),
-        });
-      } else {
-        await rolesService.create({
-          name: roleName,
-          permissions,
-          createdAt: Timestamp.now(),
-        });
-      }
-      navigate("/roles", {
-        state: {
-          message: isEditMode
-            ? "Role updated successfully!"
-            : "Role created successfully!",
+    const payload = {
+      name: roleName,
+      permissions,
+      ...(isEditMode
+        ? { updatedAt: new Date().toISOString() }
+        : { createdAt: new Date().toISOString() }),
+    };
+
+    if (isEditMode && id) {
+      updateRole.mutate(
+        { id, data: payload },
+        {
+          onSuccess: () => {
+            navigate("/roles", {
+              state: { message: "Role updated successfully!" },
+            });
+          },
+        },
+      );
+    } else {
+      createRole.mutate(payload, {
+        onSuccess: () => {
+          navigate("/roles", {
+            state: { message: "Role created successfully!" },
+          });
         },
       });
-    } catch (error) {
-      console.error("Error saving role:", error);
     }
   }, [roleName, isEditMode, id, permissions, navigate]);
-
   return (
     <>
       <ToastContainer />

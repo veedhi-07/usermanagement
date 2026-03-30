@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { Timestamp } from "firebase/firestore";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import UserPagination from "../../components/pagination";
@@ -19,9 +18,8 @@ import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadSpinner from "../../components/common/spinner";
-import { usefirebasecollection } from "../../hooks/use-firebasecollection/index";
 import FormField from "../../components/common/form-field/formfield";
-import type { Permissions, Role } from "../../../src/types/index";
+import type { Permissions, Roles } from "../../../src/types/index";
 import { useMemo } from "react";
 import {
   setRoleSearch,
@@ -30,7 +28,7 @@ import {
   setSidebarOpen,
 } from "../../redux/reducer/ui-slice/index";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { rolesService } from "../../services/firebase/roles-service/index";
+import { useRole, useDeleteRole } from "../../hooks/use-role";
 const Roles = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,10 +41,11 @@ const Roles = () => {
   );
   const dispatch = useAppDispatch();
   const itemsPerPage = 7;
-
+  const deleteRole = useDeleteRole();
   const { can } = usePermission();
   const canDelete = can("role", "delete");
   const canEdit = can("role", "edit");
+  const { data: roles = [], isLoading: loading } = useRole();
   //toastmsg
   useEffect(() => {
     if (location.state?.message) {
@@ -68,20 +67,15 @@ const Roles = () => {
 
     return count;
   };
-
-  const { data: roles, loading } = usefirebasecollection<Role>("roles");
-  // DeleteRole
   const handleDelete = useCallback(async () => {
     if (!selectedUserId) return;
 
-    try {
-      await rolesService.delete(selectedUserId);
-      toast.success("Role Deleted");
-      dispatch(setShowDeleteModal(false));
-      setSelectedUserId(null);
-    } catch (error) {
-      console.error("Delete failed:", error);
-    }
+    deleteRole.mutate(selectedUserId, {
+      onSuccess: () => {
+        dispatch(setShowDeleteModal(false));
+        setSelectedUserId(null);
+      },
+    });
   }, [selectedUserId]);
 
   // search + sort
@@ -89,19 +83,20 @@ const Roles = () => {
     const query = (searchQuery || "").toLowerCase();
     return [...(roles || [])]
 
-      .filter((role) => (role.name || "").toLowerCase().includes(query))
+      .filter((role) => (role.role || "").toLowerCase().includes(query))
       .sort((a, b) => {
-        const nameA = (a.name || "").toLowerCase();
-        const nameB = (b.name || "").toLowerCase();
+        const nameA = (a.role || "").toLowerCase();
+        const nameB = (b.role || "").toLowerCase();
         return sortOrder === "asc"
           ? nameA.localeCompare(nameB)
           : nameB.localeCompare(nameA);
       });
   }, [roles, searchQuery, sortOrder]);
 
-  const formatDate = (timestamp?: Timestamp) => {
-    if (!timestamp) return "-";
-    return timestamp.toDate().toLocaleDateString("en-IN", {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "-";
+
+    return new Date(dateString).toLocaleDateString("en-IN", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -115,6 +110,37 @@ const Roles = () => {
     nextPage,
     prevPage,
   } = usePagination(filteredAndSortedRoles, itemsPerPage);
+
+  const mapPermissions = (
+    apiPermissions?: Roles["permissions"],
+  ): Permissions => {
+    return {
+      user: {
+        view: !!apiPermissions?.users?.view,
+        add: !!apiPermissions?.users?.add,
+        edit: !!apiPermissions?.users?.edit,
+        delete: !!apiPermissions?.users?.delete,
+      },
+      role: {
+        view: !!apiPermissions?.roles?.view,
+        add: !!apiPermissions?.roles?.add,
+        edit: !!apiPermissions?.roles?.edit,
+        delete: !!apiPermissions?.roles?.delete,
+      },
+      chat: {
+        view: !!apiPermissions?.chat?.view,
+        add: !!apiPermissions?.chat?.add,
+        edit: !!apiPermissions?.chat?.edit,
+        delete: !!apiPermissions?.chat?.delete,
+      },
+      campaign: {
+        view: !!apiPermissions?.campaign?.view,
+        add: !!apiPermissions?.campaign?.add,
+        edit: !!apiPermissions?.campaign?.edit,
+        delete: !!apiPermissions?.campaign?.delete,
+      },
+    };
+  };
   return (
     <>
       <ToastContainer position="top-center" autoClose={3000} />
@@ -135,9 +161,7 @@ const Roles = () => {
               <>
                 <h1 className="text-2xl font-bold mb-6">Roles List</h1>
 
-                {/* Search + Add */}
                 <div className="flex justify-between items-center mb-4">
-                  {/* Search */}
                   <div className="relative w-full max-w-sm bg-white rounded-lg">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                       <SearchIcon size={18} />
@@ -207,16 +231,13 @@ const Roles = () => {
 
                       {paginatedRoles.map((role) => (
                         <tr key={role.id} className="border-t hover:bg-gray-50">
-                          <td className="p-3">{role.name}</td>
+                          <td className="p-3">{role.role}</td>
                           <td className="p-3">
                             {role.createdAt ? formatDate(role.createdAt) : "-"}
                           </td>
+
                           <td className="p-3">
-                            {role.permissions
-                              ? countPermissions(
-                                  role.permissions as Permissions,
-                                )
-                              : 0}
+                            {countPermissions(mapPermissions(role.permissions))}
                           </td>
                           <td className="p-3 flex gap-3">
                             <Pencil

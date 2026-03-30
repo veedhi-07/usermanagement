@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Timestamp } from "firebase/firestore";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import {
@@ -10,7 +9,6 @@ import {
   PlusSquare,
 } from "lucide-react";
 import CommonModal from "../../components/addedit-modal";
-import { getAuth, updateCurrentUser } from "firebase/auth";
 import UserPagination from "../../components/pagination";
 import usePagination from "../../hooks/use-pagination";
 import DeleteModal from "../../components/delete-modal";
@@ -21,10 +19,15 @@ import { ToastContainer } from "react-toastify";
 import FormField from "../../components/common/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
 import type { User } from "../../../src/types/index";
-import { usersService } from "../../services/firebase/users-service/index";
+import {
+  useUser,
+  useDeleteUser,
+  useCreateUser,
+  useUpdateUser,
+} from "../../hooks/use-user";
+import { useRole } from "../../hooks/use-role";
 import {
   setUserSearch,
-  setLoading,
   setUserSort,
   setSelectedUser,
   setShowModals,
@@ -33,7 +36,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Users = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  // const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { can } = usePermission();
   const canDelete = can("user", "delete");
@@ -43,58 +46,40 @@ const Users = () => {
   const selectedUser = useAppSelector((state) => state.ui.users.selectedUser);
   const showModals = useAppSelector((state) => state.ui.users.showModals);
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
-  const loading = useAppSelector((state) => state.ui.loading);
   const dispatch = useAppDispatch();
   const itemsPerPage = 7;
+  const getRoleName = (roleId: string) => {
+    return roles.find((r) => r.id === roleId)?.role || "Unknown";
+  };
 
-  useEffect(() => {
-    dispatch(setLoading(true));
+  const { data: users = [], isLoading } = useUser();
+  const { data: roles = [] } = useRole();
 
-    const auth = getAuth();
+  const updateUser = useUpdateUser();
 
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          const { users } = await usersService.getAll();
-
-          const filteredUsers = users.filter((u: User) => u.id !== user.uid);
-
-          setUsers(filteredUsers);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-        } finally {
-          dispatch(setLoading(false));
-        }
-      }
+  const handleSave = useCallback((updatedUser: User) => {
+    updateUser.mutate({
+      id: updatedUser.id,
+      data: updatedUser,
     });
 
-    return () => unsubscribe();
+    dispatch(setSelectedUser(null));
   }, []);
 
+  const deleteUser = useDeleteUser();
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!selectedUserId) return;
 
-    try {
-      await usersService.delete(selectedUserId);
-      setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
-      dispatch(setShowModals({ add: false, delete: false }));
-      setSelectedUserId(null);
-    } catch (error) {
-      console.error("Delete failed:", error);
-    }
+    deleteUser.mutate(selectedUserId, {
+      onSuccess: () => {
+        dispatch(setShowModals({ add: false, delete: false }));
+        setSelectedUserId(null);
+      },
+    });
   }, [selectedUserId]);
-  
-  const handleSave = useCallback(
-    (updatedUser: User) => {
-      setUsers((prev) =>
-        prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
-      );
 
-      dispatch(setSelectedUser(null));
-    },
-    [setUsers],
-  );
+  const createUser = useCreateUser();
 
   const filteredAndSortedUsers = useMemo(() => {
     return [...users]
@@ -114,11 +99,10 @@ const Users = () => {
       });
   }, [users, searchQuery, sortOrder]);
 
-  const formatDate = (timestamp?: Timestamp) => {
-    if (!timestamp) return "-";
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "-";
 
-    const date = timestamp.toDate();
-    return date.toLocaleDateString("en-IN", {
+    return  new Date(dateString).toLocaleDateString("en-IN", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -132,7 +116,7 @@ const Users = () => {
     nextPage,
     prevPage,
   } = usePagination(filteredAndSortedUsers, itemsPerPage);
-  if (loading) return <LoadSpinner />;
+  if (isLoading) return <LoadSpinner />;
   return (
     <>
       <ToastContainer position="top-center" autoClose={2000} />
@@ -149,7 +133,6 @@ const Users = () => {
             <h1 className="text-2xl font-bold mb-6">Users List</h1>
 
             <div className="flex justify-between items-center mb-4">
-              {/* Search */}
               <div className="relative w-full max-w-sm bg-white rounded-lg">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-black">
                   <SearchIcon size={18} />
@@ -166,7 +149,6 @@ const Users = () => {
                 />
               </div>
 
-              {/* Add User */}
               <Can module="user" action="add">
                 <div className="flex items-center gap-2">
                   <span className="text-black font-bold">Add User</span>
@@ -181,7 +163,6 @@ const Users = () => {
               </Can>
             </div>
 
-            {/* Table */}
             <div className="bg-white shadow rounded-lg overflow-hidden">
               <table className="w-full border-collapse">
                 <thead className="bg-gray-300">
@@ -225,8 +206,10 @@ const Users = () => {
                       <td className="p-3">{user.firstName || "-"}</td>
                       <td className="p-3">{user.lastName || "-"}</td>
                       <td className="p-3">{user.email}</td>
-                      <td className="p-3">{user.role}</td>
+                      <td className="p-3">{getRoleName(user.role)}</td>
                       <td className="p-3">
+                        {/* {user.createdAt ? formatDate(user.createdAt) : "-"} */}
+                        {/* {user.createdAt ? new Date().toISOString() : "-"} */}
                         {user.createdAt ? formatDate(user.createdAt) : "-"}
                       </td>
                       <td className="p-3 flex gap-3">
@@ -274,11 +257,10 @@ const Users = () => {
                   dispatch(setShowModals({ add: false, delete: false }))
                 }
                 mode="add"
-                onSave={(newUser) => setUsers((prev) => [...prev, newUser])}
+                onSave={(newUser) => createUser.mutate(newUser)}
               />
             )}
 
-            {/* Edit User */}
             {selectedUser && (
               <CommonModal
                 isOpen={selectedUser !== null}

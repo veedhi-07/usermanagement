@@ -11,7 +11,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: string;
-  createdAt?: Timestamp;
+  createdAt?: Timestamp | string;
 }
 export interface Role {
   id: string;
@@ -159,4 +159,27 @@ export interface CanProps {
   module: ModuleKey;
   action: ActionKey;
   children: ReactNode;
+}
+
+//for roles servicein api
+export interface Roles {
+  id: string;
+  role: string;
+  createdAt?: string;
+  permissions: {
+    users: {
+      add: boolean;
+      edit: boolean;
+      view: boolean;
+      delete: boolean;
+    };
+    roles: {
+      add: boolean;
+      edit: boolean;
+      view: boolean;
+      delete: boolean;
+    };
+    chat: { add: boolean; edit: boolean; view: boolean; delete: boolean };
+    campaign: { add: boolean; edit: boolean; view: boolean; delete: boolean };
+  };
 }
