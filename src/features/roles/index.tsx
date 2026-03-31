@@ -55,7 +55,7 @@ const Roles = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
-  //Permission Count Function
+  //Permission Count 
   const countPermissions = (permissions: Permissions) => {
     let count = 0;
 

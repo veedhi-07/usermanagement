@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import {
@@ -36,7 +36,6 @@ import {
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Users = () => {
-  // const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { can } = usePermission();
   const canDelete = can("user", "delete");
@@ -102,7 +101,7 @@ const Users = () => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
 
-    return  new Date(dateString).toLocaleDateString("en-IN", {
+    return new Date(dateString).toLocaleDateString("en-IN", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -208,8 +207,6 @@ const Users = () => {
                       <td className="p-3">{user.email}</td>
                       <td className="p-3">{getRoleName(user.role)}</td>
                       <td className="p-3">
-                        {/* {user.createdAt ? formatDate(user.createdAt) : "-"} */}
-                        {/* {user.createdAt ? new Date().toISOString() : "-"} */}
                         {user.createdAt ? formatDate(user.createdAt) : "-"}
                       </td>
                       <td className="p-3 flex gap-3">

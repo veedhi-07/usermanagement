@@ -78,7 +78,7 @@ const AddRole = () => {
       const current = prev[module];
 
       const updated: ModulePermissions = {
-        ...current, 
+        ...current,
         [action]: !current[action],
       };
 
@@ -163,8 +163,6 @@ const AddRole = () => {
                   onBlur={() => {}}
                   disabled={isEditMode}
                 />
-
-                {/* Permissions Table */}
                 <table className="w-full border-collapse text-center">
                   <thead className="bg-gray-300">
                     <tr>
@@ -199,7 +197,7 @@ const AddRole = () => {
                   </tbody>
                 </table>
               </form>
-              {/* Buttons */}
+
               <div className="flex justify-end gap-4 mt-6">
                 <Button onClick={() => navigate("/roles")}>Cancel</Button>
 

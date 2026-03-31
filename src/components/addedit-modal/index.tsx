@@ -8,14 +8,8 @@ import { toast } from "react-toastify";
 import type { FormikHelpers } from "formik";
 import CommonModall from "../common/common-modal";
 import type { ModalProps } from "../../types/index";
-import {
-  useRole,
-} from "../../hooks/use-role";
-import {
-  useCreateUser,
-  useUpdateUser,
-
-} from "../../hooks/use-user";
+import { useRole } from "../../hooks/use-role";
+import { useCreateUser, useUpdateUser } from "../../hooks/use-user";
 const UserModal: FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -61,33 +55,6 @@ const UserModal: FC<ModalProps> = ({
           );
         }
 
-        // const userCredential = await createUserWithEmailAndPassword(
-        //   secondaryAuth,
-        //   values.email,
-        //   values.password,
-        // );
-
-        // const newUser = userCredential.user;
-
-        // await usersService.create({
-        //   email: values.email,
-        //   firstName: values.firstname,
-        //   lastName: values.lastname,
-        //   role: values.role,
-        //   createdAt: Timestamp.now(),
-        // });
-
-        // toast.success("User Created");
-
-        //   onSave?.({
-        //     id: newUser.uid,
-        //     email: values.email,
-        //     firstName: values.firstname,
-        //     lastName: values.lastname,
-        //     role: values.role,
-        //   });
-        // }
-
         if (mode === "edit" && user?.id) {
           updateUser.mutate(
             {
@@ -97,8 +64,7 @@ const UserModal: FC<ModalProps> = ({
                 firstName: values.firstname,
                 lastName: values.lastname,
                 role: values.role,
-                // createdAt: user.createdAt,
-                createdAt:new Date().toISOString(),
+                createdAt: new Date().toISOString(),
               },
             },
             {
