@@ -1,9 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { useDispatch, useSelector } from "react-redux";
-import type { TypedUseSelectorHook } from "react-redux";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "../../../types";
-import type { RootState, AppDispatch } from "./../../store";
 type SortOrder = "asc" | "desc";
 
 interface UsersUIState {
@@ -43,7 +40,7 @@ interface UIState {
 
 const initialState: UIState = {
   sidebarOpen: false,
-  loading: true,
+  loading: false,
   users: {
     searchQuery: "",
     sortOrder: "asc" as SortOrder,
@@ -161,5 +158,4 @@ export const {
   setShowSpaces,
 } = uiSlice.actions;
 export default uiSlice.reducer;
-export const useAppDispatch = () => useDispatch<AppDispatch>();
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+

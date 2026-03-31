@@ -5,7 +5,6 @@ import {
   query,
   where,
   getDocs,
-  orderBy,
   onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";

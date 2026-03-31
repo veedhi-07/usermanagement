@@ -1,6 +1,6 @@
 import AuthLayout from "../../../components/layout/auth-layout";
 import FormField from "../../../components/common/form-field/formfield";
-import signupImage from "../../../../assets/signup.png";
+import signupImage from "../../../assets/signup.png";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Formik, Form } from "formik";

@@ -42,8 +42,8 @@ const DirectChatModal = ({
   const parentRef = useRef<HTMLDivElement>(null);
   const loading = useAppSelector((state) => state.ui.loading);
   const dispatch = useAppDispatch();
-
   const itemsPerPage = 5;
+
   const fetchUsers = async () => {
     if (loading || !hasMore) return;
 
@@ -68,7 +68,6 @@ const DirectChatModal = ({
         limit(itemsPerPage),
       );
     }
-
     const { users: newUsers, lastDoc: newLastDoc } =
       await usersService.getAll(q);
 
@@ -80,10 +79,10 @@ const DirectChatModal = ({
 
     dispatch(setLoading(false));
   };
-
   useEffect(() => {
     fetchUsers();
   }, []);
+
   const filteredUsers = users.filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
@@ -102,6 +101,7 @@ const DirectChatModal = ({
       fetchUsers();
     }
   }, [rowVirtualizer.getVirtualItems(), users, hasMore, loading]);
+
   return (
     <CommonModall onClose={onClose} title={"Users List"} isOpen={isOpen}>
       <div className="pb-2">
@@ -128,7 +128,6 @@ const DirectChatModal = ({
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const user = filteredUsers[virtualRow.index];
-
             return (
               <div
                 key={virtualRow.key}

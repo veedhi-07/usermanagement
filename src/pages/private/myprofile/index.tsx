@@ -12,9 +12,12 @@ import LoadSpinner from "../../../components/common/spinner";
 import { Formik, Form } from "formik";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { setSidebarOpen, setLoading } from "../../../redux/reducer/ui-slice/index";
+import {
+  setSidebarOpen,
+} from "../../../redux/reducer/ui-slice/index";
 import Button from "../../../components/common/button";
 import { profileSchema } from "../../../utils/validation";
+import withLoading from "../../../hoc/withloading";
 
 const MyProfile = () => {
   const [initialValues, setInitialValues] = useState<ProfileData>({
@@ -28,12 +31,12 @@ const MyProfile = () => {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile);
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
-  const loading = useAppSelector((state) => state.ui.loading);
+  // const loading = useAppSelector((state) => state.ui.loading);
 
   const validationSchema = profileSchema;
 
   useEffect(() => {
-    dispatch(setLoading(true));
+    // dispatch(setLoading(true));
     const loadProfile = async () => {
       const auth = getAuth();
       const user = auth.currentUser;
@@ -54,13 +57,13 @@ const MyProfile = () => {
         phone: data.phone || "",
       });
 
-      dispatch(setLoading(false));
+      // dispatch(setLoading(false));
     };
 
     loadProfile();
   }, [dispatch]);
 
-  if (loading) return <LoadSpinner />;
+  // if (loading) return <LoadSpinner />;
 
   return (
     <>
@@ -223,4 +226,4 @@ const MyProfile = () => {
     </>
   );
 };
-export default MyProfile;
+export default withLoading(MyProfile);

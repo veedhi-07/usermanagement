@@ -11,15 +11,15 @@ const Dashboard = () => {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
+
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Right side */}
+  
       <div className="flex-1 flex flex-col">
-        {/* Navbar */}
+   
         <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* Dashboard content */}
+
         <main className="flex-1 p-8 bg-linear-to-br from-blue-100 to-blue-200 flex justify-center items-center">
           <Card className="w-250 bg-white! shadow-lg rounded-xl">
             <h5 className="text-2xl font-bold tracking-tight text-black">

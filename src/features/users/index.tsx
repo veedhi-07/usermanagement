@@ -40,6 +40,7 @@ const Users = () => {
   const { can } = usePermission();
   const canDelete = can("user", "delete");
   const canEdit = can("user", "edit");
+
   const sortOrder = useAppSelector((state) => state.ui.users.sortOrder);
   const searchQuery = useAppSelector((state) => state.ui.users.searchQuery);
   const selectedUser = useAppSelector((state) => state.ui.users.selectedUser);
@@ -282,4 +283,5 @@ const Users = () => {
     </>
   );
 };
+
 export default Users;

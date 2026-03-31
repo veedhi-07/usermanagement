@@ -46,7 +46,7 @@ const Nav = ({ onMenuClick }: NavProps) => {
 
   return (
     <Navbar fluid rounded className="!bg-blue-50! dark:bg-gray-900 shadow-md">
-      {/* LEFT SIDE */}
+  
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuClick}
@@ -62,7 +62,7 @@ const Nav = ({ onMenuClick }: NavProps) => {
         </NavbarBrand>
       </div>
 
-      {/* RIGHT SIDE */}
+
       <div className="flex md:order-2 items-center gap-4">
         <Dropdown
           arrowIcon={false}

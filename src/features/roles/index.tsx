@@ -35,6 +35,7 @@ const Roles = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const sortOrder = useAppSelector((state) => state.ui.roles.sortOrder);
   const searchQuery = useAppSelector((state) => state.ui.roles.searchQuery);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
   const showDeleteModal = useAppSelector(
     (state) => state.ui.roles.showDeleteModal,
@@ -46,6 +47,8 @@ const Roles = () => {
   const canDelete = can("role", "delete");
   const canEdit = can("role", "edit");
   const { data: roles = [], isLoading: loading } = useRole();
+
+
   //toastmsg
   useEffect(() => {
     if (location.state?.message) {
@@ -55,7 +58,7 @@ const Roles = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
-  //Permission Count 
+  //Permission Count
   const countPermissions = (permissions: Permissions) => {
     let count = 0;
 
@@ -79,8 +82,9 @@ const Roles = () => {
   }, [selectedUserId]);
 
   // search + sort
+
   const filteredAndSortedRoles = useMemo(() => {
-    const query = (searchQuery || "").toLowerCase();
+    const query = (debouncedSearch || "").toLowerCase();
     return [...(roles || [])]
 
       .filter((role) => (role.role || "").toLowerCase().includes(query))
@@ -91,7 +95,14 @@ const Roles = () => {
           ? nameA.localeCompare(nameB)
           : nameB.localeCompare(nameA);
       });
-  }, [roles, searchQuery, sortOrder]);
+  }, [roles, debouncedSearch, sortOrder]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -190,7 +201,6 @@ const Roles = () => {
                   </div>
                 </div>
 
-                {/* Table */}
                 <div className="bg-white shadow rounded-lg overflow-hidden">
                   <table className="w-full border-collapse">
                     <thead className="bg-gray-300">

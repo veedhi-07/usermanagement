@@ -34,7 +34,7 @@ const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [spaceName, setSpaceName] = useState("");
   const parentRef = useRef<HTMLDivElement>(null);
-
+  const throttleRef = useRef(0);
   const itemsPerPage = 5;
 
   const fetchUsers = async () => {
@@ -88,13 +88,32 @@ const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
     estimateSize: () => 60,
   });
 
-  useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
+  // useEffect(() => {
+  //   const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
 
-    if (lastItem && lastItem.index >= users.length - 1 && hasMore && !loading) {
+  //   if (lastItem && lastItem.index >= users.length - 1 && hasMore && !loading) {
+  //     fetchUsers();
+  //   }
+  // }, [rowVirtualizer.getVirtualItems(), users, hasMore, loading]);
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
+
+  useEffect(() => {
+    const [lastItem] = [...virtualItems].reverse();
+
+    const now = Date.now();
+
+    if (
+      lastItem &&
+      lastItem.index >= users.length - 1 &&
+      hasMore &&
+      !loading &&
+      now - throttleRef.current > 1000
+    ) {
+      throttleRef.current = now;
       fetchUsers();
     }
-  }, [rowVirtualizer.getVirtualItems(), users, hasMore, loading]);
+  }, [virtualItems, users.length, hasMore, loading]);
 
   const toggleUserSelection = (user: User) => {
     setSelectedUsers((prev) => {
@@ -107,6 +126,7 @@ const SpaceModal = ({ onClose, onUserSelect, isOpen }: SpaceModalProps) => {
       }
     });
   };
+
   return (
     <CommonModall onClose={onClose} isOpen={isOpen} title="Create A Space">
       <FormField
