@@ -3,6 +3,7 @@ import { Button, Modal, ModalBody, ModalHeader } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import Portal from "../../portal";
 import type { DeleteModalProps } from "../../types/index";
+
 const DeleteModal = ({ show, onClose, onConfirm }: DeleteModalProps) => {
   if (!show) return null;
   return (
