@@ -12,12 +12,10 @@ export const BarChart = () => {
     { name: "Permissions", data: [] as number[] },
   ]);
   const [categories, setCategories] = useState<String[]>([]);
-
+  const { data: roles = [] } = useRole();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: roles = [] } = useRole();
-
         if (!roles || !Array.isArray(roles)) {
           return;
         }
@@ -26,12 +24,9 @@ export const BarChart = () => {
 
         roles.forEach((roleItem: any) => {
           let count = 0;
-
           const permissions = roleItem.permissions || {};
-
           for (const key in permissions) {
             const module = permissions[key];
-
             if (module.view) count++;
             if (module.add) count++;
             if (module.edit) count++;
@@ -40,7 +35,6 @@ export const BarChart = () => {
           categories.push(roleItem.role || "Unknown");
           data.push(count);
         });
-
         setCategories(categories);
         setSeries([{ name: "Permissions", data: data.length ? data : [0] }]);
       } catch (error) {
@@ -48,17 +42,13 @@ export const BarChart = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [roles]);
 
   const options: ApexOptions = {
     plotOptions: {
-      bar: {
-        horizontal: false,
-      },
+      bar: { horizontal: false },
     },
-    xaxis: {
-      categories: categories,
-    },
+    xaxis: { categories: categories },
   };
   return (
     <>
@@ -112,22 +102,11 @@ export const LineChart = () => {
 
   const series = [{ name: "Users Created", data }];
   const options: ApexOptions = {
-    chart: {
-      id: "line-chart",
-      zoom: { enabled: true },
-    },
-    xaxis: {
-      categories,
-    },
-    stroke: {
-      width: 3,
-      curve: "smooth",
-    },
-    markers: {
-      size: 5,
-    },
+    chart: { id: "line-chart", zoom: { enabled: true } },
+    xaxis: { categories },
+    stroke: { width: 3, curve: "smooth" },
+    markers: { size: 5 },
   };
-
   if (isLoading) return <div>Loading...</div>;
   return (
     <>
@@ -142,22 +121,14 @@ export const LineChart = () => {
 };
 //area Chart depicts number of users created in a month
 export const AreaChart = () => {
-  const { data: users = []} = useUser();
+  const { data: users = [] } = useUser();
 
   const { data } = getItemsPerMonth(users);
   const series = [{ name: "Users Created", data }];
   const options: ApexOptions = {
-    chart: {
-      id: "area-chart",
-      zoom: { enabled: true },
-    },
-    stroke: {
-      curve: "smooth",
-      width: 3,
-    },
-    fill: {
-      type: "gradient",
-    },
+    chart: { id: "area-chart", zoom: { enabled: true } },
+    stroke: { curve: "smooth", width: 3 },
+    fill: { type: "gradient" },
   };
   return (
     <>
@@ -232,9 +203,7 @@ export const CandleStickChart = () => {
         },
       },
     },
-    chart: {
-      id: "candlestick plot",
-    },
+    chart: { id: "candlestick plot" },
     xaxis: {
       type: "datetime",
       labels: {
@@ -271,17 +240,9 @@ export const CandleStickChart = () => {
 export const RadarChart = () => {
   const options: ApexOptions = {
     labels: ["April", "May", "June", "July", "August", "September"],
-    fill: {
-      opacity: 0.2,
-      colors: ["#25ce95", "#3C90EB"],
-    },
-    stroke: {
-      show: true,
-      width: 2,
-    },
-    markers: {
-      size: 5,
-    },
+    fill: { opacity: 0.2, colors: ["#25ce95", "#3C90EB"] },
+    stroke: { show: true, width: 2 },
+    markers: { size: 5 },
   };
   const series = [
     {
@@ -311,24 +272,9 @@ export const HeatMap = () => {
       heatmap: {
         colorScale: {
           ranges: [
-            {
-              from: 0,
-              to: 10,
-              color: "#00A100",
-              name: "low",
-            },
-            {
-              from: 11,
-              to: 20,
-              color: "#128FD9",
-              name: "medium",
-            },
-            {
-              from: 21,
-              to: 30,
-              color: "#FFB200",
-              name: "high",
-            },
+            { from: 0, to: 10, color: "#00A100", name: "low" },
+            { from: 11, to: 20, color: "#128FD9", name: "medium" },
+            { from: 21, to: 30, color: "#FFB200", name: "high" },
           ],
         },
       },
@@ -378,13 +324,11 @@ export const HeatMap = () => {
 export const StackedBarchart = () => {
   const [series, setSeries] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-
+  const { data: roles = [] } = useRole();
+  const { data: users = [] } = useUser();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: roles = [] } = useRole();
-        const { data: users = [] } = useUser();
-
         const userData = getItemsPerMonth(users);
         const roleData = getItemsPerMonth(roles);
 
@@ -400,18 +344,11 @@ export const StackedBarchart = () => {
     };
 
     fetchData();
-  }, []);
-
+  }, [roles, users]);
   const options: ApexOptions = {
-    chart: {
-      id: "stacked-barchart",
-      stacked: true,
-    },
-    xaxis: {
-      categories,
-    },
+    chart: { id: "stacked-barchart", stacked: true },
+    xaxis: { categories },
   };
-
   return (
     <ChartWrapper
       options={options}
@@ -421,33 +358,24 @@ export const StackedBarchart = () => {
     />
   );
 };
-//MutltiAxis Chart
 
+//MutltiAxis Chart
 export const MultiAxisChart = () => {
   const [series, setSeries] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-
+  const { data: roles = [] } = useRole();
+  const { data: users = [] } = useUser();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: roles = [] } = useRole();
-        const { data: users = [] } = useUser();
         const userData = getItemsPerMonth(users);
         const roleData = getItemsPerMonth(roles);
 
         setCategories(userData.categories);
 
         setSeries([
-          {
-            name: "Users",
-            type: "column",
-            data: userData.data,
-          },
-          {
-            name: "Roles",
-            type: "line",
-            data: roleData.data,
-          },
+          { name: "Users", type: "column", data: userData.data },
+          { name: "Roles", type: "line", data: roleData.data },
         ]);
       } catch (err) {
         console.error(err);
@@ -458,31 +386,16 @@ export const MultiAxisChart = () => {
   }, []);
 
   const options: ApexOptions = {
-    chart: {
-      id: "multi-axis-chart",
-    },
-    xaxis: {
-      categories,
-    },
+    chart: { id: "multi-axis-chart" },
+    xaxis: { categories },
     yaxis: [
-      {
-        title: { text: "Users" },
-      },
-      {
-        opposite: true,
-        title: { text: "Roles" },
-      },
+      { title: { text: "Users" } },
+      { opposite: true, title: { text: "Roles" } },
     ],
-    stroke: {
-      width: [0, 3],
-      curve: "smooth",
-    },
+    stroke: { width: [0, 3], curve: "smooth" },
     colors: ["#008FFB", "#FF4560"],
-    legend: {
-      position: "top",
-    },
+    legend: { position: "top" },
   };
-
   return (
     <ChartWrapper
       options={options}
@@ -508,19 +421,10 @@ export const ScatterPlot = () => {
     },
   ];
   const options: ApexOptions = {
-    chart: {
-      type: "scatter",
-      zoom: { enabled: true },
-    },
-    xaxis: {
-      title: { text: "X Values" },
-    },
-    yaxis: {
-      title: { text: "Y Values" },
-    },
-    markers: {
-      size: 7,
-    },
+    chart: { type: "scatter", zoom: { enabled: true } },
+    xaxis: { title: { text: "X Values" } },
+    yaxis: { title: { text: "Y Values" } },
+    markers: { size: 7 },
   };
   return (
     <ChartWrapper
@@ -593,21 +497,11 @@ export const BubbleChart = () => {
   ];
 
   const options: ApexOptions = {
-    chart: {
-      type: "bubble",
-      zoom: { enabled: true },
-    },
-    xaxis: {
-      title: { text: "X Values" },
-    },
-    yaxis: {
-      title: { text: "Y Values" },
-    },
-    dataLabels: {
-      enabled: false,
-    },
+    chart: { type: "bubble", zoom: { enabled: true } },
+    xaxis: { title: { text: "X Values" } },
+    yaxis: { title: { text: "Y Values" } },
+    dataLabels: { enabled: false },
   };
-
   return (
     <ChartWrapper
       type="bubble"
@@ -636,12 +530,8 @@ export const PolarAreaChart = () => {
         "#ecc1c7",
       ],
     },
-    fill: {
-      opacity: 0.8,
-    },
-    legend: {
-      position: "top",
-    },
+    fill: { opacity: 0.8 },
+    legend: { position: "top" },
   };
 
   return (
@@ -668,13 +558,9 @@ export const RangeBarChart = () => {
   ];
 
   const options: ApexOptions = {
-    chart: {
-      type: "rangeBar",
-    },
+    chart: { type: "rangeBar" },
     plotOptions: {
-      bar: {
-        horizontal: false,
-      },
+      bar: { horizontal: false },
     },
   };
 
