@@ -1,13 +1,11 @@
-import Chart from "react-apexcharts";
-import type { ApexOptions, ApexNonAxisChartSeries } from "apexcharts";
+import type { ApexOptions } from "apexcharts";
 import { useState, useEffect } from "react";
-import { roleApi } from "../../services/rest-api-services/roles-service";
-import type { User } from "../../types";
-import { userApi } from "../../services/rest-api-services/users-service";
-import { getDate, getRoleDistribution } from "../../utils/dateutils/index";
+import { getRoleDistribution } from "../../utils/chartutils/index";
 import { ChartWrapper } from "../chart-wrapper";
 import { useUser } from "../../hooks/use-user";
-import { getItemsPerMonth } from "../../utils/dateutils";
+import { useRole } from "../../hooks/use-role";
+import { getItemsPerMonth } from "../../utils/chartutils";
+
 //Bar chart depicts no of permission a role have
 export const BarChart = () => {
   const [series, setSeries] = useState([
@@ -18,7 +16,7 @@ export const BarChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const roles = await roleApi.getRoles();
+        const { data: roles = [] } = useRole();
 
         if (!roles || !Array.isArray(roles)) {
           return;
@@ -144,9 +142,9 @@ export const LineChart = () => {
 };
 //area Chart depicts number of users created in a month
 export const AreaChart = () => {
-  const { data: users = [], isLoading } = useUser();
+  const { data: users = []} = useUser();
 
-  const { categories, data } = getItemsPerMonth(users);
+  const { data } = getItemsPerMonth(users);
   const series = [{ name: "Users Created", data }];
   const options: ApexOptions = {
     chart: {
@@ -384,8 +382,8 @@ export const StackedBarchart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const users = await userApi.getUsers();
-        const roles = await roleApi.getRoles();
+        const { data: roles = [] } = useRole();
+        const { data: users = [] } = useUser();
 
         const userData = getItemsPerMonth(users);
         const roleData = getItemsPerMonth(roles);
@@ -432,9 +430,8 @@ export const MultiAxisChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const users = await userApi.getUsers();
-        const roles = await roleApi.getRoles();
-
+        const { data: roles = [] } = useRole();
+        const { data: users = [] } = useUser();
         const userData = getItemsPerMonth(users);
         const roleData = getItemsPerMonth(roles);
 
