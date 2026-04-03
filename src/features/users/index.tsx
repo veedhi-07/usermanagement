@@ -48,8 +48,13 @@ const Users = () => {
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
   const dispatch = useAppDispatch();
   const itemsPerPage = 7;
+  // const getRoleName = (roleId: string) => {
+  //   return roles.find((r) => r.id === roleId)?.role || "Unknown";
+  // };
   const getRoleName = (roleId: string) => {
-    return roles.find((r) => r.id === roleId)?.role || "Unknown";
+    return (
+      roles.find((r) => String(r.id) === String(roleId))?.role || "Unknown"
+    );
   };
 
   const { data: users = [], isLoading } = useUser();
@@ -201,39 +206,46 @@ const Users = () => {
                     </tr>
                   )}
 
-                  {paginatedUsers.map((user) => (
-                    <tr key={user.id} className="border-t hover:bg-gray-50">
-                      <td className="p-3">{user.firstName || "-"}</td>
-                      <td className="p-3">{user.lastName || "-"}</td>
-                      <td className="p-3">{user.email}</td>
-                      <td className="p-3">{getRoleName(user.role)}</td>
-                      <td className="p-3">
-                        {user.createdAt ? formatDate(user.createdAt) : "-"}
-                      </td>
-                      <td className="p-3 flex gap-3">
-                        <Pencil
-                          size={18}
-                          className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                          onClick={
-                            canEdit
-                              ? () => dispatch(setSelectedUser(user))
-                              : undefined
-                          }
-                        />
+                  {paginatedUsers.map((user) => {
+                    console.log("User:", user);
+                    console.log("User role value:", user.role);
+                    console.log("Roles array:", roles);
 
-                        <Trash
-                          size={18}
-                          className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
-                          onClick={() => {
-                            setSelectedUserId(user.id);
-                            dispatch(
-                              setShowModals({ add: false, delete: true }),
-                            );
-                          }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                    return (
+                      <tr key={user.id} className="border-t hover:bg-gray-50">
+                        <td className="p-3">{user.firstName || "-"}</td>
+                        <td className="p-3">{user.lastName || "-"}</td>
+                        <td className="p-3">{user.email}</td>
+                        {/* <td className="p-3">{getRoleName(user.role)}</td> */}
+                        <td className="p-3">{user.role || "Unknown"}</td>
+                        <td className="p-3">
+                          {user.createdAt ? formatDate(user.createdAt) : "-"}
+                        </td>
+                        <td className="p-3 flex gap-3">
+                          <Pencil
+                            size={18}
+                            className={`cursor-pointer text-blue-500 ${canEdit ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                            onClick={
+                              canEdit
+                                ? () => dispatch(setSelectedUser(user))
+                                : undefined
+                            }
+                          />
+
+                          <Trash
+                            size={18}
+                            className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+                            onClick={() => {
+                              setSelectedUserId(user.id);
+                              dispatch(
+                                setShowModals({ add: false, delete: true }),
+                              );
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -52,12 +52,7 @@ export const BarChart = () => {
   };
   return (
     <>
-      <ChartWrapper
-        title="Bar Chart"
-        type="bar"
-        options={options}
-        series={series}
-      />
+      <ChartWrapper type="bar" options={options} series={series} />
     </>
   );
 };
@@ -85,12 +80,7 @@ export const PieChart = () => {
   };
   return (
     <>
-      <ChartWrapper
-        type="pie"
-        title="Pie Chart"
-        options={options}
-        series={series}
-      />
+      <ChartWrapper type="pie" options={options} series={series} />
     </>
   );
 };
@@ -110,12 +100,7 @@ export const LineChart = () => {
   if (isLoading) return <div>Loading...</div>;
   return (
     <>
-      <ChartWrapper
-        title="Line Chart"
-        options={options}
-        series={series}
-        type="line"
-      />
+      <ChartWrapper options={options} series={series} type="line" />
     </>
   );
 };
@@ -132,12 +117,7 @@ export const AreaChart = () => {
   };
   return (
     <>
-      <ChartWrapper
-        options={options}
-        series={series}
-        type="area"
-        title="Area Chart"
-      />
+      <ChartWrapper options={options} series={series} type="area" />
     </>
   );
 };
@@ -180,12 +160,7 @@ export const BoxPlot = () => {
   ];
   return (
     <>
-      <ChartWrapper
-        title="Box Plot"
-        options={options}
-        series={series}
-        type="boxPlot"
-      />
+      <ChartWrapper options={options} series={series} type="boxPlot" />
     </>
   );
 };
@@ -227,12 +202,7 @@ export const CandleStickChart = () => {
   ];
   return (
     <>
-      <ChartWrapper
-        series={series}
-        options={options}
-        type="candlestick"
-        title="CandleStick Chart"
-      />
+      <ChartWrapper series={series} options={options} type="candlestick" />
     </>
   );
 };
@@ -256,12 +226,7 @@ export const RadarChart = () => {
   ];
   return (
     <>
-      <ChartWrapper
-        series={series}
-        options={options}
-        type="radar"
-        title="Radar Chart"
-      />
+      <ChartWrapper series={series} options={options} type="radar" />
     </>
   );
 };
@@ -311,12 +276,7 @@ export const HeatMap = () => {
   ];
   return (
     <>
-      <ChartWrapper
-        series={series}
-        options={options}
-        type="heatmap"
-        title="HeatMap"
-      />
+      <ChartWrapper series={series} options={options} type="heatmap" />
     </>
   );
 };
@@ -349,14 +309,7 @@ export const StackedBarchart = () => {
     chart: { id: "stacked-barchart", stacked: true },
     xaxis: { categories },
   };
-  return (
-    <ChartWrapper
-      options={options}
-      series={series}
-      title="Stacked Bar Chart"
-      type="bar"
-    />
-  );
+  return <ChartWrapper options={options} series={series} type="bar" />;
 };
 
 //MutltiAxis Chart
@@ -396,14 +349,7 @@ export const MultiAxisChart = () => {
     colors: ["#008FFB", "#FF4560"],
     legend: { position: "top" },
   };
-  return (
-    <ChartWrapper
-      options={options}
-      series={series}
-      type="line"
-      title="Multi Axis Chart"
-    />
-  );
+  return <ChartWrapper options={options} series={series} type="line" />;
 };
 //Scatter Plot
 export const ScatterPlot = () => {
@@ -426,14 +372,7 @@ export const ScatterPlot = () => {
     yaxis: { title: { text: "Y Values" } },
     markers: { size: 7 },
   };
-  return (
-    <ChartWrapper
-      options={options}
-      series={series}
-      type="scatter"
-      title="Scatter Chart"
-    />
-  );
+  return <ChartWrapper options={options} series={series} type="scatter" />;
 };
 export const DonutChart = () => {
   const { data: users = [] } = useUser();
@@ -463,14 +402,7 @@ export const DonutChart = () => {
       "#ecc1c7",
     ],
   };
-  return (
-    <ChartWrapper
-      type="donut"
-      title="Donut Chart"
-      options={options}
-      series={series}
-    />
-  );
+  return <ChartWrapper type="donut" options={options} series={series} />;
 };
 export const BubbleChart = () => {
   const series = [
@@ -502,14 +434,7 @@ export const BubbleChart = () => {
     yaxis: { title: { text: "Y Values" } },
     dataLabels: { enabled: false },
   };
-  return (
-    <ChartWrapper
-      type="bubble"
-      title="Bubble Chart"
-      options={options}
-      series={series}
-    />
-  );
+  return <ChartWrapper type="bubble" options={options} series={series} />;
 };
 export const PolarAreaChart = () => {
   const { data: users = [] } = useUser();
@@ -534,14 +459,7 @@ export const PolarAreaChart = () => {
     legend: { position: "top" },
   };
 
-  return (
-    <ChartWrapper
-      type="polarArea"
-      title="Polar Area Chart"
-      options={options}
-      series={series}
-    />
-  );
+  return <ChartWrapper type="polarArea" options={options} series={series} />;
 };
 export const RangeBarChart = () => {
   const series = [
@@ -564,19 +482,11 @@ export const RangeBarChart = () => {
     },
   };
 
-  return (
-    <ChartWrapper
-      type="rangeBar"
-      title="Range Bar Chart"
-      options={options}
-      series={series}
-    />
-  );
+  return <ChartWrapper type="rangeBar" options={options} series={series} />;
 };
 export const GroupedHorizontalBarChart = () => (
   <ChartWrapper
     type="bar"
-    title="Grouped Horizontal"
     series={[
       { name: "A", data: [10, 20, 30] },
       { name: "B", data: [15, 25, 35] },
@@ -590,7 +500,6 @@ export const GroupedHorizontalBarChart = () => (
 export const RadialBarChart = () => (
   <ChartWrapper
     type="radialBar"
-    title="Radial Bar Chart"
     series={[70, 55, 40, 85]}
     options={{
       labels: ["Users", "Roles", "Admins", "Guests"],

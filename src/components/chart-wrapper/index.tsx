@@ -2,7 +2,6 @@ import Chart from "react-apexcharts";
 import type { ApexOptions } from "apexcharts";
 
 type ChartWrapperProps = {
-  title: string;
   type: any;
   series: any;
   options: ApexOptions;
@@ -11,7 +10,6 @@ type ChartWrapperProps = {
 };
 
 export const ChartWrapper = ({
-  title,
   type,
   series,
   options,
@@ -20,7 +18,7 @@ export const ChartWrapper = ({
 }: ChartWrapperProps) => {
   return (
     <div >
-      <h1 className="text-lg font-semibold mb-3">{title}</h1>
+      {/* <h1 className="text-lg font-semibold mb-3">{title}</h1> */}
       <Chart
         type={type}
         series={series}
