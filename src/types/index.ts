@@ -11,7 +11,7 @@ export interface User {
   firstName: string;
   lastName: string;
   role: string;
-  createdAt?: Timestamp | string;
+  createdAt?:  string;
 }
 export interface Role {
   id: string;

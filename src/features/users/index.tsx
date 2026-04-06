@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import {
@@ -34,19 +34,21 @@ import {
   setSidebarOpen,
 } from "../../redux/reducer/ui-slice/index";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-
+import { useRef, useEffect } from "react";
+import userworker from "../../wokers/userworker?worker";
 const Users = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const { can } = usePermission();
   const canDelete = can("user", "delete");
   const canEdit = can("user", "edit");
-
+  const [processedUsers, setProcessedUsers] = useState<User[]>([]);
   const sortOrder = useAppSelector((state) => state.ui.users.sortOrder);
   const searchQuery = useAppSelector((state) => state.ui.users.searchQuery);
   const selectedUser = useAppSelector((state) => state.ui.users.selectedUser);
   const showModals = useAppSelector((state) => state.ui.users.showModals);
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
   const dispatch = useAppDispatch();
+  const workerRef = useRef<Worker | null>(null);
   const itemsPerPage = 7;
   // const getRoleName = (roleId: string) => {
   //   return roles.find((r) => r.id === roleId)?.role || "Unknown";
@@ -86,22 +88,37 @@ const Users = () => {
 
   const createUser = useCreateUser();
 
-  const filteredAndSortedUsers = useMemo(() => {
-    return [...users]
+  // const filteredAndSortedUsers = useMemo(() => {
+  //   return [...users]
 
-      .filter((user) => {
-        const fullName =
-          `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase();
-        return fullName.includes(searchQuery.toLowerCase());
-      })
-      .sort((a, b) => {
-        const nameA = (a.firstName || "").toLowerCase();
-        const nameB = (b.firstName || "").toLowerCase();
+  //     .filter((user) => {
+  //       const fullName =
+  //         `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase();
+  //       return fullName.includes(searchQuery.toLowerCase());
+  //     })
+  //     .sort((a, b) => {
+  //       const nameA = (a.firstName || "").toLowerCase();
+  //       const nameB = (b.firstName || "").toLowerCase();
 
-        return sortOrder === "asc"
-          ? nameA.localeCompare(nameB)
-          : nameB.localeCompare(nameA);
-      });
+  //       return sortOrder === "asc"
+  //         ? nameA.localeCompare(nameB)
+  //         : nameB.localeCompare(nameA);
+  //     });
+  // }, [users, searchQuery, sortOrder]);
+
+  useEffect(() => {
+    workerRef.current = new userworker();
+    workerRef.current.onmessage = (e) => {
+      setProcessedUsers(e.data);
+    };
+  }, []);
+
+  useEffect(() => {
+    workerRef.current?.postMessage({
+      users,
+      searchQuery,
+      sortOrder,
+    });
   }, [users, searchQuery, sortOrder]);
 
   const formatDate = (dateString?: string) => {
@@ -120,7 +137,7 @@ const Users = () => {
     goToPage,
     nextPage,
     prevPage,
-  } = usePagination(filteredAndSortedUsers, itemsPerPage);
+  } = usePagination(processedUsers, itemsPerPage);
   if (isLoading) return <LoadSpinner />;
   return (
     <>
@@ -207,16 +224,11 @@ const Users = () => {
                   )}
 
                   {paginatedUsers.map((user) => {
-                    console.log("User:", user);
-                    console.log("User role value:", user.role);
-                    console.log("Roles array:", roles);
-
                     return (
                       <tr key={user.id} className="border-t hover:bg-gray-50">
                         <td className="p-3">{user.firstName || "-"}</td>
                         <td className="p-3">{user.lastName || "-"}</td>
                         <td className="p-3">{user.email}</td>
-                        {/* <td className="p-3">{getRoleName(user.role)}</td> */}
                         <td className="p-3">{user.role || "Unknown"}</td>
                         <td className="p-3">
                           {user.createdAt ? formatDate(user.createdAt) : "-"}
@@ -231,7 +243,6 @@ const Users = () => {
                                 : undefined
                             }
                           />
-
                           <Trash
                             size={18}
                             className={`cursor-pointer text-red-500 ${canDelete ? "cursor-pointer" : "opacity-40 cursor-not-allowed"}`}

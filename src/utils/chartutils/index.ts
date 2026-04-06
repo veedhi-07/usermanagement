@@ -5,7 +5,7 @@ export const getDate = (value?: string | Timestamp): Date | null => {
 
   return typeof value === "string" ? new Date(value) : value.toDate();
 };
-export const getItemsPerMonth = (items:any[]) => {
+export const getItemsPerMonth = (items: any[]) => {
   const months = [
     "Jan",
     "Feb",
@@ -27,7 +27,7 @@ export const getItemsPerMonth = (items:any[]) => {
   items.forEach((item) => {
     const date = getDate(item.createdAt);
     if (!date) return;
-    
+
     map[months[date.getMonth()]]++;
   });
 

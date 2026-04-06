@@ -17,8 +17,7 @@ export const ChartWrapper = ({
   width = 500,
 }: ChartWrapperProps) => {
   return (
-    <div >
-      {/* <h1 className="text-lg font-semibold mb-3">{title}</h1> */}
+    <div>
       <Chart
         type={type}
         series={series}

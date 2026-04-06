@@ -48,7 +48,29 @@ export const BarChart = () => {
     plotOptions: {
       bar: { horizontal: false },
     },
+    grid: {
+      show: false,
+    },
     xaxis: { categories: categories },
+    chart: { toolbar: { show: true }, zoom: { enabled: true } },
+    annotations: {
+      yaxis: [
+        // min: 5,
+        // max: 20,
+        {
+          y: 10,
+          y2: 15,
+          fillColor: "#00E396",
+          opacity: 0.2,
+
+          borderColor: "#FF0000",
+          label: { text: "Threshold" },
+        },
+      ],
+    },
+    theme: {
+      mode: "dark",
+    },
   };
   return (
     <>
@@ -87,7 +109,7 @@ export const PieChart = () => {
 
 //Line chart depicts number of users created in a month
 export const LineChart = () => {
-  const { data: users = [], isLoading } = useUser();
+  const { data: users = [] } = useUser();
   const { categories, data } = getItemsPerMonth(users);
 
   const series = [{ name: "Users Created", data }];
@@ -97,13 +119,14 @@ export const LineChart = () => {
     stroke: { width: 3, curve: "smooth" },
     markers: { size: 5 },
   };
-  if (isLoading) return <div>Loading...</div>;
+
   return (
     <>
       <ChartWrapper options={options} series={series} type="line" />
     </>
   );
 };
+
 //area Chart depicts number of users created in a month
 export const AreaChart = () => {
   const { data: users = [] } = useUser();
@@ -209,7 +232,7 @@ export const CandleStickChart = () => {
 //radarchart
 export const RadarChart = () => {
   const options: ApexOptions = {
-    labels: ["April", "May", "June", "July", "August", "September"],
+    labels: ["Jan", "Feb", "March", "April", "May", "June"],
     fill: { opacity: 0.2, colors: ["#25ce95", "#3C90EB"] },
     stroke: { show: true, width: 2 },
     markers: { size: 5 },
@@ -302,7 +325,6 @@ export const StackedBarchart = () => {
         console.error("Error:", error);
       }
     };
-
     fetchData();
   }, [roles, users]);
   const options: ApexOptions = {
@@ -374,6 +396,7 @@ export const ScatterPlot = () => {
   };
   return <ChartWrapper options={options} series={series} type="scatter" />;
 };
+//donut chart
 export const DonutChart = () => {
   const { data: users = [] } = useUser();
 
@@ -461,6 +484,7 @@ export const PolarAreaChart = () => {
 
   return <ChartWrapper type="polarArea" options={options} series={series} />;
 };
+//dummy data range bar
 export const RangeBarChart = () => {
   const series = [
     {
@@ -497,6 +521,7 @@ export const GroupedHorizontalBarChart = () => (
     }}
   />
 );
+//Radialchart dummy data
 export const RadialBarChart = () => (
   <ChartWrapper
     type="radialBar"
