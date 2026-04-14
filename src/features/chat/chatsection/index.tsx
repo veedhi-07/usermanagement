@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { db } from "../../../services/firebase";
 import {
   collection,
   query,
   where,
   getDocs,
-  onSnapshot,
+  // onSnapshot,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { X, UserPlus } from "lucide-react";
@@ -31,6 +31,8 @@ import {
   setShowSpaceModal,
   setConversationId,
 } from "../../../redux/reducer/ui-slice/index";
+import { getSocket } from "../../../socket";
+
 type Props = {
   sidebarOpen: boolean;
 };
@@ -69,13 +71,38 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   const showSpaces = useAppSelector((state) => state.ui.chats.showspaces);
   const dispatch = useAppDispatch();
   const auth = getAuth();
+
   const currentUser = auth.currentUser;
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const socket = getSocket();
+    if (!socket) return;
+
+    socket.send(
+      JSON.stringify({
+        type: "JOIN_CONVERSATION",
+        conversationId,
+      }),
+    );
+
+    return () => {
+      socket.send(
+        JSON.stringify({
+          type: "LEAVE_CONVERSATION",
+          conversationId,
+        }),
+      );
+    };
+  }, [conversationId]);
+
   const createConversation = async (userId: string) => {
     if (!currentUser) return;
     try {
       const conversationRef = await chatsService.create({
-        type: "private",
+        type: isGroupChat ? "group" : "private",
         participants: [currentUser.uid, userId],
         lastMessage: messageInput,
         createdAt: Timestamp.now(),
@@ -88,136 +115,76 @@ const ChatSection = ({ sidebarOpen }: Props) => {
       console.log("Error Creating Conversation", error);
     }
   };
-  const handleSendMessage = useCallback(async () => {
-    if (!messageInput.trim() || !currentUser || !conversationId) return;
-    const newMessage: Message = {
-      senderId: currentUser.uid,
-      text: messageInput,
-      type: isGroupChat ? "group" : "private",
-      seenBy: [],
-      createdAt: Timestamp.now(),
-    };
-    try {
-      await chatsService.addMessage(conversationId, newMessage);
-      await chatsService.update(conversationId, {
-        lastMessage: messageInput,
-        lastMessageAt: Timestamp.now(),
-      });
-      setMessageInput("");
-    } catch (error) {
-      console.log("Error Sending Message", error);
-    }
-  }, [conversationId, messageInput, currentUser, isGroupChat]);
 
-  //To load previous messages
+  const handleSendMessage = () => {
+    if (!messageInput.trim() || !conversationId || !currentUser) return;
+
+    const socket = getSocket();
+
+    socket?.send(
+      JSON.stringify({
+        type: "SEND_MESSAGE",
+        payload: {
+          conversationId,
+          message: {
+            text: messageInput,
+            senderId: currentUser.uid,
+            type: isGroupChat ? "group" : "private",
+            seenBy: [],
+            read: false,
+          },
+        },
+      }),
+    );
+
+    setMessageInput("");
+  };
+
   useEffect(() => {
     if (!conversationId) return;
 
-    const unsubscribe = chatsService.PrevMessages(conversationId, setMessages);
-    return () => unsubscribe();
+    const fetchMessages = async () => {
+      const msgs = await chatsService.getMessages(conversationId);
+      setMessages(msgs);
+    };
+
+    fetchMessages();
   }, [conversationId]);
 
   //marks as read
+  // useEffect(() => {
+  //   if (!currentUser || !conversationId) return;
+
+  //   const markAsRead = async () => {
+  //     try {
+  //       await chatsService.markAsRead(conversationId, currentUser.uid);
+  //     } catch (error) {
+  //       console.log("Error", error);
+  //     }
+  //   };
+  //   markAsRead();
+  // }, [currentUser, conversationId]);
   useEffect(() => {
     if (!currentUser || !conversationId) return;
 
-    const markAsRead = async () => {
-      try {
-        await chatsService.markAsRead(conversationId, currentUser.uid);
-      } catch (error) {
-        console.log("Error", error);
-      }
-    };
-    markAsRead();
+    const socket = getSocket();
+
+    socket?.send(
+      JSON.stringify({
+        type: "MARK_AS_READ",
+        payload: {
+          conversationId,
+          userId: currentUser.uid,
+        },
+      }),
+    );
   }, [currentUser, conversationId]);
 
-  //unread msg countt
-  useEffect(() => {
-    if (!currentUser) return;
-
-    const unsubscribes: (() => void)[] = [];
-
-    directChats.forEach((chat) => {
-      const q = query(collection(db, "conversation", chat.id, "messages"));
-      const unsub = onSnapshot(q, (snapshot) => {
-        let count = 0;
-        snapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          if (
-            !data.seenBy?.includes(currentUser.uid) &&
-            data.senderId !== currentUser.uid
-          ) {
-            count++;
-          }
-        });
-        setUnreadMsgCount((prev) => ({
-          ...prev,
-          [chat.id]: count,
-        }));
-      });
-      unsubscribes.push(unsub);
-    });
-    return () => unsubscribes.forEach((u) => u());
-  }, [directChats, currentUser]);
-
-  //focus input
   useEffect(() => {
     if ((selectedUser || isGroupChat) && inputRef.current) {
       inputRef.current.focus();
     }
   }, [selectedUser, isGroupChat, conversationId]);
-
-  //for group
-  useEffect(() => {
-    if (!currentUser) return;
-    const unsubscribes: (() => void)[] = [];
-    spaces.forEach((chat) => {
-      const q = query(collection(db, "conversation", chat.id, "messages"));
-      const unsub = onSnapshot(q, (snapshot) => {
-        let count = 0;
-        snapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          if (
-            data.senderId !== currentUser.uid &&
-            !data.seenBy?.includes(currentUser.uid)
-          ) {
-            count++;
-          }
-        });
-        setUnreadMsgCount((prev) => ({
-          ...prev,
-          [chat.id]: count,
-        }));
-      });
-      unsubscribes.push(unsub);
-    });
-    return () => unsubscribes.forEach((u) => u());
-  }, [spaces, currentUser]);
-
-  //To display chats in sidebar
-  useEffect(() => {
-    if (!currentUser) return;
-
-    dispatch(setLoadingChats(true));
-    const q = query(
-      collection(db, "conversation"),
-      where("participants", "array-contains", currentUser.uid),
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const chats: conversation[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<conversation, "id">),
-      }));
-
-      const direct = chats.filter((c) => c.type === "private");
-      const groups = chats.filter((c) => c.type === "group");
-
-      setDirectChats(direct);
-      setSpaces(groups);
-      dispatch(setLoadingChats(false));
-    });
-    return () => unsubscribe();
-  }, [currentUser]);
 
   // display chat under direct section
   useEffect(() => {
@@ -241,6 +208,64 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   }, []);
   const currentUserData = currentUser ? userMap[currentUser.uid] : null;
   const isAdmin = currentUserData?.role === "Admin";
+
+  //fetch conversation from firestore
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchChats = async () => {
+      dispatch(setLoadingChats(true));
+
+      const snapshot = await getDocs(
+        query(
+          collection(db, "conversation"),
+          where("participants", "array-contains", currentUser.uid),
+        ),
+      );
+
+      const chats: conversation[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<conversation, "id">),
+      }));
+
+      setDirectChats(chats.filter((c) => c.type === "private"));
+      setSpaces(chats.filter((c) => c.type === "group"));
+
+      dispatch(setLoadingChats(false));
+    };
+
+    fetchChats();
+  }, [currentUser]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+
+      switch (data.type) {
+        case "NEW_MESSAGE":
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === data.message.id);
+            if (exists) return prev;
+            return [...prev, data.message];
+          });
+          break;
+
+        case "MESSAGES_READ":
+          setMessages((prev) => prev.map((msg) => ({ ...msg, read: true })));
+          break;
+      }
+    };
+
+    socket.addEventListener("message", handleMessage);
+
+    return () => {
+      socket.removeEventListener("message", handleMessage);
+    };
+  }, [conversationId]);
+
   if (loadingChats || loadingUsers) {
     return (
       <div className="h-screen flex items-center justify-center bg-white">

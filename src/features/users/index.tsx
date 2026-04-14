@@ -25,7 +25,7 @@ import {
   useCreateUser,
   useUpdateUser,
 } from "../../hooks/use-user";
-import { useRole } from "../../hooks/use-role";
+// import { useRole } from "../../hooks/use-role";
 import {
   setUserSearch,
   setUserSort,
@@ -53,14 +53,14 @@ const Users = () => {
   // const getRoleName = (roleId: string) => {
   //   return roles.find((r) => r.id === roleId)?.role || "Unknown";
   // };
-  const getRoleName = (roleId: string) => {
-    return (
-      roles.find((r) => String(r.id) === String(roleId))?.role || "Unknown"
-    );
-  };
+  // const getRoleName = (roleId: string) => {
+  //   return (
+  //     roles.find((r) => String(r.id) === String(roleId))?.role || "Unknown"
+  //   );
+  // };
 
   const { data: users = [], isLoading } = useUser();
-  const { data: roles = [] } = useRole();
+  // const { data: roles = [] } = useRole();
 
   const updateUser = useUpdateUser();
 
@@ -106,13 +106,29 @@ const Users = () => {
   //     });
   // }, [users, searchQuery, sortOrder]);
 
+  // useEffect(() => {
+  //   workerRef.current = new userworker();
+
+  //   workerRef.current.onmessage = (e) => {
+  //     setProcessedUsers(e.data);
+  //   };
+  // }, []);
   useEffect(() => {
     workerRef.current = new userworker();
+
     workerRef.current.onmessage = (e) => {
-      setProcessedUsers(e.data);
+      setProcessedUsers((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(e.data)) {
+          return prev;
+        }
+        return e.data;
+      });
+    };
+
+    return () => {
+      workerRef.current?.terminate(); //
     };
   }, []);
-
   useEffect(() => {
     workerRef.current?.postMessage({
       users,
@@ -138,7 +154,9 @@ const Users = () => {
     nextPage,
     prevPage,
   } = usePagination(processedUsers, itemsPerPage);
+
   if (isLoading) return <LoadSpinner />;
+
   return (
     <>
       <ToastContainer position="top-center" autoClose={2000} />
