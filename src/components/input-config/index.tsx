@@ -1,4 +1,4 @@
-import { SignInFormValues, SignUpformValues } from "../../types";
+import { SignInFormValues, SignUpformValues, ProfileValues } from "../../types";
 
 export const signInFields: {
   id: keyof SignInFormValues;
@@ -19,6 +19,44 @@ export const signInFields: {
     type: "password",
   },
 ];
+
+export const profileFields: {
+  id: keyof ProfileValues;
+  label: string;
+  placeholder: string;
+  type: string;
+}[] = [
+  {
+    id: "firstName",
+    label: "First Name",
+    placeholder: "Enter your First Name",
+    type: "text",
+  },
+  {
+    id: "lastName",
+    label: "Last Name",
+    placeholder: "Enter your Last Name",
+    type: "text",
+  },
+  {
+    id: "email",
+    label: "Email",
+    placeholder: "name@email.com",
+    type: "text",
+  },
+  {
+    id: "phone",
+    label: "Phone Number",
+    placeholder: "Enter Phone Number",
+    type: "string",
+  },
+  // {
+  //   id: "roleTitle",
+  //   label: "Role title",
+  //   placeholder: "Enter Role Title",
+  //   type: "text",
+  // },
+];
 export const signUpFields: {
   id: keyof SignUpformValues;
   label: string;
@@ -26,13 +64,13 @@ export const signUpFields: {
   type: string;
 }[] = [
   {
-    id: "fname",
+    id: "firstName",
     label: "First Name",
     placeholder: "Enter your First Name",
     type: "text",
   },
   {
-    id: "lname",
+    id: "lastName",
     label: "Last Name",
     placeholder: "Enter your Last Name",
     type: "text",
@@ -50,15 +88,15 @@ export const signUpFields: {
     type: "password",
   },
   {
-    id: "uname",
+    id: "username",
     label: "User Name",
     placeholder: "Enter UserName",
     type: "text",
   },
-    {
-      id: "phone",
-      label: "Phone Number",
-      placeholder: "Enter Phone Number",
-      type: "phone",
-    },
+  {
+    id: "phone",
+    label: "Phone Number",
+    placeholder: "Enter Phone Number",
+    type: "string",
+  },
 ];

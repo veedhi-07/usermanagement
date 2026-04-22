@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/api/roles/{{roleId}}"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "status": "inactive"
+    }
+order: 4000

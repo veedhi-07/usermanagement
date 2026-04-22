@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../../../assets/icons";
+import {
+  ChevronLeftIcon,
+  EyeCloseIcon,
+  EyeIcon,
+} from "../../../../assets/icons";
 import FormField from "../../../../components/form-field/index";
 import { Formik, Form } from "formik";
 import { signinSchema } from "../../../../utils/validation";
@@ -8,13 +12,19 @@ import { signInFields } from "../../../../components/input-config";
 import Button from "../../../../components/ui/button/Button";
 import Label from "../../../../components/form/Label";
 import { SignInFormValues } from "../../../../types";
+import { useSignIn } from "../../hooks/useauth-hook";
 
 export default function SignInForm() {
   const initialValues = { email: "", password: "" };
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate, isPending } = useSignIn();
   return (
     <Formik<SignInFormValues>
       initialValues={initialValues}
+      onSubmit={(values) => {
+        console.log("FORM SUBMIT TRIGGERED", values);
+        mutate(values);
+      }}
       validationSchema={signinSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
@@ -98,8 +108,13 @@ export default function SignInForm() {
                       </Link>
                     </div>
                     <div>
-                      <Button className="w-full" size="sm">
-                        Sign in
+                      <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full"
+                        size="sm"
+                      >
+                        {isPending ? "Signing in ..." : "Sign In"}
                       </Button>
                     </div>
                   </div>

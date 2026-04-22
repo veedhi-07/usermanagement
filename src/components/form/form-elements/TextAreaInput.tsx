@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
+import ComponentCard from "../../../features/users/components/ComponentCard";
 import TextArea from "../input/TextArea";
 import Label from "../Label";
 

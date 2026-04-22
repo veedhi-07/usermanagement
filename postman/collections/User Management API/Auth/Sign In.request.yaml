@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{baseUrl}}/api/auth/signin"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "admin@example.com",
+      "password": "Admin@123"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      try {
+        var j = pm.response.json();
+        if (j.data && j.data.token) pm.collectionVariables.set('token', j.data.token);
+      } catch (e) {}
+    language: text/javascript
+order: 2000

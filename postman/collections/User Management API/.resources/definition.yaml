@@ -1,0 +1,19 @@
+$kind: collection
+description: |-
+  Node.js + MySQL user management: auth, roles, users, employees, profile, dashboard.
+
+  **Setup:** Import collection, set `baseUrl` (e.g. http://localhost:3000). Run **Auth > Sign In** to save `token` automatically, or paste a JWT into `token`.
+
+  **Seed admin:** After `schema.sql` and `npm run seed`, use admin@example.com / Admin@123
+variables:
+  baseUrl: http://localhost:3000
+  token: ""
+  userId: "1"
+  roleId: "1"
+  employeeId: "1"
+auth:
+  - id: a9d66c97-bfe5-4665-970d-b8b3cb4721a6
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{token}}"

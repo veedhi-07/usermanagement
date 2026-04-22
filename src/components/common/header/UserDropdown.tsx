@@ -5,7 +5,7 @@ import { Link } from "react-router";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const user = JSON.parse(localStorage.getItem("user") || "null");
   function toggleDropdown() {
     setIsOpen(!isOpen);
   }
@@ -23,7 +23,10 @@ export default function UserDropdown() {
           <img src="/images/user/owner.jpg" alt="User" />
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        {/* <span className="block mr-1 font-medium text-theme-sm">Musharof</span> */}
+        <span className="block mr-1 font-medium text-theme-sm">
+          {user?.firstName || "User"}
+        </span>
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -50,11 +53,17 @@ export default function UserDropdown() {
         className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
         <div>
-          <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
+          {/* <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
             Musharof Chowdhury
+          </span> */}
+          <span className="block font-medium text-gray-700 text-theme-sm">
+            {user?.firstName} {user?.lastName}
           </span>
-          <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
+          {/* <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
             randomuser@pimjo.com
+          </span> */}
+          <span className="mt-0.5 block text-theme-xs text-gray-500">
+            {user?.email}
           </span>
         </div>
 

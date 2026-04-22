@@ -1,0 +1,7 @@
+$kind: http-request
+url: "{{baseUrl}}/api/users?page=1&limit=20"
+method: GET
+queryParams:
+  page: "1"
+  limit: "20"
+order: 1000

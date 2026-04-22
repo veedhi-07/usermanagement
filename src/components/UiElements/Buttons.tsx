@@ -1,4 +1,4 @@
-import ComponentCard from "../../components/common/ComponentCard";
+import ComponentCard from "../../features/users/components/ComponentCard";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";

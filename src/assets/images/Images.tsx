@@ -2,7 +2,7 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ResponsiveImage from "./ResponsiveImage";
 import TwoColumnImageGrid from "./TwoColumnImageGrid";
 import ThreeColumnImageGrid from "./ThreeColumnImageGrid";
-import ComponentCard from "../../components/common/ComponentCard";
+import ComponentCard from "../../features/users/components/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 
 export default function Images() {

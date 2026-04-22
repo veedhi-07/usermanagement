@@ -1,0 +1,31 @@
+$kind: http-request
+url: "{{baseUrl}}/api/roles"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Manager",
+      "status": "active",
+      "permissions": [
+        {
+          "moduleId": 1,
+          "list": true,
+          "view": true,
+          "add": false,
+          "edit": false,
+          "delete": false
+        },
+        {
+          "moduleId": 2,
+          "list": true,
+          "view": true,
+          "add": true,
+          "edit": true,
+          "delete": false
+        }
+      ]
+    }
+order: 3000

@@ -1,0 +1,27 @@
+$kind: http-request
+url: "{{baseUrl}}/api/auth/signup"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "email": "jane.doe@example.com",
+      "password": "Password123",
+      "username": "janedoe",
+      "phone": "+15551234567"
+    }
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      try {
+        var j = pm.response.json();
+        if (j.data && j.data.token) pm.collectionVariables.set('token', j.data.token);
+      } catch (e) {}
+    language: text/javascript
+order: 1000

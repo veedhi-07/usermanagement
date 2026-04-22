@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/employees"
+method: POST
+body:
+  type: formdata
+  content:
+    - type: text
+      key: email
+      value: photo@example.com
+    - type: text
+      key: firstName
+      value: Photo
+    - type: text
+      key: lastName
+      value: User
+    - type: text
+      key: phone
+      value: "+15553334444"
+    - type: file
+      key: profilePic
+      src: []
+order: 4000

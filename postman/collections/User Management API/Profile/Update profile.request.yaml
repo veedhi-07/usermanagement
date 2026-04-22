@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{baseUrl}}/api/profile"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "firstName": "Admin",
+      "lastName": "User",
+      "phone": "+10000000001"
+    }
+order: 2000

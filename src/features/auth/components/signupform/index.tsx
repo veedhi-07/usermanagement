@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../../../assets/icons";
+import {
+  ChevronLeftIcon,
+  EyeCloseIcon,
+  EyeIcon,
+} from "../../../../assets/icons";
 import Label from "../../../../components/form/Label";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
@@ -8,22 +12,29 @@ import FormField from "../../../../components/form-field/index";
 import { SignUpformValues } from "../../../../types";
 import PhoneInput from "react-phone-input-2";
 import { signUpFields } from "../../../../components/input-config";
+import { useSignUp } from "../../hooks/useauth-hook";
+import Button from "../../../../components/ui/button/Button";
 
 export default function SignUpForm() {
   const initialValues = {
     email: "",
     password: "",
-    fname: "",
-    lname: "",
-    uname: "",
+    firstName: "",
+    lastName: "",
+    username: "",
     phone: "",
   };
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate, isPending } = useSignUp();
 
   return (
     <Formik<SignUpformValues>
       initialValues={initialValues}
       validationSchema={signupSchema}
+      onSubmit={(values) => {
+        console.log("Signup form data", values);
+        mutate(values);
+      }}
     >
       {({
         values,
@@ -117,7 +128,6 @@ export default function SignUpForm() {
                                   : field.type
                               }
                             />
-
                             {/* Password Toggle */}
                             {isPassword && (
                               <span
@@ -125,9 +135,9 @@ export default function SignUpForm() {
                                 className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
                               >
                                 {showPassword ? (
-                                  <EyeIcon className="size-5" />
+                                  <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
                                 ) : (
-                                  <EyeCloseIcon className="size-5" />
+                                  <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
                                 )}
                               </span>
                             )}
@@ -136,9 +146,12 @@ export default function SignUpForm() {
                       </div>
                     );
                   })}
-                  <button className="w-full px-4 py-3 text-sm text-white bg-brand-500 rounded-lg">
+                  {/* <button className="w-full px-4 py-3 text-sm text-white bg-brand-500 rounded-lg">
                     Sign Up
-                  </button>
+                  </button> */}
+                  <Button type="submit" className="w-full" size="sm">
+                    Sign up
+                  </Button>
                 </div>
               </Form>
               <div className="mt-5">

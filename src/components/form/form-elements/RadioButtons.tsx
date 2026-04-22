@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ComponentCard from "../../common/ComponentCard";
+import ComponentCard from "../../../features/users/components/ComponentCard";
 import Radio from "../input/Radio";
 
 export default function RadioButtons() {

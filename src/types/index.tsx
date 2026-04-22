@@ -22,10 +22,48 @@ export interface SignInFormValues {
 }
 
 export interface SignUpformValues {
-  fname: string;
-  lname: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  uname: string;
+  username: string;
   phone: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  data: {
+    token: string;
+    user: {
+      id: number;
+      email: string;
+    };
+  };
+}
+export interface User {
+  id: string;
+  email?: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  phone: string;
+  roleid?: number;
+  roleTitle: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ProfileValues {
+  id?: string;
+  email?: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  phone: string;
+  roleid?: number;
+  // roleTitle: string;
+  // isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -1,5 +1,5 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
+import ComponentCard from "../../features/users/components/ComponentCard";
 import LineChartOne from "../../components/charts/line/LineChartOne";
 import PageMeta from "../../components/common/PageMeta";
 

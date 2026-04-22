@@ -1,25 +1,27 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router";
-import AuthRoute from "../src/features/auth/AuthPages/authroute";
-import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
+import AuthLayout from "./features/auth/authlayout/index";
+import NotFound from "./pages/notfound/index";
+import UserProfiles from "./pages/profile/index";
 // import Videos from "./pages/UiElements/Videos";
 // import Images from "./pages/UiElements/Images";
 // import Alerts from "./pages/UiElements/Alerts";
 // import Badges from "./pages/UiElements/Badges";
 // import Avatars from "./pages/UiElements/Avatars";
 // import Buttons from "./pages/UiElements/Buttons";
-// import LineChart from "./pages/Charts/LineChart";
-// import BarChart from "./pages/Charts/BarChart";
-import BasicTables from "./pages/Tables/BasicTables";
+import LineChart from "./pages/charts/LineChart";
+import BarChart from "./pages/charts/BarChart";
+import BasicTables from "./features/users/components/main-table/index";
 import FormElements from "./pages/Forms/FormElements";
 // import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
+import Home from "./pages/dashboard/Home";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
     <>
+      <Toaster position="top-center" />
       <Router>
         <ScrollToTop />
         <Routes>
@@ -46,13 +48,13 @@ export default function App() {
             <Route path="/videos" element={<Videos />} /> */}
 
             {/* Charts */}
-            {/* <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} /> */}
+            <Route path="/line-chart" element={<LineChart />} />
+            <Route path="/bar-chart" element={<BarChart />} />
           </Route>
 
           {/* Auth Layout */}
-          <Route path="/signin" element={<AuthRoute />} />
-          <Route path="/signup" element={<AuthRoute />} />
+          <Route path="/signin" element={<AuthLayout />} />
+          <Route path="/signup" element={<AuthLayout />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
