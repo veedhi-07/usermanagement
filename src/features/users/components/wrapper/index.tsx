@@ -1,7 +1,7 @@
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import ComponentCard from "../ComponentCard";
 import PageMeta from "../../../../components/common/PageMeta";
-import BasicTableOne from "../main-table";
+import UserTable from "../../components/main-user-table/index";
 
 export default function BasicTables() {
   return (
@@ -13,7 +13,7 @@ export default function BasicTables() {
       <PageBreadcrumb pageTitle="Basic Tables" />
       <div className="space-y-6">
         <ComponentCard title="Basic Table 1">
-          <BasicTableOne />
+          <UserTable />
         </ComponentCard>
       </div>
     </>

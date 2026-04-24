@@ -50,7 +50,7 @@ export default function InputStates() {
           <Input
             type="email"
             value={emailTwo}
-            success={!error}
+            success=""
             onChange={handleEmailTwoChange}
             placeholder="Enter your email"
             hint={!error ? "This is an success message." : ""}

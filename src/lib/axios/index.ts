@@ -12,16 +12,37 @@ api.interceptors.request.use((config) => {
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete config.headers.Authorization;
   }
 
   return config;
 });
 
+// api.interceptors.response.use(
+//   (response) => {
+//     return response;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   },
+// );
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
+    console.log("RESPONSE STATUS:", error.response?.status);
+    console.log("RESPONSE DATA:", error.response?.data);
+    console.log("HEADERS:", error.response?.headers);
+    console.log("REQUEST:", error.config);
+    console.log("MESSAGE:", error.message);
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/signin";
+    }
+    // console.log("API ERROR:", error.response?.status, error.response?.data);
+
     return Promise.reject(error);
   },
 );

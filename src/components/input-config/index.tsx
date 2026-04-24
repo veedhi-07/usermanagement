@@ -20,8 +20,8 @@ export const signInFields: {
   },
 ];
 
-export const profileFields: {
-  id: keyof ProfileValues;
+export const AddEditFields: {
+  id: string;
   label: string;
   placeholder: string;
   type: string;
@@ -50,12 +50,50 @@ export const profileFields: {
     placeholder: "Enter Phone Number",
     type: "string",
   },
-  // {
-  //   id: "roleTitle",
-  //   label: "Role title",
-  //   placeholder: "Enter Role Title",
-  //   type: "text",
-  // },
+  {
+    id: "isActive",
+    label: "Status",
+    placeholder: "Select Status",
+    type: "select",
+  },
+  {
+    id: "roleid",
+    label: "Role",
+    placeholder: "Select Role",
+    type: "select",
+  },
+];
+
+export const ProfileFields: {
+  id: string;
+  label: string;
+  placeholder: string;
+  type: string;
+}[] = [
+  {
+    id: "firstName",
+    label: "First Name",
+    placeholder: "Enter your First Name",
+    type: "text",
+  },
+  {
+    id: "lastName",
+    label: "Last Name",
+    placeholder: "Enter your Last Name",
+    type: "text",
+  },
+  {
+    id: "email",
+    label: "Email",
+    placeholder: "name@email.com",
+    type: "text",
+  },
+  {
+    id: "phone",
+    label: "Phone Number",
+    placeholder: "Enter Phone Number",
+    type: "string",
+  },
 ];
 export const signUpFields: {
   id: keyof SignUpformValues;

@@ -1,4 +1,4 @@
-export const endpoints = {
-  signin: "/api/auth/signin",
-  signup: "/api/auth/signup",
-};
+// export const endpoints = {
+//   signin: "/api/auth/signin",
+//   signup: "/api/auth/signup",
+// };

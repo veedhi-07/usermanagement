@@ -5,7 +5,7 @@ import {
   EyeCloseIcon,
   EyeIcon,
 } from "../../../../assets/icons";
-import FormField from "../../../../components/form-field/index";
+import FormField from "../../../../components/form/input/InputField";
 import { Formik, Form } from "formik";
 import { signinSchema } from "../../../../utils/validation";
 import { signInFields } from "../../../../components/input-config";

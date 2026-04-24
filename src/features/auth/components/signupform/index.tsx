@@ -8,7 +8,7 @@ import {
 import Label from "../../../../components/form/Label";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
-import FormField from "../../../../components/form-field/index";
+import FormField from "../../../../components/form/input/InputField";
 import { SignUpformValues } from "../../../../types";
 import PhoneInput from "react-phone-input-2";
 import { signUpFields } from "../../../../components/input-config";

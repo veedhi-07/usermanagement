@@ -1,25 +1,18 @@
 import type React from "react";
+import { FormProps } from "../../../types";
 import type { FC } from "react";
+import type { InputHTMLAttributes } from "react";
 
-interface InputProps {
-  type?: "text" | "number" | "email" | "password" | "date" | "time" | string;
-  id?: string;
-  name?: string;
-  placeholder?: string;
-  value?: string | number | undefined;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  className?: string;
-  min?: string;
-  max?: string;
-  step?: number;
-  disabled?: boolean;
-  success?: boolean;
-  error?: boolean;
-  hint?: string;
-}
-
-const Input: FC<InputProps> = ({
+type NativeInputProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  keyof FormProps
+>;
+type FormComponentProps = FormProps &
+  NativeInputProps & {
+    as?: "input" | "select";
+    options?: { label: string; value: string | number | boolean }[];
+  };
+const FormField: FC<FormComponentProps> = ({
   type = "text",
   id,
   name,
@@ -31,10 +24,12 @@ const Input: FC<InputProps> = ({
   min,
   max,
   step,
-  disabled = false,
-  success = false,
-  error = false,
+  errorMessage,
+  disabled,
+  success,
+  error,
   hint,
+  ...rest
 }) => {
   let inputClasses = ` h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 ${className}`;
 
@@ -63,6 +58,7 @@ const Input: FC<InputProps> = ({
         step={step}
         disabled={disabled}
         className={inputClasses}
+        {...rest}
       />
 
       {hint && (
@@ -78,8 +74,11 @@ const Input: FC<InputProps> = ({
           {hint}
         </p>
       )}
+      {error && errorMessage && (
+        <p className="text-red-500 text-sm">{errorMessage}</p>
+      )}
     </div>
   );
 };
 
-export default Input;
+export default FormField;

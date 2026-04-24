@@ -8,9 +8,9 @@ description: |-
 variables:
   baseUrl: http://localhost:3000
   token: ""
-  userId: "1"
-  roleId: "1"
-  employeeId: "1"
+  userId: "3"
+  roleId: "3"
+  employeeId: "3"
 auth:
   - id: a9d66c97-bfe5-4665-970d-b8b3cb4721a6
     type: bearer

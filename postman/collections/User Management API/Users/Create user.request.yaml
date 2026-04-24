@@ -14,6 +14,6 @@ body:
       "username": "testuser",
       "phone": "+15559876543",
       "roleId": 2,
-      "isActive": true
+      "status": true
     }
 order: 3000

@@ -1,14 +1,16 @@
+import { AxiosRequestConfig } from "axios";
 import { api } from "../axios";
 
 export const apiClient = {
-  get: (url: string) => api.get(url).then((res) => res.data),
+  get: (url: string, config?: AxiosRequestConfig) =>
+    api.get(url, config).then((res) => res.data),
 
-  post: (url: string, data: any) => api.post(url, data).then((res) => res.data),
+  post: (url: string, data?: any, config?: AxiosRequestConfig) =>
+    api.post(url, data, config).then((res) => res.data),
 
-  put: (url: string, data: any) => api.put(url, data).then((res) => res.data),
+  put: (url: string, data?: any, config?: AxiosRequestConfig) =>
+    api.put(url, data, config).then((res) => res.data),
 
-  patch: (url: string, data: any) =>
-    api.patch(url, data).then((res) => res.data),
-
-  delete: (url: string) => api.delete(url).then((res) => res.data),
+  delete: (url: string, config?: AxiosRequestConfig) =>
+    api.delete(url, config).then((res) => res.data),
 };

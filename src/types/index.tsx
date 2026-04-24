@@ -41,7 +41,7 @@ export interface AuthResponse {
   };
 }
 export interface User {
-  id: string;
+  id: number;
   email?: string;
   firstName: string;
   lastName: string;
@@ -54,6 +54,14 @@ export interface User {
   updatedAt?: string;
 }
 
+export interface Role {
+  id: number;
+  title: string;
+  status: "active" | "inactive";
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface ProfileValues {
   id?: string;
   email?: string;
@@ -61,9 +69,16 @@ export interface ProfileValues {
   lastName: string;
   username: string;
   phone: string;
-  roleid?: number;
+  roleId?: number;
   // roleTitle: string;
-  // isActive: boolean;
+  // status: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+export interface UserPaginationProps {
+  currentPage: number;
+  totalPages: number;
+  goToPage: (page: number) => void;
+  nextPage: () => void;
+  prevPage: () => void;
 }

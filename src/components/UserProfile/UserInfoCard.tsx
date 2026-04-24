@@ -1,13 +1,16 @@
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
-import Input from "../form/input/InputField";
+// import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { Formik, Form } from "formik";
 import { useState } from "react";
-import { useUpdateProfile } from "./hook/user-hook";
+import { useUpdateProfile } from "./hook/profile-hook";
+import PhoneInput from "react-phone-input-2";
 import toast from "react-hot-toast";
+import { ProfileFields } from "../input-config";
 import { profileSchema } from "../../utils/validation";
+import FormField from "../form/input/InputField";
 
 export default function UserInfoCard() {
   const mutation = useUpdateProfile();
@@ -39,9 +42,6 @@ export default function UserInfoCard() {
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 First Name
               </p>
-              {/* <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
-              </p> */}
               <p>{user?.firstName}</p>
             </div>
 
@@ -153,8 +153,9 @@ export default function UserInfoCard() {
               handleChange,
               handleBlur,
               errors,
+              setFieldValue,
+              setFieldTouched,
               touched,
-              isSubmitting,
             }) => (
               <Form className="flex flex-col">
                 <div className="custom-scrollbar h-112.5 overflow-y-auto px-2 pb-3">
@@ -167,75 +168,69 @@ export default function UserInfoCard() {
                     </h5>
 
                     <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                      <div className="col-span-2 lg:col-span-1">
-                        <Label>First Name</Label>
-                        {/* <Input type="text" value="Musharof" /> */}
-                        <Input
-                          type="text"
-                          name="firstName"
-                          value={values.firstName}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={!!(touched.firstName && errors.firstName)}
-                        />
-                        {touched.firstName && errors.firstName && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {getError(errors.firstName)}
-                          </p>
-                        )}
-                      </div>
+                      {ProfileFields.map((field) => {
+                        const isPhone = field.id === "phone";
+                        return (
+                          <div
+                            key={field.id}
+                            className="col-span-2 lg:col-span-1"
+                          >
+                            <Label>{field.label}</Label>
 
-                      <div className="col-span-2 lg:col-span-1">
-                        <Label>Last Name</Label>
-                        {/* <Input type="text" value="Chowdhury" /> */}
-                        <Input
-                          type="text"
-                          name="lastName"
-                          value={values.lastName}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={!!(touched.lastName && errors.lastName)}
-                        />
-                        {touched.lastName && errors.lastName && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {getError(errors.lastName)}
-                          </p>
-                        )}
-                      </div>
+                            {isPhone ? (
+                              <>
+                                <PhoneInput
+                                  country={"in"} // default India
+                                  value={values.phone}
+                                  onChange={(phone) =>
+                                    setFieldValue("phone", phone)
+                                  }
+                                  onBlur={() => setFieldTouched("phone", true)}
+                                  inputStyle={{
+                                    width: "100%",
+                                    height: "40px",
+                                  }}
+                                />
 
-                      <div className="col-span-2 lg:col-span-1">
-                        <Label>Email Address</Label>
-                        <Input
-                          type="text"
-                          name="email"
-                          value={values.email}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={!!(touched.email && errors.email)}
-                        />
-                        {touched.email && errors.email && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {getError(errors.email)}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="col-span-2 lg:col-span-1">
-                        <Label>Phone</Label>
-                        <Input
-                          type="text"
-                          name="phone"
-                          value={values.phone}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          error={!!(touched.phone && errors.phone)}
-                        />
-                        {touched.phone && errors.phone && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {getError(errors.phone)}
-                          </p>
-                        )}
-                      </div>
+                                {/* Error */}
+                                {touched.phone && errors.phone === "string" && (
+                                  <p className="text-error-500 text-sm mt-1">
+                                    {errors.phone}
+                                  </p>
+                                )}
+                                {/* {isPhone &&
+                                  typeof errors.phone === "string" && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                      {errors.phone}
+                                    </p>
+                                  )} */}
+                              </>
+                            ) : (
+                              <FormField
+                                type={field.type}
+                                name={field.id}
+                                value={values[field.id as keyof typeof values]}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                error={
+                                  !!(
+                                    touched[field.id as keyof typeof values] &&
+                                    errors[field.id as keyof typeof values]
+                                  )
+                                }
+                              />
+                            )}
+                            {touched[field.id as keyof typeof values] &&
+                              errors[field.id as keyof typeof values] && (
+                                <p className="text-red-500 text-sm mt-1">
+                                  {getError(
+                                    errors[field.id as keyof typeof values],
+                                  )}
+                                </p>
+                              )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
