@@ -8,12 +8,12 @@ import {
 import Label from "../../../../components/form/Label";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
-import FormField from "../../../../components/form/input/InputField";
+import FormField from "../../../../components/form/input/input-field";
 import { SignUpformValues } from "../../../../types";
 import PhoneInput from "react-phone-input-2";
 import { signUpFields } from "../../../../components/input-config";
 import { useSignUp } from "../../hooks/useauth-hook";
-import Button from "../../../../components/ui/button/Button";
+import Button from "../../../../components/ui/button/index";
 
 export default function SignUpForm() {
   const initialValues = {
@@ -25,7 +25,7 @@ export default function SignUpForm() {
     phone: "",
   };
   const [showPassword, setShowPassword] = useState(false);
-  const { mutate, isPending } = useSignUp();
+  const { mutate } = useSignUp();
 
   return (
     <Formik<SignUpformValues>

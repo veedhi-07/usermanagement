@@ -1,6 +1,5 @@
 import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User } from "../../../../types";
 import {
   createUserApi,
   updateUserApi,
@@ -47,7 +46,6 @@ export const useUser = (page?: number, limit?: number) => {
 
     isLoading: usersquery.isLoading,
     isError: usersquery.isError,
-    isFetching: usersquery.isFetching,
     isPending: usersquery.isPending,
 
     createUser,

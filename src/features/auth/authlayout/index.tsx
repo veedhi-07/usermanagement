@@ -1,7 +1,7 @@
-import GridShape from "../../../components/common/GridShape";
+import GridShape from "../../../components/common/gridshape";
 import { Link } from "react-router";
-import ThemeTogglerTwo from "../../../components/common/ThemeTogglerTwo";
-import PageMeta from "../../../components/common/PageMeta";
+import ThemeTogglerTwo from "../../../components/common/theme/theme-toggler-two/index";
+import PageMeta from "../../../components/common/page-meta/index";
 import { useLocation } from "react-router";
 import SignInForm from "../components/signinform";
 import SignUpForm from "../components/signupform";
@@ -12,7 +12,10 @@ export default function AuthLayout() {
 
   return (
     <>
-      <PageMeta title={isSignIn ? "Sign In": "Sign Up"} description="Auth Page" />
+      <PageMeta
+        title={isSignIn ? "Sign In" : "Sign Up"}
+        description="Auth Page"
+      />
       <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
         <div className="relative flex flex-col justify-center w-full h-screen lg:flex-row dark:bg-gray-900 sm:p-0">
           {isSignIn ? <SignInForm /> : <SignUpForm />}

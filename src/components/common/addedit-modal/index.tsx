@@ -1,16 +1,15 @@
 import { Modal } from "../../ui/modal";
-import Button from "../../ui/button/Button";
-import formField from "../../form/input/InputField";
+import Button from "../../ui/button/index";
 import "react-phone-input-2/lib/style.css";
 import Label from "../../form/Label";
 import { Formik, Form } from "formik";
 import toast from "react-hot-toast";
 import { User } from "../../../types";
-import { profileSchema } from "../../../utils/validation";
+import { AddEditSchema } from "../../../utils/validation";
 import { AddEditFields } from "../../../components/input-config";
 import { useUser } from "../../../features/users/hooks/useuser-hook";
 import PhoneInput from "react-phone-input-2";
-import FormField from "../../form/input/InputField";
+import FormField from "../../form/input/input-field/index";
 import { useRole } from "../../../features/roles/hooks/userole-hook";
 
 interface Props {
@@ -23,19 +22,23 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
   const { updateUser, createUser } = useUser();
 
   const filteredRoles =
-    roles?.filter((role: any) => role.title.toLowerCase() !== "admin") || [];
+    roles?.filter((role: any) => role.title.toLowerCase() !== "Super Admin") ||
+    [];
 
   const getError = (error: any) =>
     typeof error === "string" ? error : undefined;
+
   const isEditMode = !!user;
+
   const initialValues = {
     email: user?.email || "",
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     username: user?.username || "",
     phone: user?.phone || "",
+    password: "",
     isActive: user?.isActive ?? true,
-    roleid: user?.roleid ?? undefined,
+    roleId: user?.roleId ?? undefined,
   };
 
   return (
@@ -53,43 +56,8 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
         <Formik
           initialValues={initialValues}
           enableReinitialize={true}
-          validationSchema={profileSchema}
-          // onSubmit={async (values, { setSubmitting }) => {
-          //   console.log("SUBMIT:", values);
-
-          //   try {
-          //     const cleanPayload: Partial<User> = {
-          //       email: values.email,
-          //       firstName: values.firstName,
-          //       lastName: values.lastName,
-          //       username: values.username,
-          //       phone: values.phone,
-          //       isActive: values.isActive,
-          //       roleid: values.roleid,
-          //     };
-          //     console.log("CALLING API...");
-
-          //     const res = await updateUser.mutateAsync({
-          //       id: Number(user!.id),
-          //       data: cleanPayload,
-          //     });
-
-          //     console.log("API RESPONSE:", res);
-
-          //     toast.success("Profile updated successfully", {
-          //       duration: 3000,
-          //     });
-          //     setTimeout(() => {
-          //       onClose();
-          //     }, 500);
-          //   } catch (err: any) {
-          //     console.log("API ERROR:", err?.response?.data);
-
-          //     toast.error(err?.response?.data?.message || "Update failed");
-          //   } finally {
-          //     setSubmitting(false);
-          //   }
-          // }}
+          validationSchema={AddEditSchema}
+          context={{ isEditMode }}
           onSubmit={async (values, { setSubmitting }) => {
             try {
               const cleanPayload: Partial<User> = {
@@ -99,24 +67,24 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                 username: values.username,
                 phone: values.phone,
                 isActive: values.isActive,
-                roleid: values.roleid,
+                roleId: values.roleId,
               };
 
               if (isEditMode) {
                 // EDIT USER
+
                 await updateUser.mutateAsync({
                   id: Number(user!.id),
                   data: cleanPayload,
                 });
-
                 toast.success("User updated successfully");
               } else {
                 // ADD USER
+                cleanPayload.password = values.password;
                 await createUser.mutateAsync(cleanPayload);
 
                 toast.success("User created successfully");
               }
-
               onClose();
             } catch (err: any) {
               toast.error(err?.response?.data?.message || "Operation failed");
@@ -142,10 +110,15 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                 </div>
                 <div className="mt-7">
                   <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                    {AddEditFields.map((field) => {
+                    {AddEditFields.filter((field) => {
+                      if (isEditMode) {
+                        return field.showInEdit !== false;
+                      }
+                      return true;
+                    }).map((field) => {
                       const isisActiveField = field.id === "isActive";
                       const isPhone = field.id === "phone";
-                      const isRole = field.id === "roleid";
+                      const isRole = field.id === "roleId";
                       return (
                         <div
                           key={field.id}
@@ -185,21 +158,13 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                                   height: "40px",
                                 }}
                               />
-
-                              {/* Error */}
-                              {touched.phone && errors.phone && (
-                                <p className="text-error-500 text-sm mt-1">
-                                  {errors.phone}
-                                </p>
-                              )}
                             </>
                           ) : isRole ? (
-                            // ROLE DROPDOWN FIX
                             <select
-                              name="roleid"
-                              value={values.roleid}
+                              name="roleId"
+                              value={values.roleId}
                               onChange={(e) =>
-                                setFieldValue("roleid", Number(e.target.value))
+                                setFieldValue("roleId", Number(e.target.value))
                               }
                               onBlur={handleBlur}
                               className="h-11 w-full rounded-lg border px-4 py-2.5 text-sm"

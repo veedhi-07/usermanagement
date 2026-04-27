@@ -47,9 +47,10 @@ export interface User {
   lastName: string;
   username: string;
   phone: string;
-  roleid?: number;
+  roleId?: number;
   roleTitle: string;
   isActive: boolean;
+  password?: string;
   createdAt?: string;
   updatedAt?: string;
 }

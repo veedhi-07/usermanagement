@@ -12,10 +12,8 @@ export const signInApi = async (data: SignInFormValues) => {
   //  store user
   localStorage.setItem("user", JSON.stringify(user));
 
-  return res; 
+  return res;
 };
-// export const signUpApi = (data: SignUpformValues) =>
-//   apiClient.post("/auth/signup", data);
 
 export const signUpApi = async (data: SignUpformValues) => {
   const res = await apiClient.post("/auth/signup", data);

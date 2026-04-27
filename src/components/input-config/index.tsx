@@ -1,4 +1,4 @@
-import { SignInFormValues, SignUpformValues, ProfileValues } from "../../types";
+import { SignInFormValues, SignUpformValues } from "../../types";
 
 export const signInFields: {
   id: keyof SignInFormValues;
@@ -24,6 +24,7 @@ export const AddEditFields: {
   id: string;
   label: string;
   placeholder: string;
+  showInEdit: boolean;
   type: string;
 }[] = [
   {
@@ -31,36 +32,58 @@ export const AddEditFields: {
     label: "First Name",
     placeholder: "Enter your First Name",
     type: "text",
+    showInEdit: true,
   },
   {
     id: "lastName",
     label: "Last Name",
     placeholder: "Enter your Last Name",
     type: "text",
+    showInEdit: true,
   },
   {
     id: "email",
     label: "Email",
     placeholder: "name@email.com",
     type: "text",
+    showInEdit: true,
   },
+  {
+    id: "username",
+    label: "Username",
+    type: "text",
+    placeholder: "Enter Username ",
+    showInEdit: true,
+  },
+
+  {
+    id: "password",
+    label: "Password",
+    type: "password",
+    placeholder: "Enter Password",
+    showInEdit: false,
+  },
+
   {
     id: "phone",
     label: "Phone Number",
     placeholder: "Enter Phone Number",
     type: "string",
+    showInEdit: true,
   },
   {
     id: "isActive",
     label: "Status",
     placeholder: "Select Status",
     type: "select",
+    showInEdit: true,
   },
   {
-    id: "roleid",
+    id: "roleId",
     label: "Role",
     placeholder: "Select Role",
     type: "select",
+    showInEdit: true,
   },
 ];
 

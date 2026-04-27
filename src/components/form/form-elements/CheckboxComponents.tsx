@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ComponentCard from "../../../features/users/components/ComponentCard";
-import Checkbox from "../input/Checkbox";
+import Checkbox from "../input/checkbox/index";
 
 export default function CheckboxComponents() {
   const [isChecked, setIsChecked] = useState(false);

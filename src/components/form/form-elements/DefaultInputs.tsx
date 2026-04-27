@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ComponentCard from "../../../features/users/components/ComponentCard.tsx";
 import Label from "../Label";
-import Input from "../input/InputField";
+import Input from "../input/input-field/index.tsx";
 import Select from "../Select";
 import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../assets/icons";
 import DatePicker from "../date-picker.tsx";

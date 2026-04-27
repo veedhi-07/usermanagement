@@ -6,19 +6,18 @@ import {
   TableRow,
 } from "../../../../components/ui/table";
 import { Pencil, Trash2 } from "../../../../assets/icons/index";
-import Badge from "../../../../components/ui/badge/Badge";
+import Badge from "../../../../components/ui/badge/index";
 import { Plus } from "lucide-react";
 import { useRole } from "../../../roles/hooks/userole-hook";
 import { useState } from "react";
 import DeleteModal from "../../../../components/common/delete-modal/index";
+import { getroleByIdApi } from "../../services/role-service";
 import RoleModal from "../../../../components/common/role-modal";
 
 export default function RoleTable() {
-  const { roles, isLoading, deleteRole, updateRole } = useRole();
+  const { roles, isLoading } = useRole();
   console.log("roles:", roles);
-
   const [selectedrole, setSelectedrole] = useState<any>(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -29,7 +28,7 @@ export default function RoleTable() {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex items-center justify-between p-3">
         <h3 className="text-base font-extrabold text-gray-800 dark:text-white/90">
-          Users List
+          Roles List
         </h3>
 
         <button
@@ -109,8 +108,11 @@ export default function RoleTable() {
                 </TableCell>
 
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  <Badge size="sm" color={role.status ? "success" : "error"}>
-                    {role.status ? "Active" : "InActive"}
+                  <Badge
+                    size="sm"
+                    color={role.status === "active" ? "success" : "error"}
+                  >
+                    {role.status === "active" ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
 
@@ -129,10 +131,15 @@ export default function RoleTable() {
                   <div className="flex gap-3">
                     {/* EDIT */}
                     <button
-                      onClick={() => {
-                        setSelectedrole(role);
-                        setSelectedId(role.id);
-                        setIsRoleModalOpen(true);
+                      onClick={async () => {
+                        try {
+                          const res = await getroleByIdApi(role.id);
+                          console.log("API RES:", res);
+                          setSelectedrole(res); 
+                          setIsRoleModalOpen(true);
+                        } catch (err) {
+                          console.error(err);
+                        }
                       }}
                       className="text-blue-500 hover:text-blue-700"
                     >
@@ -162,7 +169,7 @@ export default function RoleTable() {
           onClose={() => setIsDeleteOpen(false)}
           type="role"
         />
-        
+
         <RoleModal
           isOpen={isRoleModalOpen}
           onClose={() => {

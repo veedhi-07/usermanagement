@@ -4,7 +4,7 @@ import "./index.css";
 import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
-import { AppWrapper } from "./components/common/PageMeta.tsx";
+import { AppWrapper } from "./components/common/page-meta/index.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

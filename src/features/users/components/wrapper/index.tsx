@@ -1,6 +1,6 @@
 import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
 import ComponentCard from "../ComponentCard";
-import PageMeta from "../../../../components/common/PageMeta";
+import PageMeta from "../../../../components/common/page-meta/index";
 import UserTable from "../../components/main-user-table/index";
 
 export default function BasicTables() {

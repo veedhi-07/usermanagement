@@ -2,12 +2,16 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import React from "react";
 import AuthLayout from "./features/auth/authlayout/index";
 import ProtectedRoute from "./routes/protected-route";
-import { ScrollToTop } from "./components/common/ScrollToTop";
+import { ScrollToTop } from "./components/common/scroll-to-top";
 import { Toaster } from "react-hot-toast";
 
-const AppLayout = React.lazy(() => import("./layout/AppLayout"));
-const Home = React.lazy(() => import("./pages/dashboard/Home"));
-const UserProfiles = React.lazy(() => import("./pages/profile/index"));
+const AppLayout = React.lazy(() => import("./layout/app-layout"));
+const Home = React.lazy(
+  () => import("./features/dashboard/components/main/index"),
+);
+const UserProfiles = React.lazy(
+  () => import("./components/UserProfile/components/main/index"),
+);
 const UserTable = React.lazy(
   () => import("./features/users/components/main-user-table/index"),
 );

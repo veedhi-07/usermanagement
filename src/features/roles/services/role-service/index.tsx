@@ -8,9 +8,10 @@ export const getRolesApi = async (): Promise<Role[]> => {
 };
 
 //GET SINGLE ROLE
-export const getroleByIdApi = async (id: number): Promise<Role> => {
+export const getroleByIdApi = async (id: number) => {
   const res = await apiClient.get(`/roles/${id}`);
-  return res.data.role;
+  console.log("RAW API:", res.data);
+  return res.data;
 };
 
 //  CREATE ROLE

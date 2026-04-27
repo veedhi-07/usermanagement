@@ -19,14 +19,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// api.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   },
-// );
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -41,7 +33,6 @@ api.interceptors.response.use(
       localStorage.removeItem("user");
       window.location.href = "/signin";
     }
-    // console.log("API ERROR:", error.response?.status, error.response?.data);
 
     return Promise.reject(error);
   },

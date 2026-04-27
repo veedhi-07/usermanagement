@@ -5,11 +5,11 @@ import {
   EyeCloseIcon,
   EyeIcon,
 } from "../../../../assets/icons";
-import FormField from "../../../../components/form/input/InputField";
+import FormField from "../../../../components/form/input/input-field";
 import { Formik, Form } from "formik";
 import { signinSchema } from "../../../../utils/validation";
 import { signInFields } from "../../../../components/input-config";
-import Button from "../../../../components/ui/button/Button";
+import Button from "../../../../components/ui/button/index";
 import Label from "../../../../components/form/Label";
 import { SignInFormValues } from "../../../../types";
 import { useSignIn } from "../../hooks/useauth-hook";

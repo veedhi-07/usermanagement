@@ -1,10 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { updateProfileApi } from "../../services/user-services";
+import { getProfileApi, updateProfileApi } from "../../services/user-services";
 import { ProfileValues } from "../../../../types";
 import toast from "react-hot-toast";
-export const useUpdateProfile = () => {
+
+export const useProfile = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+
+  const Profilequery = useQuery({
+    queryKey: ["users"],
+    queryFn: getProfileApi,
+  });
+
+  const UpdateProfile = useMutation({
     mutationFn: async (data: ProfileValues) => {
       const res = await updateProfileApi(data);
       return res;
@@ -14,4 +21,13 @@ export const useUpdateProfile = () => {
       toast.success("Updated");
     },
   });
+
+  return {
+    profile: Profilequery.data,
+    isLoading: Profilequery.isLoading,
+    isError: Profilequery.isError,
+    isPending: Profilequery.isPending,
+
+    UpdateProfile,
+  };
 };

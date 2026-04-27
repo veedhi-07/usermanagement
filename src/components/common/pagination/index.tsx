@@ -1,4 +1,4 @@
-import Button from "../../ui/button/Button";
+import Button from "../../ui/button/index";
 import type { UserPaginationProps } from "../../../types";
 function UserPagination({
   currentPage,

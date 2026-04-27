@@ -8,69 +8,33 @@ import {
 import { Pencil, Trash2 } from "../../../../assets/icons/index";
 import { SearchIcon } from "lucide-react";
 import { Plus } from "lucide-react";
-import Badge from "../../../../components/ui/badge/Badge";
+import Badge from "../../../../components/ui/badge/index";
 import { useUser } from "../../hooks/useuser-hook";
 import UserPagination from "../../../../components/common/pagination";
-// import usePagination from "../../../../hooks/use-pagination";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { User } from "../../../../types";
+import { useModal } from "../../../../hooks/use-modal";
 import useDebounce from "../../../../hooks/use-debounce";
 import DeleteModal from "../../../../components/common/delete-modal/index";
 import AddEditModal from "../../../../components/common/addedit-modal";
 
 export default function UserTable() {
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const addEditModal = useModal();
+  const deleteModal = useModal();
   const itemsPerPage = 7;
-  // const itemsPerPage = 7;
 
-  // const filteredUsers =
-  //   users?.filter((user: User) => {
-  //     const query = debouncedSearch.toLowerCase();
-
-  //     return (
-  //       user.firstName?.toLowerCase().includes(query) ||
-  //       user.lastName?.toLowerCase().includes(query) ||
-  //       user.email?.toLowerCase().includes(query) ||
-  //       user.username?.toLowerCase().includes(query) ||
-  //       user.phone?.toLowerCase().includes(query)
-  //     );
-  //   }) || [];
-
-  // const {
-  //   paginatedData: paginatedUsers,
-  //   totalPages,
-  //   currentPage,
-  //   goToPage,
-  //   nextPage,
-  //   prevPage,
-  // } = usePagination({ data: filteredUsers, itemsPerPage });
-  // const prevSearchRef = useRef("");
-
-  // useEffect(() => {
-  //   if (prevSearchRef.current !== search) {
-  //     goToPage(1);
-  //     prevSearchRef.current = search;
-  //   }
-  // }, [search]);
-  const limit = 7;
   const debouncedSearch = useDebounce(search, 400);
-  const { users, isLoading, total, isFetching } = useUser(
-    currentPage,
-    itemsPerPage,
-    // debouncedSearch,
-  );
+  const { users, isLoading, total } = useUser(currentPage, itemsPerPage);
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch]);
 
   const totalPages = Math.ceil(total / itemsPerPage);
 
-  if (isLoading) return <div>Loading...</div>;
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
@@ -81,12 +45,17 @@ export default function UserTable() {
       setCurrentPage((prev) => prev + 1);
     }
   };
-
   const prevPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
     }
   };
+  const filteredUsers = users.filter((user: User) =>
+    `${user.firstName} ${user.lastName} ${user.email} ${user.username}`
+      .toLowerCase()
+      .includes(debouncedSearch.toLowerCase()),
+  );
+  if (isLoading) return <div>Loading...</div>;
   return (
     <div>
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -96,9 +65,7 @@ export default function UserTable() {
               <h3 className="text-base font-extrabold text-gray-800 dark:text-white/90">
                 Users List
               </h3>
-
               <div className="flex items-center gap-3 pl-3">
-                {/* SEARCH BOX */}
                 <div className="relative">
                   <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                   <input
@@ -115,7 +82,8 @@ export default function UserTable() {
               onClick={() => {
                 setSelectedUser(null);
                 setSelectedId(null);
-                setIsEditOpen(true);
+                addEditModal.openModal();
+                // setIsEditOpen(true);
               }}
               className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition text-sm"
             >
@@ -188,7 +156,7 @@ export default function UserTable() {
 
               {/* Table Body */}
               <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                {users.map((user: User) => (
+                {filteredUsers.map((user: User) => (
                   <TableRow key={user.id}>
                     <TableCell className="px-5 py-4 sm:px-6 text-start">
                       <div className="flex items-center gap-3">
@@ -237,7 +205,7 @@ export default function UserTable() {
                           onClick={() => {
                             setSelectedUser(user);
                             setSelectedId(user.id);
-                            setIsEditOpen(true);
+                            addEditModal.openModal();
                           }}
                           className="text-blue-500 hover:text-blue-700"
                         >
@@ -249,7 +217,7 @@ export default function UserTable() {
                           onClick={() => {
                             setSelectedUser(user);
                             setSelectedId(user.id);
-                            setIsDeleteOpen(true);
+                            deleteModal.openModal();
                           }}
                           className="text-red-500 hover:text-red-700"
                         >
@@ -263,14 +231,14 @@ export default function UserTable() {
             </Table>
 
             <DeleteModal
-              isOpen={isDeleteOpen}
+              isOpen={deleteModal.isOpen}
               id={selectedId}
-              onClose={() => setIsDeleteOpen(false)}
+              onClose={deleteModal.closeModal}
               type="user"
             />
             <AddEditModal
-              isOpen={isEditOpen}
-              onClose={() => setIsEditOpen(false)}
+              isOpen={addEditModal.isOpen}
+              onClose={addEditModal.closeModal}
               user={selectedUser}
             />
           </div>

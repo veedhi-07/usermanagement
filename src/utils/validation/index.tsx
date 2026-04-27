@@ -6,7 +6,7 @@ export const signupSchema = Yup.object({
   lastName: Yup.string()
     .required("Last Name is required")
     .test("not-same", "First and last Name cannot be same", function (value) {
-      return value !== this.parent.firstname;
+      return value !== this.parent.firstName;
     }),
 
   username: Yup.string().required("User Name is required"),
@@ -27,7 +27,6 @@ export const signupSchema = Yup.object({
     .test("valid-phone", "Enter valid phone number", (value) => {
       if (!value) return false;
 
-      // remove country code (simple approach) if not digit replace it
       const phoneDigits = value.replace(/\D/g, "");
 
       return phoneDigits.length >= 10;
@@ -54,7 +53,7 @@ export const profileSchema = Yup.object({
   lastName: Yup.string()
     .required("Last Name is required")
     .test("not-same", "First and last Name cannot be same", function (value) {
-      return value !== this.parent.firstname;
+      return value !== this.parent.firstName;
     }),
 
   email: Yup.string()
@@ -65,10 +64,46 @@ export const profileSchema = Yup.object({
     .required("Phone is required")
     .test("valid-phone", "Enter valid phone number", (value) => {
       if (!value) return false;
+      const phoneDigits = value.replace(/\D/g, "");
+      return phoneDigits.length >= 10;
+    }),
+});
 
-      // remove country code (simple approach) if not digit replace it
+//add-edit modal schema
+export const AddEditSchema = Yup.object({
+  firstName: Yup.string().required("First Name is required"),
+
+  lastName: Yup.string()
+    .required("Last Name is required")
+    .test("not-same", "First and last Name cannot be same", function (value) {
+      return value !== this.parent.firstName;
+    }),
+
+  username: Yup.string().required("UserName is required"),
+
+  email: Yup.string()
+    .email("Enter a valid email")
+    .required("Email is required"),
+
+  phone: Yup.string()
+    .required("Phone is required")
+    .test("valid-phone", "Enter valid phone number", (value) => {
+      if (!value) return false;
+
       const phoneDigits = value.replace(/\D/g, "");
 
       return phoneDigits.length >= 10;
     }),
+
+  password: Yup.string().when("$isEditMode", {
+    is: false,
+    then: (schema) =>
+      schema
+        .required("Password is required")
+        .min(5, "Password must be at least 5 characters")
+        .matches(/[A-Za-z]/, "Password must contain an alphabet")
+        .matches(/\d/, "Password must contain a number")
+        .matches(/[@$!%*#?&]/, "Password must contain a special character"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
