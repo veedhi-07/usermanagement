@@ -34,14 +34,14 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      type={type} // now works
+      type={type} 
       disabled={disabled}
       className={`inline-flex items-center justify-center gap-2 rounded-lg transition ${className} ${
         sizeClasses[size]
       } ${variantClasses[variant]} ${
         disabled ? "cursor-not-allowed opacity-50" : ""
       }`}
-      {...rest} // llows onClick, etc.
+      {...rest} // 
     >
       {startIcon && <span className="flex items-center">{startIcon}</span>}
       {children}

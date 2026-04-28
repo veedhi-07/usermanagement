@@ -24,19 +24,18 @@ export const getUsersApi = async ({
       0,
   };
 };
-//GET SINGLE USER
+
 export const getUserByIdApi = async (id: number): Promise<User> => {
   const res = await apiClient.get(`/users/${id}`);
   return res.data.user;
 };
 
-//  CREATE USER
+
 export const createUserApi = async (data: Partial<User>) => {
   const res = await apiClient.post("/users", data);
   return res.data;
 };
 
-//  UPDATE USER
 export const updateUserApi = async ({
   id,
   data,
@@ -48,7 +47,6 @@ export const updateUserApi = async ({
   return res.data;
 };
 
-// DELETE USER
 export const deleteUserApi = async (id: number) => {
   const res = await apiClient.delete(`/users/${id}`);
   return res.data;

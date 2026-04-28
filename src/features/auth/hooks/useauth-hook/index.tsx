@@ -2,37 +2,66 @@ import { useMutation } from "@tanstack/react-query";
 import { signInApi, signUpApi } from "../../services/authservice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { getroleByIdApi } from "../../../roles/services/role-service";
+import { setPermissions } from "../../../../redux/reducer/permission-slice/index";
+
+import { useAppDispatch } from "../../../../redux/hook";
 
 export const useSignIn = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return useMutation({
     mutationFn: signInApi,
+    onSuccess: async (res: any) => {
+      try {
+        console.log("LOGIN RESPONSE:", res?.data);
 
-    onSuccess: (res: any) => {
-      const token = res?.data?.data?.token;
+        const token = res?.data?.token;
+        const user = res?.data?.user;
 
-      toast.success("Login successful", {
-        duration: 3000,
-      });
+        if (!token || !user) {
+          toast.error("Invalid login response");
+          return;
+        }
 
-      if (token) {
+        toast.success("Login successful");
+
         localStorage.setItem("token", token);
-      }
+        localStorage.setItem("user", JSON.stringify(user));
 
-      setTimeout(() => {
+        let permissions: any[] = [];
+
+        if (user?.roleId) {
+          try {
+            const roleRes = await getroleByIdApi(user.roleId);
+
+            permissions =
+              roleRes?.data?.data?.permissions ||
+              roleRes?.data?.permissions ||
+              roleRes?.permissions ||
+              [];
+          } catch (err) {
+            console.error("Role API failed:", err);
+          }
+        }
+
+        dispatch(setPermissions(permissions || []));
+
         navigate("/");
-      }, 500);
+      } catch (err) {
+        console.error("LOGIN FLOW CRASH:", err);
+        toast.error("Something went wrong during login");
+      }
     },
-
     onError: (error: any) => {
+      console.error("LOGIN ERROR:", error);
       toast.error("Invalid Credentials", {
         duration: 1500,
       });
     },
   });
 };
-
 export const useSignUp = () => {
   const navigate = useNavigate();
 

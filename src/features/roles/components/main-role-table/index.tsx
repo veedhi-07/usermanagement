@@ -9,6 +9,7 @@ import { Pencil, Trash2 } from "../../../../assets/icons/index";
 import Badge from "../../../../components/ui/badge/index";
 import { Plus } from "lucide-react";
 import { useRole } from "../../../roles/hooks/userole-hook";
+import { usePermission } from "../../../../hooks/use-permission";
 import { useState } from "react";
 import DeleteModal from "../../../../components/common/delete-modal/index";
 import { getroleByIdApi } from "../../services/role-service";
@@ -21,6 +22,7 @@ export default function RoleTable() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const { can } = usePermission();
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -30,18 +32,19 @@ export default function RoleTable() {
         <h3 className="text-base font-extrabold text-gray-800 dark:text-white/90">
           Roles List
         </h3>
-
-        <button
-          onClick={() => {
-            setSelectedrole(null);
-            setSelectedId(null);
-            setIsRoleModalOpen(true);
-          }}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition text-sm"
-        >
-          <Plus size={16} />
-          Add Role
-        </button>
+        {can("role", "add") && (
+          <button
+            onClick={() => {
+              setSelectedrole(null);
+              setSelectedId(null);
+              setIsRoleModalOpen(true);
+            }}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition text-sm"
+          >
+            <Plus size={16} />
+            Add Role
+          </button>
+        )}
       </div>
       <div className="max-w-full overflow-x-auto">
         <Table>
@@ -130,33 +133,36 @@ export default function RoleTable() {
                 <TableCell className="px-4 py-3">
                   <div className="flex gap-3">
                     {/* EDIT */}
-                    <button
-                      onClick={async () => {
-                        try {
-                          const res = await getroleByIdApi(role.id);
-                          console.log("API RES:", res);
-                          setSelectedrole(res); 
-                          setIsRoleModalOpen(true);
-                        } catch (err) {
-                          console.error(err);
-                        }
-                      }}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      <Pencil size={18} />
-                    </button>
-
+                    {can("role", "edit") && (
+                      <button
+                        onClick={async () => {
+                          try {
+                            const res = await getroleByIdApi(role.id);
+                            console.log("API RES:", res);
+                            setSelectedrole(res);
+                            setIsRoleModalOpen(true);
+                          } catch (err) {
+                            console.error(err);
+                          }
+                        }}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                    )}
                     {/* DELETE */}
-                    <button
-                      onClick={() => {
-                        setSelectedrole(role);
-                        setSelectedId(role.id);
-                        setIsDeleteOpen(true);
-                      }}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                    {can("role", "delete") && (
+                      <button
+                        onClick={() => {
+                          setSelectedrole(role);
+                          setSelectedId(role.id);
+                          setIsDeleteOpen(true);
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>

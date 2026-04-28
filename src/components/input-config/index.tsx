@@ -61,7 +61,7 @@ export const AddEditFields: {
     label: "Password",
     type: "password",
     placeholder: "Enter Password",
-    showInEdit: false,
+    showInEdit: true,
   },
 
   {

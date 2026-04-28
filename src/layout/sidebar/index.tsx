@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { usePermission } from "../../hooks/use-permission";
+import type { ActionKey } from "../../types";
 
-// Assume these icons are imported from an icon library
 import {
   ChevronDownIcon,
   GridIcon,
@@ -15,6 +16,10 @@ type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
+  permission?: {
+    module: string;
+    action: ActionKey;
+  };
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
@@ -22,19 +27,20 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    path: "/",
   },
   {
     name: "Users",
     icon: <TableIcon />,
     path: "/user-table",
+    permission: { module: "users", action: "view" },
   },
   {
     name: "Roles",
     icon: <TableIcon />,
     path: "/role-table",
+    permission: { module: "role", action: "view" },
   },
-
 ];
 
 const othersItems: NavItem[] = [
@@ -43,12 +49,13 @@ const othersItems: NavItem[] = [
     name: "User Profile",
     path: "/profile",
   },
-  
 ];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+
+  const { can } = usePermission();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -59,7 +66,6 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const status = (path: string) => location.pathname === path;
   const status = useCallback(
     (path: string) => location.pathname === path,
     [location.pathname],
@@ -113,7 +119,10 @@ const AppSidebar: React.FC = () => {
       return { type: menuType, index };
     });
   };
-
+  const filteredNavItems = navItems.filter(
+    (item) =>
+      !item.permission || can(item.permission.module, item.permission.action),
+  );
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
       {items.map((nav, index) => (
@@ -236,7 +245,8 @@ const AppSidebar: React.FC = () => {
       ))}
     </ul>
   );
-
+  console.log("CAN USERS:", can("users", "view"));
+  console.log("CAN ROLE:", can("role", "view"));
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
@@ -302,7 +312,8 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {/* {renderMenuItems(navItems, "main")} */}
+              {renderMenuItems(filteredNavItems, "main")}
             </div>
             <div className="">
               <h2

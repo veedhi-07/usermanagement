@@ -1,4 +1,4 @@
-import PageBreadcrumb from "../../../../components/common/PageBreadCrumb";
+import PageBreadcrumb from "../../../../components/common/page-bread-crumb/index";
 import UserMetaCard from "../meta-card";
 import UserInfoCard from "../info-card";
 import PageMeta from "../../../../components/common/page-meta";

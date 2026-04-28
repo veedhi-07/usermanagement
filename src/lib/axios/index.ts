@@ -27,13 +27,6 @@ api.interceptors.response.use(
     console.log("HEADERS:", error.response?.headers);
     console.log("REQUEST:", error.config);
     console.log("MESSAGE:", error.message);
-
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/signin";
-    }
-
     return Promise.reject(error);
   },
 );

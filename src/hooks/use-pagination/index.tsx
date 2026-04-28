@@ -15,7 +15,6 @@ export default function usePagination<T>({
     return Math.max(1, Math.ceil(data.length / itemsPerPage));
   }, [data.length, itemsPerPage]);
 
-  //  Prevent invalid page when data shrinks
   useEffect(() => {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);

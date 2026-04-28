@@ -71,8 +71,6 @@ export interface ProfileValues {
   username: string;
   phone: string;
   roleId?: number;
-  // roleTitle: string;
-  // status: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -83,3 +81,23 @@ export interface UserPaginationProps {
   nextPage: () => void;
   prevPage: () => void;
 }
+//permissionslice
+export type ModulePermission = {
+  moduleSlug: string;
+  list: number;
+  view: number;
+  add: number;
+  edit: number;
+  delete: number;
+};
+
+export type Module = "user" | "role";
+export type ActionKey = "view" | "list" | "add" | "edit" | "delete";
+
+export type PermissionsState = Record<string, ModulePermission>;
+
+export type RolePermission = {
+  roleId: number;
+  permissionId: number;
+};
+

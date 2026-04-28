@@ -1,5 +1,5 @@
-import ComponentCard from "../../features/users/components/ComponentCard";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import ComponentCard from "../../components/component-card";
+import PageBreadcrumb from "../../components/common/page-bread-crumb/index";
 import PageMeta from "../../components/common/page-meta/index";
 import Button from "../../components/ui/button/index";
 import { BoxIcon } from "../../assets/icons";

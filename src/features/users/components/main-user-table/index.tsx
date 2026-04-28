@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { User } from "../../../../types";
 import { useModal } from "../../../../hooks/use-modal";
 import useDebounce from "../../../../hooks/use-debounce";
+import { usePermission } from "../../../../hooks/use-permission";
 import DeleteModal from "../../../../components/common/delete-modal/index";
 import AddEditModal from "../../../../components/common/addedit-modal";
 
@@ -23,9 +24,11 @@ export default function UserTable() {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
   const addEditModal = useModal();
   const deleteModal = useModal();
   const itemsPerPage = 7;
+  const { can } = usePermission();
 
   const debouncedSearch = useDebounce(search, 400);
   const { users, isLoading, total } = useUser(currentPage, itemsPerPage);
@@ -78,19 +81,22 @@ export default function UserTable() {
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => {
-                setSelectedUser(null);
-                setSelectedId(null);
-                addEditModal.openModal();
-                // setIsEditOpen(true);
-              }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition text-sm"
-            >
-              <Plus size={16} />
-              Add User
-            </button>
+            {can("users", "add") && (
+              <button
+                onClick={() => {
+                  setSelectedUser(null);
+                  setSelectedId(null);
+                  addEditModal.openModal();
+                  // setIsEditOpen(true);
+                }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition text-sm"
+              >
+                <Plus size={16} />
+                Add User
+              </button>
+            )}
           </div>
+
           <div className="max-w-full overflow-x-auto">
             <Table>
               {/* Table Header */}
@@ -201,28 +207,31 @@ export default function UserTable() {
                     <TableCell className="px-4 py-3">
                       <div className="flex gap-3">
                         {/* EDIT */}
-                        <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setSelectedId(user.id);
-                            addEditModal.openModal();
-                          }}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <Pencil size={18} />
-                        </button>
-
+                        {can("users", "edit") && (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setSelectedId(user.id);
+                              addEditModal.openModal();
+                            }}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                        )}
                         {/* DELETE */}
-                        <button
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setSelectedId(user.id);
-                            deleteModal.openModal();
-                          }}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                        {can("users", "delete") && (
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setSelectedId(user.id);
+                              deleteModal.openModal();
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

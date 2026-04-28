@@ -1,7 +1,7 @@
 import { Modal } from "../../ui/modal";
 import Button from "../../ui/button/index";
 import "react-phone-input-2/lib/style.css";
-import Label from "../../form/Label";
+import Label from "../../form/label";
 import { Formik, Form } from "formik";
 import toast from "react-hot-toast";
 import { User } from "../../../types";
@@ -9,6 +9,7 @@ import { AddEditSchema } from "../../../utils/validation";
 import { AddEditFields } from "../../../components/input-config";
 import { useUser } from "../../../features/users/hooks/useuser-hook";
 import PhoneInput from "react-phone-input-2";
+import { useState } from "react";
 import FormField from "../../form/input/input-field/index";
 import { useRole } from "../../../features/roles/hooks/userole-hook";
 
@@ -20,7 +21,7 @@ interface Props {
 export default function AddEditModal({ isOpen, onClose, user }: Props) {
   const { roles } = useRole();
   const { updateUser, createUser } = useUser();
-
+  const [resetPassword, setResetPassword] = useState(false);
   const filteredRoles =
     roles?.filter((role: any) => role.title.toLowerCase() !== "Super Admin") ||
     [];
@@ -56,7 +57,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
         <Formik
           initialValues={initialValues}
           enableReinitialize={true}
-          validationSchema={AddEditSchema}
+          validationSchema={AddEditSchema(isEditMode, resetPassword)}
           context={{ isEditMode }}
           onSubmit={async (values, { setSubmitting }) => {
             try {
@@ -66,13 +67,16 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                 lastName: values.lastName,
                 username: values.username,
                 phone: values.phone,
+
                 isActive: values.isActive,
                 roleId: values.roleId,
               };
 
               if (isEditMode) {
                 // EDIT USER
-
+                if (values.password && values.password.trim() !== "") {
+                  cleanPayload.password = values.password;
+                }
                 await updateUser.mutateAsync({
                   id: Number(user!.id),
                   data: cleanPayload,
@@ -208,6 +212,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                         </div>
                       );
                     })}
+                   
                   </div>
                 </div>
               </div>

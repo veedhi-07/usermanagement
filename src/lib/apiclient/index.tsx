@@ -14,3 +14,4 @@ export const apiClient = {
   delete: (url: string, config?: AxiosRequestConfig) =>
     api.delete(url, config).then((res) => res.data),
 };
+//config so that we can pass header,timeout,queryparams..

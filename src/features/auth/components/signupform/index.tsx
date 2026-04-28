@@ -5,12 +5,13 @@ import {
   EyeCloseIcon,
   EyeIcon,
 } from "../../../../assets/icons";
-import Label from "../../../../components/form/Label";
+import Label from "../../../../components/form/label/index";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
 import FormField from "../../../../components/form/input/input-field";
 import { SignUpformValues } from "../../../../types";
 import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import { signUpFields } from "../../../../components/input-config";
 import { useSignUp } from "../../hooks/useauth-hook";
 import Button from "../../../../components/ui/button/index";
@@ -88,7 +89,7 @@ export default function SignUpForm() {
                         {isPhone ? (
                           <>
                             <PhoneInput
-                              country={"in"} // default India
+                              country={"in"}
                               value={values.phone}
                               onChange={(phone) =>
                                 setFieldValue("phone", phone)
@@ -146,9 +147,6 @@ export default function SignUpForm() {
                       </div>
                     );
                   })}
-                  {/* <button className="w-full px-4 py-3 text-sm text-white bg-brand-500 rounded-lg">
-                    Sign Up
-                  </button> */}
                   <Button type="submit" className="w-full" size="sm">
                     Sign up
                   </Button>

@@ -1,11 +1,12 @@
 import { useModal } from "../../../../hooks/use-modal/index";
 import { Modal } from "../../../ui/modal";
 import Button from "../../../ui/button/index";
-import Label from "../../../form/Label";
+import Label from "../../../form/label";
 import { Formik, Form } from "formik";
 import { useState } from "react";
 import { useProfile } from "./../../hook/profile-hook";
 import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import toast from "react-hot-toast";
 import { ProfileFields } from "../../../input-config";
 import { profileSchema } from "../../../../utils/validation";
@@ -179,7 +180,7 @@ export default function UserInfoCard() {
                             {isPhone ? (
                               <>
                                 <PhoneInput
-                                  country={"in"} // default India
+                                  country={"in"}
                                   value={values.phone}
                                   onChange={(phone) =>
                                     setFieldValue("phone", phone)

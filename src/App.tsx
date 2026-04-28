@@ -18,7 +18,7 @@ const UserTable = React.lazy(
 const RoleTable = React.lazy(
   () => import("./features/roles/components/main-role-table/index"),
 );
-
+const NotFound = React.lazy(() => import("./pages/notfound"));
 export default function App() {
   return (
     <>
@@ -37,7 +37,7 @@ export default function App() {
             </Route>
           </Route>
           {/* FALLBACK */}
-          <Route path="*" element={<div>Not Found</div>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </>

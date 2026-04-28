@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import {
-  ChevronLeftIcon,
   EyeCloseIcon,
   EyeIcon,
 } from "../../../../assets/icons";
@@ -10,7 +9,7 @@ import { Formik, Form } from "formik";
 import { signinSchema } from "../../../../utils/validation";
 import { signInFields } from "../../../../components/input-config";
 import Button from "../../../../components/ui/button/index";
-import Label from "../../../../components/form/Label";
+import Label from "../../../../components/form/label/index";
 import { SignInFormValues } from "../../../../types";
 import { useSignIn } from "../../hooks/useauth-hook";
 
@@ -29,15 +28,7 @@ export default function SignInForm() {
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
         <div className="flex flex-col flex-1">
-          <div className="w-full max-w-md pt-10 mx-auto">
-            <Link
-              to="/"
-              className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-            >
-              <ChevronLeftIcon className="size-5" />
-              Back to dashboard
-            </Link>
-          </div>
+          <div className="w-full max-w-md pt-10 mx-auto"></div>
 
           <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
             <div>
@@ -99,14 +90,6 @@ export default function SignInForm() {
                         </div>
                       );
                     })}
-                    <div className="flex items-center justify-between">
-                      <Link
-                        to="/reset-password"
-                        className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
                     <div>
                       <Button
                         type="submit"

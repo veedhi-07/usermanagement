@@ -1,10 +1,10 @@
 import { useState } from "react";
-import ComponentCard from "../../../features/users/components/ComponentCard.tsx";
-import Label from "../Label";
-import Input from "../input/input-field/index.tsx";
-import Select from "../Select";
-import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../assets/icons";
-import DatePicker from "../date-picker.tsx";
+import ComponentCard from "../../../component-card";
+import Label from "../../label";
+import Input from "../../input/input-field/index.tsx";
+import Select from "../../select";
+import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../../assets/icons";
+import DatePicker from "../../date-picker";
 
 export default function DefaultInputs() {
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +63,6 @@ export default function DefaultInputs() {
             label="Date Picker Input"
             placeholder="Select a date"
             onChange={(dates, currentDateString) => {
-              // Handle your logic
               console.log({ dates, currentDateString });
             }}
           />
