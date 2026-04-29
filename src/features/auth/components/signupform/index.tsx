@@ -33,7 +33,7 @@ export default function SignUpForm() {
       initialValues={initialValues}
       validationSchema={signupSchema}
       onSubmit={(values) => {
-        console.log("Signup form data", values);
+        // console.log("Signup form data", values);
         mutate(values);
       }}
     >

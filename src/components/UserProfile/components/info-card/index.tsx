@@ -13,7 +13,7 @@ import { profileSchema } from "../../../../utils/validation";
 import FormField from "../../../form/input/input-field";
 
 export default function UserInfoCard() {
-  const { UpdateProfile } = useProfile();
+  const { UpdateProfile, isLoading } = useProfile();
   const { isOpen, openModal, closeModal } = useModal();
 
   const [user, setUser] = useState(() =>
@@ -28,7 +28,7 @@ export default function UserInfoCard() {
     username: user?.username || "",
     phone: user?.phone || "",
   };
-
+  if (isLoading) return <div>Loading...</div>;
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -113,7 +113,7 @@ export default function UserInfoCard() {
             enableReinitialize={true}
             validationSchema={profileSchema}
             onSubmit={async (values, { setSubmitting }) => {
-              console.log("SUBMIT:", values);
+              // console.log("SUBMIT:", values);
 
               try {
                 const cleanPayload = {
@@ -122,7 +122,7 @@ export default function UserInfoCard() {
                 };
 
                 const res = await UpdateProfile.mutateAsync(cleanPayload);
-                console.log("API RESPONSE:", res);
+                // console.log("API RESPONSE:", res);
 
                 const updatedUser = {
                   ...user,
@@ -198,12 +198,6 @@ export default function UserInfoCard() {
                                     {errors.phone}
                                   </p>
                                 )}
-                                {/* {isPhone &&
-                                  typeof errors.phone === "string" && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                      {errors.phone}
-                                    </p>
-                                  )} */}
                               </>
                             ) : (
                               <FormField

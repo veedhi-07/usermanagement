@@ -245,8 +245,8 @@ const AppSidebar: React.FC = () => {
       ))}
     </ul>
   );
-  console.log("CAN USERS:", can("users", "view"));
-  console.log("CAN ROLE:", can("role", "view"));
+  // console.log("CAN USERS:", can("users", "view"));
+  // console.log("CAN ROLE:", can("role", "view"));
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 

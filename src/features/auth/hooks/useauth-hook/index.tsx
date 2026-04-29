@@ -90,7 +90,7 @@ export const useSignUp = () => {
       });
 
       const err = error?.response?.data?.errors?.[0];
-      console.log("FINAL ERROR:", JSON.stringify(err, null, 2));
+      console.log("FINAL ERROR:", JSON.stringify(err));
     },
   });
 };

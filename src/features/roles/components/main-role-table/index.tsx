@@ -17,7 +17,7 @@ import RoleModal from "../../../../components/common/role-modal";
 
 export default function RoleTable() {
   const { roles, isLoading } = useRole();
-  console.log("roles:", roles);
+  // console.log("roles:", roles);
   const [selectedrole, setSelectedrole] = useState<any>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
@@ -138,7 +138,7 @@ export default function RoleTable() {
                         onClick={async () => {
                           try {
                             const res = await getroleByIdApi(role.id);
-                            console.log("API RES:", res);
+                            // console.log("API RES:", res);
                             setSelectedrole(res);
                             setIsRoleModalOpen(true);
                           } catch (err) {

@@ -30,7 +30,6 @@ export const getUserByIdApi = async (id: number): Promise<User> => {
   return res.data.user;
 };
 
-
 export const createUserApi = async (data: Partial<User>) => {
   const res = await apiClient.post("/users", data);
   return res.data;

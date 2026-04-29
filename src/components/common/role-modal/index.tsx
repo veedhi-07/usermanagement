@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Modal } from "../../../components/ui/modal";
+import toast from "react-hot-toast";
 import { useRole } from "../../../features/roles/hooks/userole-hook";
 import Checkbox from "../../../components/form/input/checkbox/index";
 
@@ -42,7 +43,7 @@ export default function RoleModal({ isOpen, onClose, role }: any) {
   );
 
   useEffect(() => {
-    console.log("MODAL ROLE:", role);
+    // console.log("MODAL ROLE:", role);
 
     if (!role) {
       setTitle("");
@@ -119,12 +120,15 @@ export default function RoleModal({ isOpen, onClose, role }: any) {
           id: Number(role?.role?.id),
           data: payload,
         });
+        toast.success("Role updated successfully");
       } else {
         // ADD
         await createRole.mutateAsync(payload);
+        toast.success("Role created successfully");
       }
-
-      onClose();
+      setTimeout(() => {
+        onClose();
+      }, 300);
     } catch (err) {
       console.error("ERROR:", err);
     }

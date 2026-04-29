@@ -9,7 +9,6 @@ import {
 } from "../../services/role-service";
 
 export const useRole = () => {
-  
   const queryClient = useQueryClient();
 
   const Rolesquery = useQuery({
@@ -20,11 +19,14 @@ export const useRole = () => {
   const createRole = useMutation({
     mutationFn: createRoleApi,
     onSuccess: () => {
+      console.log("CREATE SUCCESS TRIGGERED");
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       toast.success("Created");
     },
+    onError: (err) => {
+      console.log("CREATE ERROR:", err);
+    },
   });
-
   const updateRole = useMutation({
     mutationFn: updateRoleApi,
     onSuccess: () => {

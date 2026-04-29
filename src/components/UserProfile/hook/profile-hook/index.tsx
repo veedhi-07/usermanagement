@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProfileApi, updateProfileApi } from "../../services/user-services";
+import { getProfileApi, updateProfileApi } from "../../services/profile-services";
 import { ProfileValues } from "../../../../types";
 import toast from "react-hot-toast";
 

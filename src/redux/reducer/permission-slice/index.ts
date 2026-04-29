@@ -1,6 +1,5 @@
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { PermissionsState } from "../../../types";
+import type { PermissionsState, Permission } from "../../../types";
 
 const normalizePermissions = (permissionsArray: any[]): PermissionsState => {
   const result: PermissionsState = {};
@@ -25,11 +24,11 @@ const permissionSlice = createSlice({
   name: "permission",
   initialState,
   reducers: {
-    setPermissions: (state, action: PayloadAction<any[]>) => {
-      console.log("RAW PERMISSIONS:", action.payload);
-      const normalized = normalizePermissions(action.payload);
+    setPermissions: (state, action: PayloadAction<Permission[]>) => {
+      // console.log("RAW PERMISSIONS:", action.payload);
 
-      console.log("NORMALIZED:", normalized);
+      const normalized = normalizePermissions(action.payload);
+      // console.log("NORMALIZED:", normalized);
       return normalized;
     },
 

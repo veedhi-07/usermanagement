@@ -2,13 +2,14 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardApi } from "../services";
 import { User } from "../../../types";
+
 export const useDashboard = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["dashboard"],
     queryFn: getDashboardApi,
   });
 
-  //  normalize API ONCE (important)
+  //  normalize
   const dashboard = data?.data ??
     data ?? {
       stats: { totalUsers: 0, totalEmployees: 0 },

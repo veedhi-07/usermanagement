@@ -10,7 +10,7 @@ export const getRolesApi = async (): Promise<Role[]> => {
 
 export const getroleByIdApi = async (id: number) => {
   const res = await apiClient.get(`/roles/${id}`);
-  console.log("RAW API:", res.data);
+  // console.log("RAW API:", res.data);
   return res.data;
 };
 

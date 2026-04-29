@@ -101,3 +101,11 @@ export type RolePermission = {
   permissionId: number;
 };
 
+export type Permission = {
+  moduleSlug: string;
+  list: boolean;
+  view: boolean;
+  add: boolean;
+  edit: boolean;
+  delete: boolean;
+};
