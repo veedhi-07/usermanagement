@@ -1,8 +1,9 @@
 import { apiClient } from "../../../../lib/apiclient";
 import { SignInFormValues, SignUpformValues } from "../../../../types/index";
+import { endpoints } from "../../../../lib/endpoints";
 
 export const signInApi = async (data: SignInFormValues) => {
-  const res = await apiClient.post("/auth/signin", data);
+  const res = await apiClient.post(endpoints.signin, data);
 
   const { token, user } = res.data;
 
@@ -16,7 +17,7 @@ export const signInApi = async (data: SignInFormValues) => {
 };
 
 export const signUpApi = async (data: SignUpformValues) => {
-  const res = await apiClient.post("/auth/signup", data);
+  const res = await apiClient.post(endpoints.signup, data);
 
   const { token, user } = res.data;
 

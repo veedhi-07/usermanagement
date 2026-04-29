@@ -1,5 +1,6 @@
 import { apiClient } from "../../../../lib/apiclient";
 import { User } from "../../../../types";
+import { endpoints } from "../../../../lib/endpoints";
 
 export const getUsersApi = async ({
   page,
@@ -8,7 +9,7 @@ export const getUsersApi = async ({
   page: number;
   limit: number;
 }) => {
-  const res = await apiClient.get("/users", {
+  const res = await apiClient.get(endpoints.users, {
     params: {
       page,
       limit,
@@ -26,12 +27,12 @@ export const getUsersApi = async ({
 };
 
 export const getUserByIdApi = async (id: number): Promise<User> => {
-  const res = await apiClient.get(`/users/${id}`);
+  const res = await apiClient.get(`${endpoints.users}/${id}`);
   return res.data.user;
 };
 
 export const createUserApi = async (data: Partial<User>) => {
-  const res = await apiClient.post("/users", data);
+  const res = await apiClient.post(endpoints.users, data);
   return res.data;
 };
 
@@ -42,11 +43,11 @@ export const updateUserApi = async ({
   id: number;
   data: Partial<User>;
 }) => {
-  const res = await apiClient.put(`/users/${id}`, data);
+  const res = await apiClient.put(`${endpoints.users}/${id}`, data);
   return res.data;
 };
 
 export const deleteUserApi = async (id: number) => {
-  const res = await apiClient.delete(`/users/${id}`);
+  const res = await apiClient.delete(`${endpoints.users}/${id}`);
   return res.data;
 };

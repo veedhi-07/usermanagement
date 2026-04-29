@@ -16,22 +16,6 @@ export const useDashboard = () => {
       recentUsers: [],
     };
 
-  //  Monthly users
-  const monthlyUsers = useMemo(() => {
-    const months = new Array(12).fill(0);
-
-    const users = dashboard.recentUsers || [];
-
-    users.forEach((user: any) => {
-      const date = new Date(user.joinedAt);
-      if (!isNaN(date.getTime())) {
-        months[date.getMonth()]++;
-      }
-    });
-
-    return months;
-  }, [dashboard.recentUsers]);
-
   //  Role distribution
   const roleDistribution = useMemo(() => {
     const map: Record<string, number> = {};
@@ -53,8 +37,6 @@ export const useDashboard = () => {
 
     stats: dashboard.stats,
     recentUsers: dashboard.recentUsers,
-
-    monthlyUsers,
     roleDistribution,
   };
 };
