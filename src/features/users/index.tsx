@@ -98,7 +98,8 @@ export default function UserTable() {
               )}
             </div>
 
-            <div className="max-w-full overflow-x-auto">
+            {/* <div className="max-w-full overflow-x-auto"> */}
+            <div className="max-w-full overflow-x-auto max-h-[450px] overflow-y-auto">
               <Table>
                 {/* Table Header */}
                 <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">

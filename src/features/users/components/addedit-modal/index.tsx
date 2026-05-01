@@ -25,9 +25,6 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
   const { updateUser, createUser } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [resetPassword, setResetPassword] = useState(false);
-  // const filteredRoles =
-  //   roles?.filter((role: Role) => role.title.toLowerCase() !== "Super Admin") ||
-  //   [];
   const filteredRoles =
     roles?.filter((role: Role) => role.title.toLowerCase() !== "super admin") ||
     [];
@@ -228,25 +225,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                                 )
                               }
                             />
-                            // <FormField
-                            //   type={field.type}
-                            //   name={field.id}
-                            //   value={
-                            //     values[
-                            //       field.id as keyof typeof values
-                            //     ] as string
-                            //   }
-                            //   onChange={handleChange}
-                            //   onBlur={handleBlur}
-                            //   error={
-                            //     !!(
-                            //       touched[field.id as keyof typeof values] &&
-                            //       errors[field.id as keyof typeof values]
-                            //     )
-                            //   }
-                            // />
                           )}
-
                           {touched[field.id as keyof typeof values] &&
                             errors[field.id as keyof typeof values] && (
                               <p className="text-red-500 text-sm mt-1">

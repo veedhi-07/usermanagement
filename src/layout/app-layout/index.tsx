@@ -3,11 +3,11 @@ import { Outlet } from "react-router";
 import AppHeader from "../app-header/index";
 import Backdrop from "./../back-drop/index";
 import AppSidebar from "../../layout/sidebar/index";
-import { useAuthBootstrap } from "../../hooks/use-authbs";
+import { useAuthBS } from "../../hooks/use-authbs";
 
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  useAuthBootstrap();
+  useAuthBS();
 
   return (
     <div className="min-h-screen xl:flex">

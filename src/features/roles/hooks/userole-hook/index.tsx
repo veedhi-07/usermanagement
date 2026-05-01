@@ -6,7 +6,6 @@ import {
   deleteRoleApi,
   getRolesApi,
 } from "../../services/role-service";
-import { string } from "yup";
 
 export const useRole = (params?: {
   page?: number;

@@ -3,7 +3,7 @@ import { useAppDispatch } from "../../redux/hook";
 import { setPermissions } from "../../redux/reducer/permission-slice";
 import { getroleByIdApi } from "../../features/roles/services/role-service";
 
-export const useAuthBootstrap = () => {
+export const useAuthBS = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
