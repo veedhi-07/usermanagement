@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 
+//signup schema
 export const signupSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
 
@@ -37,6 +38,7 @@ export const signupSchema = Yup.object({
     }),
 });
 
+//signin schema
 export const signinSchema = Yup.object({
   email: Yup.string()
     .email("Enter a valid email")
