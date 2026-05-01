@@ -29,7 +29,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
   //   roles?.filter((role: Role) => role.title.toLowerCase() !== "Super Admin") ||
   //   [];
   const filteredRoles =
-    roles?.filter((role: any) => role.title.toLowerCase() !== "super admin") ||
+    roles?.filter((role: Role) => role.title.toLowerCase() !== "super admin") ||
     [];
 
   const getError = (error: unknown) =>

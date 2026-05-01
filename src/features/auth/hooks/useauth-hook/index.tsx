@@ -6,6 +6,7 @@ import { getroleByIdApi } from "../../../roles/services/role-service";
 import { setPermissions } from "../../../../redux/reducer/permission-slice/index";
 
 import { useAppDispatch } from "../../../../redux/hook";
+import { AuthResponse } from "../../types";
 
 export const useSignIn = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export const useSignIn = () => {
 
   return useMutation({
     mutationFn: signInApi,
-    onSuccess: async (res: any) => {
+    onSuccess: async (res: AuthResponse) => {
       try {
         console.log("LOGIN RESPONSE:", res?.data);
 
@@ -71,8 +72,8 @@ export const useSignUp = () => {
   return useMutation({
     mutationFn: signUpApi,
 
-    onSuccess: (res: any) => {
-      const token = res?.data?.data?.token;
+    onSuccess: (res: AuthResponse) => {
+      const token = res?.data?.token;
 
       toast.success("SignUp successful", {
         duration: 3000,

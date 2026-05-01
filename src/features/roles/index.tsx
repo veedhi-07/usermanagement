@@ -51,7 +51,7 @@ export default function RoleTable() {
     }
   }, []);
 
-  const handleDelete = useCallback((role: any) => {
+  const handleDelete = useCallback((role: Role) => {
     setSelectedrole(role);
     setSelectedId(role.id);
     setIsDeleteOpen(true);

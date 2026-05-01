@@ -163,80 +163,84 @@ export default function UserTable() {
 
                 {/* Table Body */}
                 <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                  {users.map((user: User) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="px-5 py-4 sm:px-6 text-start">
-                        <div className="flex items-center gap-3">
-                          <div>
-                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                              {user.firstName} {user.lastName}
-                            </span>
-                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                              {user.username}
-                            </span>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                        {user.roleTitle}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                        {user.email}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                        {user.phone}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                        <Badge
-                          size="sm"
-                          color={user.isActive ? "success" : "error"}
-                        >
-                          {user.isActive ? "Active" : "InActive"}
-                        </Badge>
-                      </TableCell>
+                  {users.map((user: User) => {
+                    const isSuperAdmin =
+                      user.roleTitle?.toLowerCase() === "super admin";
 
-                      <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                        {user.createdAt
-                          ? new Date(user.createdAt).toLocaleString()
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                        {user.updatedAt
-                          ? new Date(user.updatedAt).toLocaleString()
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="px-4 py-3">
-                        <div className="flex gap-3">
-                          {/* EDIT */}
-                          {can("users", "edit") && (
-                            <button
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setSelectedId(user.id);
-                                addEditModal.openModal();
-                              }}
-                              className="text-blue-500 hover:text-blue-700"
-                            >
-                              <Pencil size={18} />
-                            </button>
-                          )}
-                          {/* DELETE */}
-                          {can("users", "delete") && (
-                            <button
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setSelectedId(user.id);
-                                deleteModal.openModal();
-                              }}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                    return (
+                      <TableRow key={user.id}>
+                        <TableCell className="px-5 py-4 sm:px-6 text-start">
+                          <div className="flex items-center gap-3">
+                            <div>
+                              <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                {user.firstName} {user.lastName}
+                              </span>
+                              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                {user.username}
+                              </span>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {user.roleTitle}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {user.email}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {user.phone}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          <Badge
+                            size="sm"
+                            color={user.isActive ? "success" : "error"}
+                          >
+                            {user.isActive ? "Active" : "InActive"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                          {user.createdAt
+                            ? new Date(user.createdAt).toLocaleString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                          {user.updatedAt
+                            ? new Date(user.updatedAt).toLocaleString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3">
+                          <div className="flex gap-3">
+                            {/* EDIT */}
+                            {!isSuperAdmin && can("users", "edit") && (
+                              <button
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setSelectedId(user.id);
+                                  addEditModal.openModal();
+                                }}
+                                className="text-blue-500 hover:text-blue-700"
+                              >
+                                <Pencil size={18} />
+                              </button>
+                            )}
+                            {/* DELETE */}
+                            {!isSuperAdmin && can("users", "delete") && (
+                              <button
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setSelectedId(user.id);
+                                  deleteModal.openModal();
+                                }}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
 
