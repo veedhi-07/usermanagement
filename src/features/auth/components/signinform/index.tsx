@@ -60,7 +60,7 @@ export default function SignInForm() {
                               error={!!(touched[field.id] && errors[field.id])}
                               errorMessage={
                                 touched[field.id]
-                                  ? (errors as any)[field.id]
+                                  ? errors[field.id as keyof SignInFormValues]
                                   : ""
                               }
                               touched={touched[field.id]}

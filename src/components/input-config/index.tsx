@@ -149,6 +149,12 @@ export const signUpFields: {
     type: "password",
   },
   {
+    id: "confirmPassword",
+    label: "Confirm Password",
+    placeholder: "Re-enter Password",
+    type: "password",
+  },
+  {
     id: "username",
     label: "User Name",
     placeholder: "Enter UserName",
@@ -159,11 +165,5 @@ export const signUpFields: {
     label: "Phone Number",
     placeholder: "Enter Phone Number",
     type: "number",
-  },
-  {
-    id: "confirmPassword",
-    label: "Confirm Password",
-    placeholder: "Re-enter Password",
-    type: "password",
   },
 ];

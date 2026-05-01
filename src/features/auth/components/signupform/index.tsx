@@ -62,16 +62,37 @@ export default function SignUpForm() {
                 </p>
               </div>
               <Form>
-                <div className="space-y-5">
+                {/* <div className="space-y-5"> */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {signUpFields.map((field) => {
                     const isPassword =
                       field.id === "password" || field.id === "confirmPassword";
+                    const isFullWidth = !isPassword;
                     const isPhone = field.type === "phone";
 
                     return (
+                      // <div
+                      //   key={field.id}
+                      //   className={isPassword ? "relative" : ""}
+                      // >
                       <div
                         key={field.id}
-                        className={isPassword ? "relative" : ""}
+                        //     className={`
+                        //       ${
+                        //         field.id === "email" ||
+                        //         field.id === "firstName" ||
+                        //         field.id === "lastName" ||
+                        //         field.id === "username" ||
+                        //         field.id === "phone"
+                        //           ? "col-span-2"
+                        //           : "col-span-1"
+                        //       }
+                        //   ${isPassword ? "relative" : ""}
+                        // `}
+                        className={`
+                        ${isFullWidth ? "col-span-2" : "col-span-1"}
+                        ${isPassword ? "relative" : ""}
+                      `}
                       >
                         <Label>
                           {field.label}
@@ -139,9 +160,14 @@ export default function SignUpForm() {
                       </div>
                     );
                   })}
-                  <Button type="submit" className="w-full" size="sm">
+                  {/* <Button type="submit" className="w-full" size="sm">
                     Sign up
-                  </Button>
+                  </Button> */}
+                  <div className="col-span-2">
+                    <Button type="submit" className="w-full" size="sm">
+                      Sign up
+                    </Button>
+                  </div>
                 </div>
               </Form>
               <div className="mt-5">
