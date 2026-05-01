@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { User } from "../../../features/users/types";
+import { Role } from "../../../features/roles/types";
 
 interface Permission {
   module: string;
@@ -7,8 +9,8 @@ interface Permission {
 
 interface AuthState {
   token: string | null;
-  user: any | null;
-  role: any | null;
+  user: User | null;
+  role: Role | null;
   permissions: Permission[];
 }
 

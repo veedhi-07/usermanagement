@@ -1,21 +1,36 @@
 import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
 import {
   createRoleApi,
   updateRoleApi,
   deleteRoleApi,
   getRolesApi,
 } from "../../services/role-service";
+import { string } from "yup";
 
-export const useRole = () => {
+export const useRole = (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) => {
   const queryClient = useQueryClient();
 
-  const Rolesquery = useQuery({
-    queryKey: ["roles"],
-    queryFn: getRolesApi,
-  });
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 10;
+  const search = params?.search ?? "";
 
+  const Rolesquery = useQuery({
+    queryKey: ["roles", page, limit, search],
+    
+    queryFn: () =>
+      getRolesApi({
+        page,
+        limit,
+        search,
+      }),
+    enabled: true,
+    
+  });
   const createRole = useMutation({
     mutationFn: createRoleApi,
     onSuccess: () => {
@@ -42,11 +57,14 @@ export const useRole = () => {
       toast.success("Deleted");
     },
   });
-
+  console.log("ROLES RESPONSE:", Rolesquery.data);
   return {
-    roles: Rolesquery.data,
+    roles: Rolesquery.data?.roles ?? [],
     isLoading: Rolesquery.isLoading,
     isError: Rolesquery.isError,
+    total: Rolesquery.data?.pagination?.total ?? 0,
+    totalPages: Rolesquery.data?.pagination?.totalPages ?? 0,
+
     isPending: Rolesquery.isPending,
 
     createRole,

@@ -1,29 +1,31 @@
 import { apiClient } from "../../../../lib/apiclient";
-import { User } from "../../../../types";
+import {
+  DeleteUserResponse,
+  GetUsersResponse,
+  User,
+  UserMutationResponse,
+} from "../../types";
 import { endpoints } from "../../../../lib/endpoints";
 
 export const getUsersApi = async ({
   page,
   limit,
+  search,
 }: {
   page: number;
+
   limit: number;
-}) => {
+  search: string;
+}): Promise<GetUsersResponse> => {
   const res = await apiClient.get(endpoints.users, {
     params: {
       page,
       limit,
+      search,
     },
   });
 
-  return {
-    users: res.data.users ?? res.data.data?.users ?? [],
-    total: res.data.pagination?.total ?? res.data.data?.pagination?.total ?? 0,
-    totalPages:
-      res.data.pagination?.totalPages ??
-      res.data.data?.pagination?.totalPages ??
-      0,
-  };
+  return res;
 };
 
 export const getUserByIdApi = async (id: number): Promise<User> => {
@@ -31,7 +33,9 @@ export const getUserByIdApi = async (id: number): Promise<User> => {
   return res.data.user;
 };
 
-export const createUserApi = async (data: Partial<User>) => {
+export const createUserApi = async (
+  data: Partial<User>,
+): Promise<UserMutationResponse> => {
   const res = await apiClient.post(endpoints.users, data);
   return res.data;
 };
@@ -42,12 +46,14 @@ export const updateUserApi = async ({
 }: {
   id: number;
   data: Partial<User>;
-}) => {
+}): Promise<UserMutationResponse> => {
   const res = await apiClient.put(`${endpoints.users}/${id}`, data);
   return res.data;
 };
 
-export const deleteUserApi = async (id: number) => {
+export const deleteUserApi = async (
+  id: number,
+): Promise<DeleteUserResponse> => {
   const res = await apiClient.delete(`${endpoints.users}/${id}`);
   return res.data;
 };

@@ -2,7 +2,7 @@ import { useUser } from "../../../features/users/hooks/useuser-hook";
 import { useRole } from "../../../features/roles/hooks/userole-hook";
 import { Modal } from "../../../components/ui/modal";
 import toast from "react-hot-toast";
-import { User, Role } from "../../../types";
+
 
 interface Props {
   isOpen: boolean;

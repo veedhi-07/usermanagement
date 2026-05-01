@@ -3,17 +3,20 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 interface UsePaginationProps<T> {
   data: T[];
   itemsPerPage: number;
+  totalCount: number;
 }
 
 export default function usePagination<T>({
   data,
   itemsPerPage,
+  totalCount,
 }: UsePaginationProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(itemsPerPage);
 
   const totalPages = useMemo(() => {
-    return Math.max(1, Math.ceil(data.length / itemsPerPage));
-  }, [data.length, itemsPerPage]);
+    return Math.max(1, Math.ceil(totalCount / limit));
+  }, [totalCount,limit]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -22,10 +25,10 @@ export default function usePagination<T>({
   }, [totalPages]);
 
   const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
+    const start = (currentPage - 1) * limit;
+    const end = start + limit;
     return data.slice(start, end);
-  }, [data, currentPage, itemsPerPage]);
+  }, [data, currentPage, limit]);
 
   const goToPage = useCallback(
     (page: number) => {
@@ -54,5 +57,8 @@ export default function usePagination<T>({
     nextPage,
     prevPage,
     setCurrentPage,
+    limit,
+    setLimit,
+    totalCount,
   };
 }

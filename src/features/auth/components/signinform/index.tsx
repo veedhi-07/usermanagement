@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import {
-  EyeCloseIcon,
-  EyeIcon,
-} from "../../../../assets/icons";
+import { EyeCloseIcon, EyeIcon } from "../../../../assets/icons";
 import FormField from "../../../../components/form/input/input-field";
 import { Formik, Form } from "formik";
 import { signinSchema } from "../../../../utils/validation";
 import { signInFields } from "../../../../components/input-config";
 import Button from "../../../../components/ui/button/index";
 import Label from "../../../../components/form/label/index";
-import { SignInFormValues } from "../../../../types";
+import { SignInFormValues } from "../../types";
 import { useSignIn } from "../../hooks/useauth-hook";
 
 export default function SignInForm() {
@@ -27,7 +24,7 @@ export default function SignInForm() {
       validationSchema={signinSchema}
     >
       {({ values, handleChange, handleBlur, errors, touched }) => (
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 no-scrollbar">
           <div className="w-full max-w-md pt-10 mx-auto"></div>
 
           <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
@@ -46,47 +43,49 @@ export default function SignInForm() {
                     {signInFields.map((field) => {
                       const isPassword = field.id === "password";
                       return (
-                        <div
-                          key={field.id}
-                          className={isPassword ? "relative" : ""}
-                        >
+                        <div key={field.id}>
                           <Label>
                             {field.label}
                             <span className="text-error-500">*</span>
                           </Label>
 
-                          <FormField
-                            id={field.id}
-                            label={field.label}
-                            placeholder={field.placeholder}
-                            value={values[field.id]}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            error={!!(touched[field.id] && errors[field.id])}
-                            errorMessage={
-                              touched[field.id] ? (errors as any)[field.id] : ""
-                            }
-                            touched={touched[field.id]}
-                            type={
-                              isPassword
-                                ? showPassword
-                                  ? "text"
-                                  : "password"
-                                : field.type
-                            }
-                          />
-                          {isPassword && (
-                            <span
-                              onClick={() => setShowPassword((prev) => !prev)}
-                              className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-                            >
-                              {showPassword ? (
-                                <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-                              ) : (
-                                <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400 size-5" />
-                              )}
-                            </span>
-                          )}
+                          <div className="relative">
+                            <FormField
+                              id={field.id}
+                              label={field.label}
+                              placeholder={field.placeholder}
+                              value={values[field.id]}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={!!(touched[field.id] && errors[field.id])}
+                              errorMessage={
+                                touched[field.id]
+                                  ? (errors as any)[field.id]
+                                  : ""
+                              }
+                              touched={touched[field.id]}
+                              type={
+                                isPassword
+                                  ? showPassword
+                                    ? "text"
+                                    : "password"
+                                  : field.type
+                              }
+                            />
+
+                            {isPassword && (
+                              <span
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-4 top-[22px] -translate-y-1/2 cursor-pointer z-30"
+                              >
+                                {showPassword ? (
+                                  <EyeIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
+                                ) : (
+                                  <EyeCloseIcon className="size-5 fill-gray-500 dark:fill-gray-400" />
+                                )}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       );
                     })}

@@ -8,7 +8,7 @@ import { useDashboard } from "../../hooks";
 import Badge from "../../../../components/ui/badge/index";
 
 export default function EcommerceMetrics() {
-  const { stats,  } = useDashboard();
+  const {stats} = useDashboard();
   // console.log("STATS:", stats);
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">

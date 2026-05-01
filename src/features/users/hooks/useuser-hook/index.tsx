@@ -6,13 +6,25 @@ import {
   deleteUserApi,
   getUsersApi,
 } from "../../services/user-service";
-
-export const useUser = (page?: number, limit?: number) => {
+export const useUser = (params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) => {
   const queryClient = useQueryClient();
 
-  const usersquery = useQuery({
-    queryKey: ["users", page, limit],
-    queryFn: () => getUsersApi({ page: page!, limit: limit! }),
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 10;
+  const search = params?.search ?? "";
+  const Usersquery = useQuery({
+    queryKey: ["users", page, limit, search],
+    queryFn: () =>
+      getUsersApi({
+        page,
+        limit,
+        search,
+      }),
+    enabled: true,
   });
 
   const createUser = useMutation({
@@ -40,13 +52,13 @@ export const useUser = (page?: number, limit?: number) => {
   });
 
   return {
-    users: usersquery.data?.users ?? [],
-    total: usersquery.data?.total ?? 0,
-    totalPages: usersquery.data?.totalPages ?? 0,
+    users: Usersquery.data?.data?.users ?? [],
+    total: Usersquery.data?.data?.pagination?.total ?? 0,
+    totalPages: Usersquery.data?.data.pagination?.totalPages ?? 0,
 
-    isLoading: usersquery.isLoading,
-    isError: usersquery.isError,
-    isPending: usersquery.isPending,
+    isLoading: Usersquery.isLoading,
+    isError: Usersquery.isError,
+    isPending: Usersquery.isPending,
 
     createUser,
     updateUser,

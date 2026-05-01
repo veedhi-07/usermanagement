@@ -22,6 +22,10 @@ export const signupSchema = Yup.object({
     .matches(/\d/, "Password must contain a number")
     .matches(/[@$!%*#?&]/, "Password must contain a special character"),
 
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+
   phone: Yup.string()
     .required("Phone is required")
     .test("valid-phone", "Enter valid phone number", (value) => {

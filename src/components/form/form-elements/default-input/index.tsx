@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ComponentCard from "../../../component-card";
 import Label from "../../label";
-import Input from "../../input/input-field/index.tsx";
+import Input from "../../input/input-field";
 import Select from "../../select";
 import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../../assets/icons";
 import DatePicker from "../../date-picker";
@@ -35,6 +35,7 @@ export default function DefaultInputs() {
             placeholder="Select an option"
             onChange={handleSelectChange}
             className="dark:bg-dark-900"
+            value="value"
           />
         </div>
         <div>

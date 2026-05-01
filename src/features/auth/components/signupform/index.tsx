@@ -9,7 +9,7 @@ import Label from "../../../../components/form/label/index";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
 import FormField from "../../../../components/form/input/input-field";
-import { SignUpformValues } from "../../../../types";
+import { SignUpformValues } from "../../types";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { signUpFields } from "../../../../components/input-config";
@@ -23,6 +23,7 @@ export default function SignUpForm() {
     firstName: "",
     lastName: "",
     username: "",
+    confirmPassword: "",
     phone: "",
   };
   const [showPassword, setShowPassword] = useState(false);
@@ -46,17 +47,7 @@ export default function SignUpForm() {
         setFieldValue,
         setFieldTouched,
       }) => (
-        <div className="flex flex-col flex-1">
-          <div className="w-full max-w-md pt-10 mx-auto">
-            <Link
-              to="/"
-              className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-            >
-              <ChevronLeftIcon className="size-5" />
-              Back to dashboard
-            </Link>
-          </div>
-
+        <div className="flex flex-col flex-1 no-scrollbar">
           <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
             <div>
               <div className="mb-5 sm:mb-8">
@@ -73,7 +64,8 @@ export default function SignUpForm() {
               <Form>
                 <div className="space-y-5">
                   {signUpFields.map((field) => {
-                    const isPassword = field.id === "password";
+                    const isPassword =
+                      field.id === "password" || field.id === "confirmPassword";
                     const isPhone = field.type === "phone";
 
                     return (
@@ -133,7 +125,7 @@ export default function SignUpForm() {
                             {isPassword && (
                               <span
                                 onClick={() => setShowPassword((prev) => !prev)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+                                className="absolute right-4 top-[42px] -translate-y-1/2 cursor-pointer z-30"
                               >
                                 {showPassword ? (
                                   <EyeIcon className="fill-gray-500 dark:fill-gray-400 size-5" />

@@ -1,14 +1,35 @@
 import { apiClient } from "../../../../lib/apiclient";
-import { Role } from "../../../../types";
+import { Role } from "../../types";
 import { endpoints } from "../../../../lib/endpoints";
 
-export const getRolesApi = async (): Promise<Role[]> => {
-  const res = await apiClient.get(endpoints.roles);
-  return res.data.roles;
+export const getRolesApi = async ({
+  page,
+  limit,
+  search,
+}: {
+  page: number;
+  limit: number;
+  search: string;
+}) => {
+  const res = await apiClient.get(endpoints.roles, {
+    params: {
+      page,
+      limit,
+      search,
+    },
+  });
+  // return res.data as {
+  //   roles: Role[];
+  //   pagination: {
+  //     total: number;
+  //     totalPages: number;
+  //   };
+  // };
+  return res.data;
 };
-
 export const getroleByIdApi = async (id: number) => {
   const res = await apiClient.get(`${endpoints.roles}/${id}`);
+  
   // console.log("RAW API:", res.data);
   return res.data;
 };

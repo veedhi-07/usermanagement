@@ -48,7 +48,10 @@ export const useSignIn = () => {
 
         dispatch(setPermissions(permissions || []));
 
-        navigate("/");
+        // navigate("/");
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
       } catch (err) {
         console.error("LOGIN FLOW CRASH:", err);
         toast.error("Something went wrong during login");

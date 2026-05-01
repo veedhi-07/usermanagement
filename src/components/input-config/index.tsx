@@ -1,4 +1,4 @@
-import { SignInFormValues, SignUpformValues } from "../../types";
+import { SignInFormValues, SignUpformValues } from "../../features/auth/types";
 
 export const signInFields: {
   id: keyof SignInFormValues;
@@ -158,6 +158,12 @@ export const signUpFields: {
     id: "phone",
     label: "Phone Number",
     placeholder: "Enter Phone Number",
-    type: "string",
+    type: "number",
+  },
+  {
+    id: "confirmPassword",
+    label: "Confirm Password",
+    placeholder: "Re-enter Password",
+    type: "password",
   },
 ];

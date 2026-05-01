@@ -8,9 +8,11 @@ import {
   GridIcon,
   HorizontaLDots,
   TableIcon,
+  UserIcon,
+  TaskIcon,
   UserCircleIcon,
 } from "../../assets/icons";
-import { useSidebar } from "../../context/SidebarContext";
+import { useSidebar } from "../../context/sidebar-context";
 
 type NavItem = {
   name: string;
@@ -31,14 +33,14 @@ const navItems: NavItem[] = [
   },
   {
     name: "Users",
-    icon: <TableIcon />,
-    path: "/user-table",
+    icon: < UserIcon/>,
+    path: "/users",
     permission: { module: "users", action: "view" },
   },
   {
     name: "Roles",
-    icon: <TableIcon />,
-    path: "/role-table",
+    icon: <TaskIcon />,
+    path: "/roles",
     permission: { module: "role", action: "view" },
   },
 ];

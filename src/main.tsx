@@ -5,8 +5,8 @@ import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
-import { AppWrapper } from "./components/common/page-meta/index.tsx";
-import { ThemeProvider } from "./context/ThemeContext.tsx";
+import { AppWrapper } from "./components/common/page-meta";
+import { ThemeProvider } from "./context/theme-context";
 import { store } from "./redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

@@ -1,3 +1,4 @@
+//input-field
 export interface FormProps {
   id?: string;
   type?: "text" | "number" | "email" | "password" | "date" | "time" | string;
@@ -16,71 +17,19 @@ export interface FormProps {
   success?: string;
   hint?: string;
 }
-export interface SignInFormValues {
-  email: string;
-  password: string;
-}
-
-export interface SignUpformValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  username: string;
-  phone: string;
-}
-
-export interface AuthResponse {
-  success: boolean;
-  data: {
-    token: string;
-    user: {
-      id: number;
-      email: string;
-    };
-  };
-}
-export interface User {
-  id: number;
-  email?: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  phone: string;
-  roleId?: number;
-  roleTitle: string;
-  isActive: boolean;
-  password?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface Role {
-  id: number;
-  title: string;
-  status: "active" | "inactive";
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface ProfileValues {
-  id?: string;
-  email?: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  phone: string;
-  roleId?: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
-export interface UserPaginationProps {
+//pagination
+export interface PaginationProps {
   currentPage: number;
   totalPages: number;
   goToPage: (page: number) => void;
   nextPage: () => void;
   prevPage: () => void;
+  limit: number;
+  setLimit: (limit: number) => void;
+  totalCount?: number;
+  label?: string;
 }
+
 //permissionslice
 export type ModulePermission = {
   moduleSlug: string;
@@ -91,16 +40,11 @@ export type ModulePermission = {
   delete: number;
 };
 
-export type Module = "user" | "role";
+//use-permission hook
 export type ActionKey = "view" | "list" | "add" | "edit" | "delete";
 
+//permission-slice
 export type PermissionsState = Record<string, ModulePermission>;
-
-export type RolePermission = {
-  roleId: number;
-  permissionId: number;
-};
-
 export type Permission = {
   moduleSlug: string;
   list: boolean;
