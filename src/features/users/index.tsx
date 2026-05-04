@@ -77,7 +77,7 @@ export default function UserTable() {
                       placeholder="Search users..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="pl-9 pr-3 py-2 border rounded-lg text-sm dark:bg-gray-900 dark:border-gray-700"
+                      className="pl-9 pr-3 py-2 border rounded-lg text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-amber-50"
                     />
                   </div>
                 </div>

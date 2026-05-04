@@ -7,7 +7,6 @@ import {
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  TableIcon,
   UserIcon,
   TaskIcon,
   UserCircleIcon,

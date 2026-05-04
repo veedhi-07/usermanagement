@@ -42,35 +42,35 @@ export default function UserInfoCard() {
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 First Name
               </p>
-              <p>{user?.firstName}</p>
+              <p className="dark:text-white/90">{user?.firstName}</p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Last Name
               </p>
-              <p>{user?.lastName}</p>
+              <p className="dark:text-white/90">{user?.lastName}</p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Email
               </p>
-              <p>{user?.email}</p>
+              <p className="dark:text-white/90">{user?.email}</p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 User Name
               </p>
-              <p>{user?.username}</p>
+              <p className="dark:text-white/90">{user?.username}</p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Phone
               </p>
-              <p>{user?.phone}</p>
+              <p className="dark:text-white/90">{user?.phone}</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function UserInfoCard() {
       </div>
 
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-175 m-4">
-        <div className="no-scrollbar relative w-full max-w-175 h-[550px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+        <div className="no-scrollbar relative w-full max-w-175  rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
               Edit Personal Information
@@ -127,7 +127,6 @@ export default function UserInfoCard() {
                 const updatedUser = {
                   ...user,
                   ...values,
-                  // ...(res?.user || res?.data?.user || {}),
                 };
 
                 setUser({ ...updatedUser });
@@ -203,6 +202,7 @@ export default function UserInfoCard() {
                               <FormField
                                 type={field.type}
                                 name={field.id}
+                                placeholder={field.placeholder}
                                 value={values[field.id as keyof typeof values]}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -254,3 +254,4 @@ export default function UserInfoCard() {
     </div>
   );
 }
+//h-[550px] overflow-y-auto

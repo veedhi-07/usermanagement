@@ -41,6 +41,7 @@ export default function RoleTable() {
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch]);
+
   const handleEdit = useCallback(async (id: number) => {
     try {
       const res = await getroleByIdApi(id);
@@ -92,10 +93,10 @@ export default function RoleTable() {
                     <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Search users..."
+                      placeholder="Search roles..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="pl-9 pr-3 py-2 border rounded-lg text-sm dark:bg-gray-900 dark:border-gray-700"
+                      className="pl-9 pr-3 py-2 border rounded-lg text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-amber-50"
                     />
                   </div>
                 </div>
@@ -166,63 +167,70 @@ export default function RoleTable() {
 
                 {/* Table Body */}
                 <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                  {roles?.map((role: Role) => (
-                    <TableRow key={role.id}>
-                      <TableCell className="px-5 py-4 sm:px-6 text-start">
-                        <div className="flex items-center gap-3">
-                          <div className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {role.id}
+                  {roles?.map((role: Role) => {
+                    const isSuperAdmin =
+                      role.title?.toLowerCase() === "super admin";
+
+                    return (
+                      <TableRow key={role.id}>
+                        <TableCell className="px-5 py-4 sm:px-6 text-start">
+                          <div className="flex items-center gap-3">
+                            <div className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {role.id}
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                        {role.title}
-                      </TableCell>
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          {role.title}
+                        </TableCell>
 
-                      <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                        <Badge
-                          size="sm"
-                          color={role.status === "active" ? "success" : "error"}
-                        >
-                          {role.status === "active" ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                          <Badge
+                            size="sm"
+                            color={
+                              role.status === "active" ? "success" : "error"
+                            }
+                          >
+                            {role.status === "active" ? "Active" : "Inactive"}
+                          </Badge>
+                        </TableCell>
 
-                      <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                        {role.createdAt
-                          ? new Date(role.createdAt).toLocaleString()
-                          : "-"}
-                      </TableCell>
+                        <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                          {role.createdAt
+                            ? new Date(role.createdAt).toLocaleString()
+                            : "-"}
+                        </TableCell>
 
-                      <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                        {role.updatedAt
-                          ? new Date(role.updatedAt).toLocaleString()
-                          : "-"}
-                      </TableCell>
-                      <TableCell className="px-4 py-3">
-                        <div className="flex gap-3">
-                          {/* EDIT */}
-                          {can("role", "edit") && (
-                            <button
-                              onClick={() => handleEdit(role.id)}
-                              className="text-blue-500 hover:text-blue-700"
-                            >
-                              <Pencil size={18} />
-                            </button>
-                          )}
-                          {/* DELETE */}
-                          {can("role", "delete") && (
-                            <button
-                              onClick={() => handleDelete(role)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                          {role.updatedAt
+                            ? new Date(role.updatedAt).toLocaleString()
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="px-4 py-3">
+                          <div className="flex gap-3">
+                            {/* EDIT */}
+                            {!isSuperAdmin && can("role", "edit") && (
+                              <button
+                                onClick={() => handleEdit(role.id)}
+                                className="text-blue-500 hover:text-blue-700"
+                              >
+                                <Pencil size={18} />
+                              </button>
+                            )}
+                            {/* DELETE */}
+                            {!isSuperAdmin && can("role", "delete") && (
+                              <button
+                                onClick={() => handleDelete(role)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
               <DeleteModal

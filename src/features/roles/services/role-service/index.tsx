@@ -18,13 +18,6 @@ export const getRolesApi = async ({
       search,
     },
   });
-  // return res.data as {
-  //   roles: Role[];
-  //   pagination: {
-  //     total: number;
-  //     totalPages: number;
-  //   };
-  // };
   return res.data;
 };
 export const getroleByIdApi = async (id: number) => {

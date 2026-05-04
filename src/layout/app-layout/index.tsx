@@ -21,7 +21,6 @@ const LayoutContent: React.FC = () => {
         } ${isMobileOpen ? "ml-0" : ""}`}
       >
         <AppHeader />
-        {/* <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6"> */}
         <div className="p-4 md:p-6 w-full">
           <Outlet />
         </div>

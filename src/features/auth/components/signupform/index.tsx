@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import {
-  ChevronLeftIcon,
   EyeCloseIcon,
   EyeIcon,
 } from "../../../../assets/icons";
@@ -62,7 +61,6 @@ export default function SignUpForm() {
                 </p>
               </div>
               <Form>
-                {/* <div className="space-y-5"> */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {signUpFields.map((field) => {
                     const isPassword =
@@ -71,24 +69,8 @@ export default function SignUpForm() {
                     const isPhone = field.type === "phone";
 
                     return (
-                      // <div
-                      //   key={field.id}
-                      //   className={isPassword ? "relative" : ""}
-                      // >
                       <div
                         key={field.id}
-                        //     className={`
-                        //       ${
-                        //         field.id === "email" ||
-                        //         field.id === "firstName" ||
-                        //         field.id === "lastName" ||
-                        //         field.id === "username" ||
-                        //         field.id === "phone"
-                        //           ? "col-span-2"
-                        //           : "col-span-1"
-                        //       }
-                        //   ${isPassword ? "relative" : ""}
-                        // `}
                         className={`
                         ${isFullWidth ? "col-span-2" : "col-span-1"}
                         ${isPassword ? "relative" : ""}
@@ -160,9 +142,6 @@ export default function SignUpForm() {
                       </div>
                     );
                   })}
-                  {/* <Button type="submit" className="w-full" size="sm">
-                    Sign up
-                  </Button> */}
                   <div className="col-span-2">
                     <Button type="submit" className="w-full" size="sm">
                       Sign up

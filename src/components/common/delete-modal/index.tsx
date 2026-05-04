@@ -3,7 +3,6 @@ import { useRole } from "../../../features/roles/hooks/userole-hook";
 import { Modal } from "../../../components/ui/modal";
 import toast from "react-hot-toast";
 
-
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -35,7 +34,9 @@ export default function DeleteModal({ isOpen, onClose, id, type }: Props) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-6">
-      <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+      <h2 className="text-lg font-semibold mb-4 dark:text-amber-50">
+        Confirm Delete
+      </h2>
 
       <p className="text-sm text-gray-600 mb-6">
         Are you sure you want to delete this {type}?
@@ -44,7 +45,7 @@ export default function DeleteModal({ isOpen, onClose, id, type }: Props) {
       <div className="flex justify-end gap-3">
         <button
           onClick={onClose}
-          className="px-4 py-2 border rounded"
+          className="px-4 py-2 border rounded dark:text-amber-50"
           disabled={isPending}
         >
           Cancel

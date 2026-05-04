@@ -144,7 +144,7 @@ export default function RoleModal({ isOpen, onClose, role }: any) {
       className="w-full max-w-5xl p-8 max-h-[70vh] overflow-y-auto"
       closeBtnClassName="absolute right-4 top-7 z-50"
     >
-      <h2 className="text-xl font-semibold mb-4">
+      <h2 className="text-xl font-semibold mb-4 dark:text-white/90">
         {role ? "Edit Role" : "Add Role"}
       </h2>
 
@@ -153,7 +153,7 @@ export default function RoleModal({ isOpen, onClose, role }: any) {
         placeholder="Role Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full border p-2 mb-4 rounded"
+        className="w-full border p-2 mb-4 rounded dark:text-white/90"
       />
 
       <Select
@@ -184,7 +184,7 @@ export default function RoleModal({ isOpen, onClose, role }: any) {
 
               return (
                 <tr key={module.id} className="border-t">
-                  <td className="p-2">{module.name}</td>
+                  <td className="p-2 dark:text-white/90">{module.name}</td>
 
                   {permissionKeys.map((key) => (
                     <td key={key} className="text-center">

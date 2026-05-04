@@ -52,7 +52,7 @@ export const AddEditFields: {
     id: "username",
     label: "Username",
     type: "text",
-    placeholder: "Enter Username ",
+    placeholder: "Enter your User Name ",
     showInEdit: true,
   },
 
@@ -157,7 +157,7 @@ export const signUpFields: {
   {
     id: "username",
     label: "User Name",
-    placeholder: "Enter UserName",
+    placeholder: "Enter your User Name",
     type: "text",
   },
   {

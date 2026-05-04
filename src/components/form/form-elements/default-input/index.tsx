@@ -4,7 +4,7 @@ import Label from "../../label";
 import Input from "../../input/input-field";
 import Select from "../../select";
 import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../../assets/icons";
-import DatePicker from "../../date-picker";
+// import DatePicker from "../../date-picker";
 
 export default function DefaultInputs() {
   const [showPassword, setShowPassword] = useState(false);
@@ -56,17 +56,6 @@ export default function DefaultInputs() {
               )}
             </button>
           </div>
-        </div>
-
-        <div>
-          <DatePicker
-            id="date-picker"
-            label="Date Picker Input"
-            placeholder="Select a date"
-            onChange={(dates, currentDateString) => {
-              console.log({ dates, currentDateString });
-            }}
-          />
         </div>
 
         <div>

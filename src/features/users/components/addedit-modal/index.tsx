@@ -12,6 +12,7 @@ import { AddEditFields } from "../../../../components/input-config";
 import { useUser } from "../../hooks/useuser-hook";
 import PhoneInput from "react-phone-input-2";
 import { useState } from "react";
+import Select from "../../../../components/form/select";
 import FormField from "../../../../components/form/input/input-field";
 import { useRole } from "../../../../features/roles/hooks/userole-hook";
 
@@ -44,9 +45,9 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
     isActive: user?.isActive ?? true,
     roleId: user?.roleId ?? undefined,
   };
-
+  //custom-scrollbar h-112.5 overflow-y-auto
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="max-w-175 m-4">
+    <Modal isOpen={isOpen} onClose={onClose} className="max-w-175">
       <div className="no-scrollbar relative w-full max-w-175 overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
         <div className="px-2 pr-14">
           <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
@@ -111,7 +112,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
             setFieldTouched,
           }) => (
             <Form className="flex flex-col">
-              <div className="custom-scrollbar h-112.5 overflow-y-auto px-2 pb-3">
+              <div className=" px-2 pb-3">
                 <div>
                   <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2"></div>
                 </div>
@@ -135,21 +136,19 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                           <Label>{field.label}</Label>
 
                           {isisActiveField ? (
-                            <select
-                              name="isActive"
+                            <Select
+                              // name="isActive"
                               value={values.isActive ? "true" : "false"}
-                              onChange={(e) => {
-                                setFieldValue(
-                                  "isActive",
-                                  e.target.value === "true",
-                                );
+                              onChange={(value) => {
+                                setFieldValue("isActive", value === "true");
                               }}
-                              onBlur={handleBlur}
-                              className="h-11 w-full rounded-lg border px-4 py-2.5 text-sm"
-                            >
-                              <option value="true">Active</option>
-                              <option value="false">Inactive</option>
-                            </select>
+                              // onBlur={handleBlur}
+                              options={[
+                                { value: "true", label: "Active" },
+                                { value: "false", label: "Inactive" },
+                              ]}
+                              placeholder="Select Status"
+                            />
                           ) : isPhone ? (
                             <>
                               <PhoneInput
@@ -166,23 +165,20 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                               />
                             </>
                           ) : isRole ? (
-                            <select
-                              name="roleId"
-                              value={values.roleId}
-                              onChange={(e) =>
-                                setFieldValue("roleId", Number(e.target.value))
+                            <Select
+                              value={values.roleId ? String(values.roleId) : ""}
+                              onChange={(value) =>
+                                setFieldValue("roleId", Number(value))
                               }
-                              onBlur={handleBlur}
-                              className="h-11 w-full rounded-lg border px-4 py-2.5 text-sm"
-                            >
-                              <option value="">Select Role</option>
-
-                              {filteredRoles.map((role: Role) => (
-                                <option key={role.id} value={role.id}>
-                                  {role.title}
-                                </option>
-                              ))}
-                            </select>
+                              options={[
+                                { value: "", label: "Select Role" },
+                                ...filteredRoles.map((role: Role) => ({
+                                  value: String(role.id),
+                                  label: role.title,
+                                })),
+                              ]}
+                              placeholder="Select Role"
+                            />
                           ) : isPassword ? (
                             <div className="relative">
                               <input
@@ -191,7 +187,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                                 value={values.password}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                className="h-11 w-full rounded-lg border px-4 py-2.5 pr-10 text-sm"
+                                className="h-11 w-full rounded-lg border px-4 py-2.5 pr-10 text-sm dark:text-white/90 outline-hidden dark:outline-hidden"
                                 placeholder="Enter password"
                               />
 
@@ -211,6 +207,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                             <FormField
                               type={field.type}
                               name={field.id}
+                              placeholder={field.placeholder}
                               value={
                                 values[
                                   field.id as keyof typeof values
