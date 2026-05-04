@@ -75,7 +75,7 @@ export default function RoleTable() {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="dark:text-white/90">Loading...</div>;
 
   return (
     <>

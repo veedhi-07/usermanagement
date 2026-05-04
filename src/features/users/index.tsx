@@ -57,7 +57,7 @@ export default function UserTable() {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="dark:text-white/90">Loading...</div>;
   return (
     <>
       <PageMeta title="Users Page" />

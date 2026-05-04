@@ -28,7 +28,7 @@ export default function UserInfoCard() {
     username: user?.username || "",
     phone: user?.phone || "",
   };
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="dark:text-white/90">Loading...</div>;
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">

@@ -207,6 +207,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                             <FormField
                               type={field.type}
                               name={field.id}
+                              autoComplete="off"
                               placeholder={field.placeholder}
                               value={
                                 values[

@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardApi } from "../services";
 
@@ -15,7 +14,6 @@ export const useDashboard = () => {
       recentUsers: [],
     };
 
-
   return {
     isLoading,
     error,
@@ -24,4 +22,3 @@ export const useDashboard = () => {
     recentUsers: dashboard.recentUsers,
   };
 };
-

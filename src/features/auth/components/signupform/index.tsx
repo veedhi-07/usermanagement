@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import {
-  EyeCloseIcon,
-  EyeIcon,
-} from "../../../../assets/icons";
+import { EyeCloseIcon, EyeIcon } from "../../../../assets/icons";
 import Label from "../../../../components/form/label/index";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
@@ -66,7 +63,7 @@ export default function SignUpForm() {
                     const isPassword =
                       field.id === "password" || field.id === "confirmPassword";
                     const isFullWidth = !isPassword;
-                    const isPhone = field.type === "phone";
+                    const isPhone = field.id === "phone";
 
                     return (
                       <div
@@ -109,6 +106,7 @@ export default function SignUpForm() {
                               id={field.id}
                               placeholder={field.placeholder}
                               value={values[field.id]}
+                              autoComplete="off"
                               onChange={handleChange}
                               onBlur={handleBlur}
                               error={!!(touched[field.id] && errors[field.id])}

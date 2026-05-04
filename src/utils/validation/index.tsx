@@ -86,7 +86,7 @@ export const AddEditSchema = (isEditMode: boolean, resetPassword: boolean) =>
         return value !== this.parent.firstName;
       }),
 
-    username: Yup.string().required("UserName is required"),
+    username: Yup.string().required("User Name is required"),
 
     email: Yup.string()
       .email("Enter a valid email")
