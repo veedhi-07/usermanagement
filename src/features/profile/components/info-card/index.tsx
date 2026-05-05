@@ -5,12 +5,13 @@ import Label from "../../../../components/form/label";
 import { Formik, Form } from "formik";
 import { useState } from "react";
 import { useProfile } from "../../../profile/hooks/profile-hook/index";
+import { AxiosError } from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import toast from "react-hot-toast";
 import { ProfileFields } from "../../../../components/input-config";
 import { profileSchema } from "../../../../utils/validation";
-import FormField from "../../../../components/form/input/input-field";
+import FormField from "../../../../components/form/input/form-field";
 
 export default function UserInfoCard() {
   const { UpdateProfile, isLoading } = useProfile();
@@ -112,16 +113,16 @@ export default function UserInfoCard() {
             initialValues={initialValues}
             enableReinitialize={true}
             validationSchema={profileSchema}
-            onSubmit={async (values, { setSubmitting }) => {
+            onSubmit={async (values) => {
               // console.log("SUBMIT:", values);
 
               try {
-                const cleanPayload = {
-                  ...values,
-                  password: undefined,
-                };
+                // const cleanPayload = {
+                //   ...values,
+                //   password: undefined,
+                // };
 
-                const res = await UpdateProfile.mutateAsync(cleanPayload);
+                // const res = await UpdateProfile.mutateAsync(cleanPayload);
                 // console.log("API RESPONSE:", res);
 
                 const updatedUser = {
@@ -138,13 +139,18 @@ export default function UserInfoCard() {
                 setTimeout(() => {
                   closeModal();
                 }, 500);
-              } catch (err: any) {
-                console.log("API ERROR:", err?.response?.data);
+              } catch (err: unknown) {
+                if (err instanceof AxiosError) {
+                  // console.log("API ERROR:", err?.response?.data);
 
-                toast.error(err?.response?.data?.message || "Update failed");
-              } finally {
-                setSubmitting(false);
+                  toast.error(err?.response?.data?.message || "Update failed");
+                } else {
+                  toast.error("Something went wrong");
+                }
               }
+              // } finally {
+              //   setSubmitting(false);
+              // }
             }}
           >
             {({

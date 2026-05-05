@@ -1,8 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import "swiper/swiper-bundle.css";
-import "flatpickr/dist/flatpickr.css";
+import * as Sentry from "@sentry/react";
+
+// import "swiper/swiper-bundle.css";
+// import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { AppWrapper } from "./components/common/page-meta";
@@ -12,16 +14,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <AppWrapper>
         <QueryClientProvider client={queryClient}>
           <Provider store={store}>
-            <App />
+            <Sentry.ErrorBoundary fallback={<p>Something went wrong</p>}>
+              <App />
+            </Sentry.ErrorBoundary>
           </Provider>
         </QueryClientProvider>
       </AppWrapper>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );

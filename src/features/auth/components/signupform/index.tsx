@@ -4,7 +4,7 @@ import { EyeCloseIcon, EyeIcon } from "../../../../assets/icons";
 import Label from "../../../../components/form/label/index";
 import { Formik, Form } from "formik";
 import { signupSchema } from "../../../../utils/validation";
-import FormField from "../../../../components/form/input/input-field";
+import FormField from "../../../../components/form/input/form-field";
 import { SignUpformValues } from "../../types";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -57,7 +57,7 @@ export default function SignUpForm() {
                   Enter your details to sign up!
                 </p>
               </div>
-              <Form>
+              <Form autoComplete="off">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {signUpFields.map((field) => {
                     const isPassword =
@@ -104,9 +104,10 @@ export default function SignUpForm() {
                           <>
                             <FormField
                               id={field.id}
+                              name={field.id}
                               placeholder={field.placeholder}
                               value={values[field.id]}
-                              autoComplete="off"
+                              autoComplete={field.autocomplete || field.id}
                               onChange={handleChange}
                               onBlur={handleBlur}
                               error={!!(touched[field.id] && errors[field.id])}

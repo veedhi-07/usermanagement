@@ -11,9 +11,10 @@ import { AddEditSchema } from "../../../../utils/validation";
 import { AddEditFields } from "../../../../components/input-config";
 import { useUser } from "../../hooks/useuser-hook";
 import PhoneInput from "react-phone-input-2";
+import { AxiosError } from "axios";
 import { useState } from "react";
 import Select from "../../../../components/form/select";
-import FormField from "../../../../components/form/input/input-field";
+import FormField from "../../../../components/form/input/form-field";
 import { useRole } from "../../../../features/roles/hooks/userole-hook";
 
 interface Props {
@@ -21,11 +22,12 @@ interface Props {
   onClose: () => void;
   user: User | null;
 }
+
 export default function AddEditModal({ isOpen, onClose, user }: Props) {
   const { roles } = useRole();
   const { updateUser, createUser } = useUser();
   const [showPassword, setShowPassword] = useState(false);
-  const [resetPassword, setResetPassword] = useState(false);
+  const [resetPassword] = useState(false);
   const filteredRoles =
     roles?.filter((role: Role) => role.title.toLowerCase() !== "super admin") ||
     [];
@@ -45,7 +47,6 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
     isActive: user?.isActive ?? true,
     roleId: user?.roleId ?? undefined,
   };
-  //custom-scrollbar h-112.5 overflow-y-auto
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-175">
       <div className="no-scrollbar relative w-full max-w-175 overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
@@ -63,7 +64,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
           enableReinitialize={true}
           validationSchema={AddEditSchema(isEditMode, resetPassword)}
           context={{ isEditMode }}
-          onSubmit={async (values, { setSubmitting }) => {
+          onSubmit={async (values) => {
             try {
               const cleanPayload: Partial<User> = {
                 email: values.email,
@@ -94,10 +95,12 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                 toast.success("User created successfully");
               }
               onClose();
-            } catch (err: any) {
-              toast.error(err?.response?.data?.message || "Operation failed");
-            } finally {
-              setSubmitting(false);
+            } catch (err: unknown) {
+              if (err instanceof AxiosError) {
+                toast.error(err?.response?.data?.message || "Operation failed");
+              } else {
+                toast.error("Something went wrong");
+              }
             }
           }}
         >

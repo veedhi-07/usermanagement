@@ -24,7 +24,7 @@ const permissionSlice = createSlice({
   name: "permission",
   initialState,
   reducers: {
-    setPermissions: (state, action: PayloadAction<Permission[]>) => {
+    setPermissions: (_state, action: PayloadAction<Permission[]>) => {
       // console.log("RAW PERMISSIONS:", action.payload);
 
       const normalized = normalizePermissions(action.payload);

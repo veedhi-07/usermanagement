@@ -23,7 +23,7 @@ import RoleModal from "./components/modal";
 
 export default function RoleTable() {
   // console.log("roles:", roles);
-  const [selectedrole, setSelectedrole] = useState<any>(null);
+  const [selectedrole, setSelectedrole] = useState<Role | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);

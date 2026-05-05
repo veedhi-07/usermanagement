@@ -4,7 +4,7 @@
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",
-    "skipLibCheck": true,
+    "skipLibCheck": true, //skips .d.ts files for node modules
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -15,10 +15,10 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": true, //variables unused
+    "noUnusedParameters": true, //function params unused
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true //missing exports
   },
   "include": ["vite.config.ts"]
 }

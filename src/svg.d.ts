@@ -4,3 +4,4 @@ declare module "*.svg?react" {
   const src: string;
   export default src;
 }
+//svg as component and svg as url

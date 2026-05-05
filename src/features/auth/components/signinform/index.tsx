@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { EyeCloseIcon, EyeIcon } from "../../../../assets/icons";
-import FormField from "../../../../components/form/input/input-field";
+import FormField from "../../../../components/form/input/form-field";
 import { Formik, Form } from "formik";
+import * as Sentry from "@sentry/react";
 import { signinSchema } from "../../../../utils/validation";
 import { signInFields } from "../../../../components/input-config";
 import Button from "../../../../components/ui/button/index";
@@ -14,6 +15,9 @@ export default function SignInForm() {
   const initialValues = { email: "", password: "" };
   const [showPassword, setShowPassword] = useState(false);
   const { mutate, isPending } = useSignIn();
+  const test = () => {
+    Sentry.captureMessage("Working test");
+  };
   return (
     <Formik<SignInFormValues>
       initialValues={initialValues}
@@ -113,6 +117,7 @@ export default function SignInForm() {
                     </Link>
                   </p>
                 </div>
+                <button onClick={test}>Test Sentry Error</button>
               </div>
             </div>
           </div>

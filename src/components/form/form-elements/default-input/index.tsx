@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ComponentCard from "../../../component-card";
 import Label from "../../label";
-import Input from "../../input/input-field";
+import Input from "../../input/form-field";
 import Select from "../../select";
 import { EyeCloseIcon, EyeIcon, TimeIcon } from "../../../../assets/icons";
 // import DatePicker from "../../date-picker";
@@ -13,7 +13,7 @@ export default function DefaultInputs() {
     { value: "template", label: "Template" },
     { value: "development", label: "Development" },
   ];
-  const handleSelectChange = (value: string) => {
+  const handleSelectChange = () => {
     // console.log("Selected value:", value);
   };
 

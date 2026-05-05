@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { signInApi, signUpApi } from "../../services/authservice";
 import toast from "react-hot-toast";
+import * as Sentry from "@sentry/react";
 import { useNavigate } from "react-router-dom";
 import { getroleByIdApi } from "../../../roles/services/role-service";
 import { setPermissions } from "../../../../redux/reducer/permission-slice/index";
@@ -48,8 +49,6 @@ export const useSignIn = () => {
         }
 
         dispatch(setPermissions(permissions || []));
-
-        // navigate("/");
         setTimeout(() => {
           navigate("/");
         }, 1500);
@@ -58,8 +57,9 @@ export const useSignIn = () => {
         toast.error("Something went wrong during login");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("LOGIN ERROR:", error);
+      Sentry.captureException(error);
       toast.error("Invalid Credentials", {
         duration: 1500,
       });
@@ -88,13 +88,10 @@ export const useSignUp = () => {
       }, 500);
     },
 
-    onError: (error: any) => {
+    onError: () => {
       toast.error("SignUp Failed", {
         duration: 3000,
       });
-
-      const err = error?.response?.data?.errors?.[0];
-      console.log("FINAL ERROR:", JSON.stringify(err));
     },
   });
 };

@@ -1,6 +1,6 @@
 import ComponentCard from "../../../component-card";
 import Label from "../../label";
-import Input from "../../input/input-field/index";
+import Input from "../../input/form-field/index";
 import { EnvelopeIcon } from "../../../../assets/icons";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";

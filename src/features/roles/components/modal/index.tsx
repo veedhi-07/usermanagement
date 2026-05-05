@@ -5,7 +5,7 @@ import { useRole } from "../../hooks/userole-hook";
 import Button from "../../../../components/ui/button";
 import Checkbox from "../../../../components/form/input/checkbox/index";
 import Select from "../../../../components/form/select";
-import FormField from "../../../../components/form/input/input-field";
+import FormField from "../../../../components/form/input/form-field";
 
 const permissionKeys = ["list", "view", "add", "edit", "delete"] as const;
 type PermissionKey = (typeof permissionKeys)[number];
