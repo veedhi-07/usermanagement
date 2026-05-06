@@ -33,7 +33,6 @@ export const useRole = (params?: {
   const createRole = useMutation({
     mutationFn: createRoleApi,
     onSuccess: () => {
-      console.log("CREATE SUCCESS TRIGGERED");
       queryClient.invalidateQueries({ queryKey: ["roles"] });
       toast.success("Created");
     },

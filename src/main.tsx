@@ -2,9 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import * as Sentry from "@sentry/react";
-
-// import "swiper/swiper-bundle.css";
-// import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { AppWrapper } from "./components/common/page-meta";
@@ -16,7 +13,6 @@ const queryClient = new QueryClient();
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
-  tracesSampleRate: 1.0,
 });
 
 createRoot(document.getElementById("root")!).render(
@@ -25,7 +21,7 @@ createRoot(document.getElementById("root")!).render(
       <AppWrapper>
         <QueryClientProvider client={queryClient}>
           <Provider store={store}>
-            <Sentry.ErrorBoundary fallback={<p>Something went wrong</p>}>
+            <Sentry.ErrorBoundary>
               <App />
             </Sentry.ErrorBoundary>
           </Provider>

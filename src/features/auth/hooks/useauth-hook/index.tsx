@@ -59,6 +59,11 @@ export const useSignIn = () => {
     },
     onError: (error) => {
       console.error("LOGIN ERROR:", error);
+
+      Sentry.addBreadcrumb({
+        message: "ERRORRRR",
+        level: "info",
+      });
       Sentry.captureException(error);
       toast.error("Invalid Credentials", {
         duration: 1500,
@@ -92,6 +97,7 @@ export const useSignUp = () => {
       toast.error("SignUp Failed", {
         duration: 3000,
       });
+      Sentry.captureMessage("SignUp Failed");
     },
   });
 };
