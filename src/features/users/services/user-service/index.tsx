@@ -5,7 +5,6 @@ import {
   User,
   UserMutationResponse,
 } from "../../types";
-// import { endpoints } from "../../../../lib/endpoints";
 
 export const getUsersApi = async ({
   page,

@@ -10,7 +10,7 @@ const LayoutContent: React.FC = () => {
   useAuthBS();
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="min-h-screen xl:flex no-scrollbar">
       <div>
         <AppSidebar />
         <Backdrop />

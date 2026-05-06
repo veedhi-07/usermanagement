@@ -117,14 +117,6 @@ export default function UserInfoCard() {
               // console.log("SUBMIT:", values);
 
               try {
-                // const cleanPayload = {
-                //   ...values,
-                //   password: undefined,
-                // };
-
-                // const res = await UpdateProfile.mutateAsync(cleanPayload);
-                // console.log("API RESPONSE:", res);
-
                 const updatedUser = {
                   ...user,
                   ...values,

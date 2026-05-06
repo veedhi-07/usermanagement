@@ -12,6 +12,13 @@ export default defineConfig({
     //     secure: false,
     //   },
     // },
+    host: true,
+    // port: 3000,
+  },
+
+  // base: "/veedhi",
+  build: {
+    outDir: "veedhiii",
   },
   plugins: [
     react(),

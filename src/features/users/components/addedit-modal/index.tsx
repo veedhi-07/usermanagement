@@ -140,7 +140,6 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
 
                           {isisActiveField ? (
                             <Select
-                              // name="isActive"
                               value={values.isActive ? "true" : "false"}
                               onChange={(value) => {
                                 setFieldValue("isActive", value === "true");

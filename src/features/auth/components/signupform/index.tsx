@@ -107,7 +107,6 @@ export default function SignUpForm() {
                               name={field.id}
                               placeholder={field.placeholder}
                               value={values[field.id]}
-                              // autoComplete={field.autocomplete || field.id}
                               onChange={handleChange}
                               onBlur={handleBlur}
                               error={!!(touched[field.id] && errors[field.id])}

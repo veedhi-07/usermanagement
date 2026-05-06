@@ -142,7 +142,6 @@ export const signUpFields: {
     label: "Email",
     placeholder: "name@email.com",
     type: "text",
-    // autocomplete: "section-signup email",
   },
   {
     id: "password",
@@ -161,7 +160,6 @@ export const signUpFields: {
     label: "User Name",
     placeholder: "Enter your User Name",
     type: "text",
-    // autocomplete: "section-signup username",
   },
   {
     id: "phone",

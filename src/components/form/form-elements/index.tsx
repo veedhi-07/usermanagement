@@ -13,7 +13,6 @@ export default function FormElements() {
           <DefaultInputs />
         </div>
         <div className="space-y-6">
-          {/* <InputGroup /> */}
           <CheckboxComponents />
         </div>
       </div>

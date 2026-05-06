@@ -88,7 +88,6 @@ export default function UserTable() {
                     setSelectedUser(null);
                     setSelectedId(null);
                     addEditModal.openModal();
-                    // setIsEditOpen(true);
                   }}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-500 text-white hover:bg-brand-600 transition text-sm"
                 >
