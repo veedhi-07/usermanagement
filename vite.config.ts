@@ -16,7 +16,7 @@ export default defineConfig({
     // port: 3000,
   },
 
-  // base: "/veedhi",
+  // base: "/veedhi/",
   build: {
     outDir: "veedhiii",
   },
