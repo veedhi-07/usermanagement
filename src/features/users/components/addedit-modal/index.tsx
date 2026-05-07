@@ -114,7 +114,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
             setFieldValue,
             setFieldTouched,
           }) => (
-            <Form className="flex flex-col">
+            <Form className="flex flex-col" autoComplete="off">
               <div className=" px-2 pb-3">
                 <div>
                   <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2"></div>
@@ -209,7 +209,6 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                             <FormField
                               type={field.type}
                               name={field.id}
-                              autoComplete="off"
                               placeholder={field.placeholder}
                               value={
                                 values[
