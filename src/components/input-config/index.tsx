@@ -123,7 +123,6 @@ export const signUpFields: {
   label: string;
   placeholder: string;
   type: string;
-  autocomplete?: string;
 }[] = [
   {
     id: "firstName",
