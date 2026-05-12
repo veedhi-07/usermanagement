@@ -1,5 +1,5 @@
 import type React from "react";
-
+//child component
 interface CheckboxProps {
   label?: string;
   checked: boolean;

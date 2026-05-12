@@ -1,4 +1,3 @@
-
 import { ReactNode, ButtonHTMLAttributes } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -17,7 +16,7 @@ const Button: React.FC<ButtonProps> = ({
   endIcon,
   className = "",
   disabled = false,
-  type = "button", 
+  type = "button",
   ...rest
 }) => {
   const sizeClasses = {
@@ -34,7 +33,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      type={type} 
+      type={type}
       disabled={disabled}
       className={`inline-flex items-center justify-center gap-2 rounded-lg transition ${className} ${
         sizeClasses[size]

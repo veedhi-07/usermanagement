@@ -15,9 +15,8 @@ export default function UserDropdown() {
   const handleLogout = () => {
     // remove stored data
     localStorage.removeItem("user");
-    localStorage.removeItem("token"); 
+    localStorage.removeItem("token");
 
-   
     delete api.defaults.headers.common["Authorization"];
     window.location.href = "/signin";
   };
