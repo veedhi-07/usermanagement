@@ -48,3 +48,32 @@ export const signUpSchema = z
     message: "Password and ConfirmPassword must be same",
     path: ["confirmPassword"],
   });
+export type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+//edit profile schema
+export const profileSchema = z
+  .object({
+    firstName: z.string().min(1, "Firstname is required"),
+
+    lastName: z.string().min(1, "Lastname is required"),
+
+    email: z.string().min(1, "Email is required").email("Enter a valid email"),
+
+    phone: z
+      .string()
+      .min(1, "Phone is required")
+      .refine((value) => {
+        const phoneDigits = value.replace(/\D/g, "");
+        return phoneDigits.length >= 10;
+      }),
+  })
+  .refine((data) => data.firstName !== data.lastName, {
+    message: "Firstname and Lastname cannot be the same",
+    path: ["lastName"],
+  });
+
+  //add-edit modal schema
+  export const AddEditSchema = (isEditMode: boolean, resetPassword:boolean) => 
+    z.object({
+
+    })
