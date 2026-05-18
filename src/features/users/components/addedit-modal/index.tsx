@@ -58,7 +58,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
     },
   });
 
-  // Persist edit data when modal/user changes
+  // Persist data
   useEffect(() => {
     reset({
       email: user?.email || "",
@@ -249,7 +249,6 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                               />
                             )}
                           />
-
                           {errors.roleId && (
                             <p className="mt-1 text-sm text-red-500">
                               {errors.roleId.message}
@@ -266,7 +265,6 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                               className="h-11 w-full rounded-lg border px-4 py-2.5 pr-10 text-sm outline-hidden dark:text-white/90"
                               {...register("password")}
                             />
-
                             <button
                               type="button"
                               onClick={() => setShowPassword((prev) => !prev)}
@@ -288,7 +286,7 @@ export default function AddEditModal({ isOpen, onClose, user }: Props) {
                         </>
                       ) : (
                         <>
-                          {/* NORMAL INPUTS */}
+                          {/* Normal Inputs */}
                           <FormField
                             type={field.type}
                             placeholder={field.placeholder}
