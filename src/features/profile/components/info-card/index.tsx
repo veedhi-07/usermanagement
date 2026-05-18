@@ -2,16 +2,20 @@ import { useModal } from "../../../../hooks/use-modal/index";
 import { Modal } from "../../../../components/ui/modal";
 import Button from "../../../../components/ui/button";
 import Label from "../../../../components/form/label";
-import { Formik, Form } from "formik";
+// import { Formik, Form } from "formik";
 import { useState } from "react";
 import { useProfile } from "../../../profile/hooks/profile-hook/index";
 import { AxiosError } from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { ProfileFields } from "../../../../components/input-config";
-import { profileSchema } from "../../../../utils/validation";
+// import { profileSchema } from "../../../../utils/validation";
+import { profileSchema } from "../../../../utils/zvalidation";
 import FormField from "../../../../components/form/input/form-field";
+import { ProfileValues } from "../../../../utils/zvalidation";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function UserInfoCard() {
   const { UpdateProfile, isLoading } = useProfile();
@@ -22,12 +26,47 @@ export default function UserInfoCard() {
   );
   const getError = (error: unknown) =>
     typeof error === "string" ? error : undefined;
-  const initialValues = {
-    email: user.email || "",
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    username: user?.username || "",
-    phone: user?.phone || "",
+  // const initialValues = {
+  //   email: user.email || "",
+  //   firstName: user?.firstName || "",
+  //   lastName: user?.lastName || "",
+  //   username: user?.username || "",
+  //   phone: user?.phone || "",
+  // };
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      email: user.email || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      phone: user?.phone || "",
+    },
+  });
+  // const onSubmit = (values: ProfileValues) => {
+  //   UpdateProfile.mutate(values);
+  // };
+  const onSubmit = async (values: ProfileValues) => {
+    try {
+      const updtatedUser = {
+        ...user,
+        ...values,
+      };
+      setUser(updtatedUser);
+      localStorage.setItem("user", JSON.stringify(updtatedUser));
+      toast.success("Profile updates successfully");
+      closeModal();
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        toast.error(err.response?.data?.message || "update failed");
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
   };
   if (isLoading) return <div className="dark:text-white/90">Loading...</div>;
   return (
@@ -60,12 +99,12 @@ export default function UserInfoCard() {
               <p className="dark:text-white/90">{user?.email}</p>
             </div>
 
-            <div>
+            {/* <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 User Name
               </p>
               <p className="dark:text-white/90">{user?.username}</p>
-            </div>
+            </div> */}
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
@@ -108,145 +147,92 @@ export default function UserInfoCard() {
               Update your details to keep your profile up-to-date.
             </p>
           </div>
+          (
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+            <div className="custom-scrollbar max-h-[60vh] overflow-y-auto px-2 pb-3">
+              <div>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2"></div>
+              </div>
+              <div className="mt-7">
+                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+                  Personal Information
+                </h5>
 
-          <Formik
-            initialValues={initialValues}
-            enableReinitialize={true}
-            validationSchema={profileSchema}
-            onSubmit={async (values) => {
-              // console.log("SUBMIT:", values);
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                  {ProfileFields.map((field) => {
+                    const isPhone = field.id === "phone";
+                    return (
+                      <div key={field.id} className="col-span-2 lg:col-span-1">
+                        <Label>{field.label}</Label>
 
-              try {
-                const updatedUser = {
-                  ...user,
-                  ...values,
-                };
-
-                setUser({ ...updatedUser });
-                localStorage.setItem("user", JSON.stringify(updatedUser));
-
-                toast.success("Profile updated successfully", {
-                  duration: 3000,
-                });
-                setTimeout(() => {
-                  closeModal();
-                }, 500);
-              } catch (err: unknown) {
-                if (err instanceof AxiosError) {
-                  // console.log("API ERROR:", err?.response?.data);
-
-                  toast.error(err?.response?.data?.message || "Update failed");
-                } else {
-                  toast.error("Something went wrong");
-                }
-              }
-              // } finally {
-              //   setSubmitting(false);
-              // }
-            }}
-          >
-            {({
-              values,
-              handleChange,
-              handleBlur,
-              errors,
-              setFieldValue,
-              setFieldTouched,
-              touched,
-            }) => (
-              <Form className="flex flex-col">
-                <div className="custom-scrollbar max-h-[60vh] overflow-y-auto px-2 pb-3">
-                  <div>
-                    <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2"></div>
-                  </div>
-                  <div className="mt-7">
-                    <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                      Personal Information
-                    </h5>
-
-                    <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                      {ProfileFields.map((field) => {
-                        const isPhone = field.id === "phone";
-                        return (
-                          <div
-                            key={field.id}
-                            className="col-span-2 lg:col-span-1"
-                          >
-                            <Label>{field.label}</Label>
-
-                            {isPhone ? (
-                              <>
+                        {isPhone ? (
+                          <>
+                            <Controller
+                              name="phone"
+                              control={control}
+                              render={({ field: phonefield }) => (
                                 <PhoneInput
                                   country={"in"}
-                                  value={values.phone}
-                                  onChange={(phone) =>
-                                    setFieldValue("phone", phone)
-                                  }
-                                  onBlur={() => setFieldTouched("phone", true)}
+                                  value={phonefield.value}
+                                  onChange={phonefield.onChange}
                                   inputStyle={{
                                     width: "100%",
                                     height: "40px",
                                   }}
                                 />
-
-                                {/* Error */}
-                                {touched.phone && errors.phone === "string" && (
-                                  <p className="text-error-500 text-sm mt-1">
-                                    {errors.phone}
-                                  </p>
-                                )}
-                              </>
-                            ) : (
-                              <FormField
-                                type={field.type}
-                                name={field.id}
-                                placeholder={field.placeholder}
-                                value={values[field.id as keyof typeof values]}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                error={
-                                  !!(
-                                    touched[field.id as keyof typeof values] &&
-                                    errors[field.id as keyof typeof values]
-                                  )
-                                }
-                              />
-                            )}
-                            {touched[field.id as keyof typeof values] &&
-                              errors[field.id as keyof typeof values] && (
-                                <p className="text-red-500 text-sm mt-1">
-                                  {getError(
-                                    errors[field.id as keyof typeof values],
-                                  )}
-                                </p>
                               )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                            />
+                            {/* Error */}
+                            {errors.phone && (
+                              <p className="text-error-500 text-sm mt-1">
+                                {errors.phone.message}
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <FormField
+                              type={field.type}
+                              placeholder={field.placeholder}
+                              error={!!errors[field.id as keyof ProfileValues]}
+                              {...register(field.id as keyof ProfileValues)}
+                            />
+                            {errors[field.id as keyof ProfileValues] && (
+                              <p className="text-red-500 text-sm mt-1">
+                                {
+                                  errors[field.id as keyof ProfileValues]
+                                    ?.message as string
+                                }
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="flex items-center gap-3 px-2 mt-18 lg:justify-end">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={closeModal}
-                  >
-                    Close
-                  </Button>
-                  <Button
-                    size="sm"
-                    type="submit"
-                    variant="primary"
-                    disabled={UpdateProfile.isPending}
-                  >
-                    {UpdateProfile.isPending ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              </Form>
-            )}
-          </Formik>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 px-2 mt-18 lg:justify-end">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={closeModal}
+              >
+                Close
+              </Button>
+              <Button
+                size="sm"
+                type="submit"
+                variant="primary"
+                disabled={UpdateProfile.isPending}
+              >
+                {UpdateProfile.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+          )
         </div>
       </Modal>
     </div>

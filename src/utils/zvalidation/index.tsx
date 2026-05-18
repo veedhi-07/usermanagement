@@ -71,9 +71,71 @@ export const profileSchema = z
     message: "Firstname and Lastname cannot be the same",
     path: ["lastName"],
   });
+export type ProfileValues = z.infer<typeof profileSchema>;
 
-  //add-edit modal schema
-  export const AddEditSchema = (isEditMode: boolean, resetPassword:boolean) => 
-    z.object({
+// export const AddEditSchema = z.object({
+//   firstName: z.string().min(1, "Firstname is required"),
 
-    })
+//   lastName: z.string().min(1, "Lastname is required"),
+
+//   username: z.string().min(1, "Username is required"),
+
+//   email: z.string().min(1, "Email is required").email("Enter a valid email"),
+
+//   phone: z
+//     .string()
+//     .min(1, "Phone is required")
+//     .refine((value) => {
+//       const phoneDigits = value.replace(/\D/g, "");
+//       return phoneDigits.length >= 10;
+//     }),
+
+//   password: z
+//     .string()
+//     .min(1, "Password is required")
+//     .min(8, "Password must be atleast 8 characters")
+//     .regex(/[A-Za-z]/, "Password must contain an alphabet")
+//     .regex(/\d/, "Password must contain a number")
+//     .regex(/[@$!#%&*?]/, "Password must contain a special character")
+//     .optional(),
+
+//   isActive: z.boolean(),
+
+//   roleId: z.number().optional(),
+// });
+// export type AddEditValues = z.infer<typeof AddEditSchema>;
+
+
+export const AddEditSchema = z.object({
+  firstName: z.string().min(1, "Firstname is required"),
+
+  lastName: z.string().min(1, "Lastname is required"),
+
+  username: z.string().min(1, "Username is required"),
+
+  email: z.string().min(1, "Email is required").email("Enter a valid email"),
+
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .refine((value) => {
+      const phoneDigits = value.replace(/\D/g, "");
+
+      return phoneDigits.length >= 10;
+    }, "Enter valid phone number"),
+
+  password: z
+    .string()
+    .min(8, "Password must be atleast 8 characters")
+    .regex(/[A-Za-z]/, "Password must contain an alphabet")
+    .regex(/\d/, "Password must contain a number")
+    .regex(/[@$!#%&*?]/, "Password must contain a special character")
+    .optional()
+    .or(z.literal("")),
+
+  isActive: z.boolean(),
+
+  roleId: z.number().optional(),
+});
+
+export type AddEditValues = z.infer<typeof AddEditSchema>;

@@ -5,7 +5,7 @@ export interface ProfileValues {
   email?: string;
   firstName: string;
   lastName: string;
-  username: string;
+  username?: string;
   phone: string;
   roleId?: number;
   createdAt?: string;

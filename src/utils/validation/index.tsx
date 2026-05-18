@@ -113,3 +113,35 @@ export const AddEditSchema = (isEditMode: boolean, resetPassword: boolean) =>
       otherwise: (schema) => schema.notRequired(),
     }),
   });
+//add-edit modal schema
+// export const AddEditBaseSchema = z.object({
+//   firstName: z.string().min(1, "Firstname is required"),
+
+//   lastName: z.string().min(1, "Lastname is required"),
+
+//   email: z.string().min(1, "Email is required").email("Enter a valid email"),
+
+//   phone: z
+//     .string()
+//     .min(1, "Phone is required")
+//     .refine((value) => {
+//       const phoneDigits = value.replace(/\D/g, "");
+//       return phoneDigits.length >= 10;
+//     }),
+
+//   password: z
+//     .string()
+//     .min(1, "Password is required")
+//     .min(8, "Password must be atleast 8 characters")
+//     .regex(/[A-Za-z]/, "Password must contain an alphabet")
+//     .regex(/\d/, "Password must contain a number")
+//     .regex(/[@$!#%&*?]/, "Password must contain a special character")
+//     .optional(),
+
+//   isActive: z.boolean(),
+
+//   // roleId: z.number({
+//   //   required_error: "Role is required",
+//   // })
+// });
+// export type AddEditValues = z.infer<typeof AddEditBaseSchema>;
