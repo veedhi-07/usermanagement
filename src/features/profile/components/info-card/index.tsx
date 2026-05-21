@@ -147,7 +147,7 @@ export default function UserInfoCard() {
               Update your details to keep your profile up-to-date.
             </p>
           </div>
-          (
+
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
             <div className="custom-scrollbar max-h-[60vh] overflow-y-auto px-2 pb-3">
               <div>
@@ -197,14 +197,14 @@ export default function UserInfoCard() {
                               error={!!errors[field.id as keyof ProfileValues]}
                               {...register(field.id as keyof ProfileValues)}
                             />
-                            {errors[field.id as keyof ProfileValues] && (
-                              <p className="text-red-500 text-sm mt-1">
-                                {
-                                  errors[field.id as keyof ProfileValues]
-                                    ?.message as string
-                                }
-                              </p>
-                            )}
+                            errors[field.id as keyof ProfileValues] && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {getError(
+                                errors[field.id as keyof ProfileValues]
+                                  ?.message as string,
+                              )}
+                            </p>
+                            )
                           </>
                         )}
                       </div>
@@ -232,7 +232,6 @@ export default function UserInfoCard() {
               </Button>
             </div>
           </form>
-          )
         </div>
       </Modal>
     </div>

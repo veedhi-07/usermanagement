@@ -35,3 +35,6 @@ export interface DeleteUserResponse {
   success: boolean;
   message: string;
 }
+export enum Status{
+  isActive
+}

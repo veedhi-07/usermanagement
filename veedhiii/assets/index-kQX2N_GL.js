@@ -1,1 +1,0 @@
-import{r as s}from"./index-UqNpuNAi.js";const u=(a=!1)=>{const[o,e]=s.useState(a),t=s.useCallback(()=>e(!0),[]),l=s.useCallback(()=>e(!1),[]),c=s.useCallback(()=>e(n=>!n),[]);return{isOpen:o,openModal:t,closeModal:l,toggleModal:c}};export{u};

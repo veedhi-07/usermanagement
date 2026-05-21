@@ -1,5 +1,4 @@
 import { FormProps } from "../../../../types";
-import type { FC } from "react";
 import { InputHTMLAttributes,forwardRef} from "react";
 
 type NativeInputProps = Omit<

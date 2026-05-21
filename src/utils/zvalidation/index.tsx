@@ -102,7 +102,7 @@ export const AddEditSchema = z.object({
 
   isActive: z.boolean(),
 
-  roleId: z.number().optional(),
+  roleId: z.number(),
 });
 
 export type AddEditValues = z.infer<typeof AddEditSchema>;
