@@ -61,7 +61,6 @@ const MyProfile = () => {
   }, [dispatch]);
 
   if (loading) return <LoadSpinner />;
-
   return (
     <>
       <div className="flex min-h-screen bg-gray-100">
