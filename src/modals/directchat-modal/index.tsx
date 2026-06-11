@@ -1,6 +1,5 @@
 import CommonModall from "../../components/common/common-modal";
-import { db } from "../../services/firebase";
-import { getAuth } from "firebase/auth";
+import { auth, db } from "../../services/firebase";
 import {
   collection,
   query,
@@ -49,7 +48,6 @@ const DirectChatModal = ({
 
     dispatch(setLoading(true));
 
-    const auth = getAuth();
     const currentUser = auth.currentUser;
 
     let q;

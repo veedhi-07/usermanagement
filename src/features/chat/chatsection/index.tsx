@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { db } from "../../../services/firebase";
+import { auth, db } from "../../../services/firebase";
 import {
   collection,
   query,
@@ -8,7 +8,6 @@ import {
   orderBy,
   onSnapshot,
 } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { X, UserPlus } from "lucide-react";
 import ChatSidebar from "../chatsidebar";
 import DirectChatModal from "../../../modals/directchat-modal";
@@ -69,7 +68,6 @@ const ChatSection = ({ sidebarOpen }: Props) => {
   );
   const showSpaces = useAppSelector((state) => state.ui.chats.showspaces);
   const dispatch = useAppDispatch();
-  const auth = getAuth();
   const currentUser = auth.currentUser;
   const inputRef = useRef<HTMLInputElement>(null);
   const createConversation = async (userId: string) => {

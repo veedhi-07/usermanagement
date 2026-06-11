@@ -10,7 +10,7 @@ import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../utils/validation";
 import ForgotPasswordModal from "../../../../src/modals/forgotpassword-modal";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../services/firebase";
+import { auth, setupNotification } from "../../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
@@ -44,6 +44,10 @@ const Login = () => {
         throw new Error("User profile not found");
       }
       const userRole = userDoc.role;
+
+      // if (userRole === "admin") {
+      //   await setupNotification();
+      // }
 
       const roles = await rolesService.getAll();
       const role = roles.find((r) => r.id === userRole);

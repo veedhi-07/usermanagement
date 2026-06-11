@@ -14,6 +14,7 @@ import CommonModall from "../common/common-modal";
 import { usefirebasecollection } from "../../hooks/use-firebasecollection/index";
 import type { Role, ModalProps } from "../../types/index";
 import { usersService } from "../../services/firebase/users-service/index";
+import { showNotification } from "../../utils/notifications";
 const UserModal: FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -56,6 +57,7 @@ const UserModal: FC<ModalProps> = ({
           });
 
           toast.success("User Created");
+          showNotification("User Created", `User was created successfully`);
 
           onSave?.({
             id: newUser.uid,

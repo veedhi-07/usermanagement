@@ -12,6 +12,7 @@ export interface User {
   lastName: string;
   role: string;
   createdAt?: Timestamp;
+  fcmToken?: string;
 }
 export interface Role {
   id: string;

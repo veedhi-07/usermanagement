@@ -10,7 +10,7 @@ import {
   PlusSquare,
 } from "lucide-react";
 import CommonModal from "../../components/addedit-modal";
-import { getAuth, updateCurrentUser } from "firebase/auth";
+import { auth } from "../../services/firebase";
 import UserPagination from "../../components/pagination";
 import usePagination from "../../hooks/use-pagination";
 import DeleteModal from "../../components/delete-modal";
@@ -31,6 +31,7 @@ import {
   setSidebarOpen,
 } from "../../redux/reducer/ui-slice/index";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { showNotification } from "../../utils/notifications";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -49,8 +50,6 @@ const Users = () => {
 
   useEffect(() => {
     dispatch(setLoading(true));
-
-    const auth = getAuth();
 
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -71,20 +70,28 @@ const Users = () => {
     return () => unsubscribe();
   }, []);
 
-
   const handleDelete = useCallback(async () => {
     if (!selectedUserId) return;
 
     try {
+      const deletedUser = users.find((u) => u.id === selectedUserId);
+
       await usersService.delete(selectedUserId);
+
+      showNotification(
+        "User Deleted",
+        `${deletedUser?.firstName ?? "User"} was deleted successfully`,
+      );
       setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
+
       dispatch(setShowModals({ add: false, delete: false }));
       setSelectedUserId(null);
+      console.log("User Deleted");
     } catch (error) {
       console.error("Delete failed:", error);
     }
-  }, [selectedUserId]);
-  
+  }, [selectedUserId, users, dispatch]);
+
   const handleSave = useCallback(
     (updatedUser: User) => {
       setUsers((prev) =>

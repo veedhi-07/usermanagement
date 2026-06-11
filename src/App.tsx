@@ -6,7 +6,10 @@ import { auth } from "./services/firebase";
 import { fetchUserProfile } from "./services/firebase/profile-service/index";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "./redux/store";
-import { setProfile, clearProfile } from "../src/redux/reducer/profile-slice/index";
+import {
+  setProfile,
+  clearProfile,
+} from "../src/redux/reducer/profile-slice/index";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -18,9 +21,10 @@ import { Navigate } from "react-router-dom";
 import { Suspense } from "react";
 import { rolesService } from "./services/firebase/roles-service/index";
 import LoadSpinner from "./components/common/spinner";
+import { setupNotification } from "./services/firebase";
 import type { Permissions } from "./types";
 
-const Login = React.lazy(() => import("./pages/public/login"));
+const Login = React.lazy(() => import("./pages/public/Login"));
 const Signup = React.lazy(() => import("./pages/public/signup"));
 const Dashboard = React.lazy(() => import("./features/dashboard"));
 const MyProfile = React.lazy(() => import("./pages/private/myprofile"));
@@ -32,6 +36,10 @@ const ErrorBoundry = React.lazy(() => import("./pages/public/errorboundry"));
 
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    setupNotification();
+  }, []);
   const dispatch = useDispatch();
   const profile = useSelector((state: RootState) => state.profile);
 

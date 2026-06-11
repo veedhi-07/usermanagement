@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setProfile } from "../../../redux/reducer/profile-slice/index";
 import profileService from "../../../services/firebase/profile-service/";
-import { getAuth } from "firebase/auth";
+import { auth } from "../../../services/firebase";
 import { Card, Avatar } from "flowbite-react";
 import type { ProfileData } from "../../../types";
 import Sidebar from "../../../components/layout/sidebar";
@@ -35,7 +35,6 @@ const MyProfile = () => {
   useEffect(() => {
     dispatch(setLoading(true));
     const loadProfile = async () => {
-      const auth = getAuth();
       const user = auth.currentUser;
       if (!user) return;
 
@@ -104,7 +103,6 @@ const MyProfile = () => {
                 validationSchema={validationSchema}
                 onSubmit={async (values) => {
                   try {
-                    const auth = getAuth();
                     const user = auth.currentUser;
                     if (!user) return;
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FormField from "../../components/common/form-field/formfield";
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../services/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 import { toast } from "react-toastify";
 import { Formik, Form } from "formik";
 import Button from "../../components/common/button";
@@ -19,7 +20,6 @@ export default function ForgotPasswordModal({
     setLoading(true);
 
     try {
-      const auth = getAuth();
       await sendPasswordResetEmail(auth, values.email);
       toast.success("Password reset email sent!", { position: "top-center" });
       onClose();
