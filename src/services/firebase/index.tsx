@@ -21,35 +21,35 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-const setupNotification = async () => {
-  const supported = await isSupported();
+// const setupNotification = async () => {
+//   const supported = await isSupported();
 
-  if (!supported) {
-    console.log("Messaging not supported");
-    return;
-  }
-  const messaging = getMessaging(app);
-  try {
-    //request permission for notifications
-    const permission = await Notification.requestPermission();
+//   if (!supported) {
+//     console.log("Messaging not supported");
+//     return;
+//   }
+//   const messaging = getMessaging(app);
+//   try {
+//     //request permission for notifications
+//     const permission = await Notification.requestPermission();
 
-    if (permission === "granted") {
-      console.log("Notification permission granted");
+//     if (permission === "granted") {
+//       console.log("Notification permission granted");
 
-      // Get the Firebase cloud messaging(FCM) token
-      const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
-      });
-      console.log("FCM Token", token);
-      return token;
-    } else {
-      console.log("Notification permission denied");
-    }
-  } catch (error) {
-    console.error("Error setting up notifications", error);
-  }
-};
-export { setupNotification };
+//       // Get the Firebase cloud messaging(FCM) token
+//       const token = await getToken(messaging, {
+//         vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+//       });
+//       console.log("FCM Token", token);
+//       return token;
+//     } else {
+//       console.log("Notification permission denied");
+//     }
+//   } catch (error) {
+//     console.error("Error setting up notifications", error);
+//   }
+// };
+// export { setupNotification };
 
 export const auth = getAuth(app);
 console.log("Authh registered");

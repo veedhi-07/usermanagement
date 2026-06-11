@@ -22,6 +22,7 @@ import FormField from "../../components/common/form-field/formfield";
 import "react-toastify/dist/ReactToastify.css";
 import type { User } from "../../../src/types/index";
 import { usersService } from "../../services/firebase/users-service/index";
+import useNotifications from "../../hooks/use-notifications";
 import {
   setUserSearch,
   setLoading,
@@ -31,7 +32,9 @@ import {
   setSidebarOpen,
 } from "../../redux/reducer/ui-slice/index";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { showNotification } from "../../utils/notifications";
+// import { showNotification } from "../../utils/notifications";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../services/firebase";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -47,7 +50,7 @@ const Users = () => {
   const loading = useAppSelector((state) => state.ui.loading);
   const dispatch = useAppDispatch();
   const itemsPerPage = 7;
-
+  useNotifications();
   useEffect(() => {
     dispatch(setLoading(true));
 
@@ -78,10 +81,14 @@ const Users = () => {
 
       await usersService.delete(selectedUserId);
 
-      showNotification(
-        "User Deleted",
-        `${deletedUser?.firstName ?? "User"} was deleted successfully`,
-      );
+      // showNotification(
+      //   "User Deleted",
+      //   `${deletedUser?.firstName ?? "User"} was deleted successfully`,
+      // );
+      await addDoc(collection(db, "notifications"), {
+        message: `${deletedUser?.firstName} was deleted`,
+      });
+
       setUsers((prev) => prev.filter((u) => u.id !== selectedUserId));
 
       dispatch(setShowModals({ add: false, delete: false }));

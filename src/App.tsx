@@ -21,7 +21,7 @@ import { Navigate } from "react-router-dom";
 import { Suspense } from "react";
 import { rolesService } from "./services/firebase/roles-service/index";
 import LoadSpinner from "./components/common/spinner";
-import { setupNotification } from "./services/firebase";
+// import { setupNotification } from "./services/firebase";
 import type { Permissions } from "./types";
 
 const Login = React.lazy(() => import("./pages/public/Login"));
@@ -37,9 +37,9 @@ const ErrorBoundry = React.lazy(() => import("./pages/public/errorboundry"));
 const App = () => {
   const [authLoading, setAuthLoading] = useState(true);
 
-  useEffect(() => {
-    setupNotification();
-  }, []);
+  // useEffect(() => {
+  //   setupNotification();
+  // }, []);
   const dispatch = useDispatch();
   const profile = useSelector((state: RootState) => state.profile);
 

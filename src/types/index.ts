@@ -161,3 +161,7 @@ export interface CanProps {
   action: ActionKey;
   children: ReactNode;
 }
+
+export interface NotificationType {
+  message: string;
+}

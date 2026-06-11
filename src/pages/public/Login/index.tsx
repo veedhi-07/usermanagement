@@ -10,7 +10,7 @@ import type { FormikHelpers } from "formik";
 import { loginSchema } from "../../../utils/validation";
 import ForgotPasswordModal from "../../../../src/modals/forgotpassword-modal";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, setupNotification } from "../../../services/firebase";
+import { auth } from "../../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
