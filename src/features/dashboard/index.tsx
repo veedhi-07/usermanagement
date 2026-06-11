@@ -3,13 +3,11 @@ import Sidebar from "../../components/layout/sidebar";
 import Navbar from "../../components/layout/navbar";
 import { useState } from "react";
 import { useAppSelector } from "../../redux/hooks";
-import useNotifications from "../../hooks/use-notifications";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const profile = useAppSelector((state) => state.profile);
-  useNotifications();
 
   return (
     <div className="flex min-h-screen">
