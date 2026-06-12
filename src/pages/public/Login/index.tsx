@@ -58,6 +58,7 @@ const Login = () => {
       }
 
       dispatch(setPermissions(role.permissions));
+
       toast.success("Login successful!");
       setTimeout(() => {
         navigate("/dashboard", { replace: true });

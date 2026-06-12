@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import permissionReducer from "./reducer/permission-slice/index";
 import uiReducer from "./reducer/ui-slice/index";
+import authReducer from "./reducer/auth-slice";
 import profileReducer from "./reducer/profile-slice/index";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -9,6 +10,7 @@ const rootReducer = combineReducers({
   profile: profileReducer,
   permission: permissionReducer,
   ui: uiReducer,
+  auth: authReducer,
 });
 
 const persistConfig = {
